@@ -12,6 +12,24 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 /**
+ * The full name at every width. The brief allows an "SM." monogram on
+ * mobile, but its accessible name could not contain the visible text
+ * (WCAG 2.5.3), so the monogram is kept for the favicon only.
+ */
+function Wordmark({ onClick }: { onClick?: () => void }) {
+  return (
+    <Link
+      href="/"
+      onClick={onClick}
+      className="inline-flex min-h-tap items-center font-display text-wordmark italic"
+    >
+      {site.name}
+      <span className="sr-only">, home</span>
+    </Link>
+  );
+}
+
+/**
  * Fixed, transparent header. `mix-blend-difference` keeps the white text
  * legible over the light section. On small screens the links move into a
  * full-screen modal dialog (focus contained, Esc closes, focus returns to the
@@ -45,18 +63,7 @@ export function SiteHeader() {
     <>
       <header className="fixed inset-x-0 top-0 z-50 text-fg mix-blend-difference">
         <div className="container-site flex h-(--header-h) items-center justify-between">
-          <Link
-            href="/"
-            aria-label={`${site.name}, home`}
-            className="inline-flex min-h-tap items-center font-display text-wordmark italic"
-          >
-            <span aria-hidden="true" className="hidden sm:inline">
-              {site.name}
-            </span>
-            <span aria-hidden="true" className="sm:hidden">
-              {site.monogram}
-            </span>
-          </Link>
+          <Wordmark />
 
           <nav aria-label="Primary" className="hidden md:block">
             <ul className="-mr-2 flex items-center gap-4">
@@ -76,7 +83,7 @@ export function SiteHeader() {
                           "absolute inset-x-2 bottom-3 h-px origin-left bg-current transition-transform duration-(--dur-ui) ease-out",
                           active
                             ? "scale-x-100"
-                            : "scale-x-0 group-hover:scale-x-100",
+                            : "scale-x-0 group-hocus:scale-x-100",
                         )}
                       />
                     </Link>
@@ -107,14 +114,7 @@ export function SiteHeader() {
       >
         <div className="flex h-full flex-col">
           <div className="container-site flex h-(--header-h) shrink-0 items-center justify-between">
-            <Link
-              href="/"
-              onClick={closeMenu}
-              aria-label={`${site.name}, home`}
-              className="inline-flex min-h-tap items-center font-display text-wordmark italic"
-            >
-              <span aria-hidden="true">{site.monogram}</span>
-            </Link>
+            <Wordmark onClick={closeMenu} />
             <button
               type="button"
               onClick={closeMenu}

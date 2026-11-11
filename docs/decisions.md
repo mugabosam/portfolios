@@ -103,3 +103,50 @@ exists, and it will never apply under touch or reduced motion.
 `@playwright/test` and `@axe-core/playwright` arrive now rather than in Phase 9. `pnpm test:e2e`
 checks every route at desktop and mobile widths (WCAG 2.0/2.1/2.2 A and AA, plus best practices),
 including the open mobile menu.
+
+## Phase 3: Content layer (2026-11-11)
+
+**MDX compiled in code, not through `@next/mdx`.** Turbopack cannot pass remark or rehype
+plugins that take function options (Next.js MDX guide). Case studies are therefore compiled
+with `@mdx-js/mdx` inside a `"use cache"` server component with `cacheLife("max")`, so
+compilation and syntax highlighting happen once, at build time. Every case study is prerendered
+as static HTML.
+
+**Frontmatter: `yaml` and a strict Zod schema.** Unknown keys, wrong types, unknown categories,
+a slug that does not match the file name, a missing cover file, duplicate `order` values or no
+featured project all throw with a readable message, which fails `next build`. This was verified
+by breaking `zunga.mdx` on purpose. `lib/content/parse.ts` has no file-system access, so unit
+tests can exercise it directly.
+
+**Syntax highlighting: Shiki with its JavaScript regex engine** (no WebAssembly) and a custom
+monochrome theme. Every token colour passes 4.5:1 on the code background.
+
+**Categories.** The brief's filters are Backend, AI / ML, Web and Blockchain. Mobile is added
+because two of the six projects (Zunga, BlueSnap) are mobile apps and fit none of the others.
+
+**Filters live in the URL** (`/work?category=backend`) so a filtered view can be shared. They
+are read through `useSyncExternalStore`, so there is no hydration mismatch. Without JavaScript,
+the filter buttons stay hidden and every project is listed.
+
+**`dynamicParams` is not allowed with Cache Components.** The build rejects it. Unknown slugs
+still return the 404 page through `notFound()`.
+
+**Covers are generated art, not screenshots.** `pnpm covers` draws a faceted gem per project,
+seeded by its slug. They match the Artifact theme and never misrepresent a product. Real
+screenshots can replace them through the `cover` field.
+
+**Honesty notes in the case studies.** Each claim was checked against the code, not only the
+README:
+
+- **Zunga:** the README says dial codes can be fixed remotely, but the remote refresh is still
+  a stub, so it is listed under "What I'd do next".
+- **BlueSnap:** calls are not claimed. The forward-secret handshake that exists in the code is
+  described.
+- **Inventory Pro:** low-stock alerts are not claimed, because their panels query undefined
+  fields. The same correction was made to Sam's CV.
+- **MediChain:** the case study states that administrators can read every record and that
+  break-glass access is never reviewed.
+
+**EUCL case study is responsibilities-only.** It has no code, data, screenshots or internal
+URLs, and an architecture diagram generic enough to describe many systems. It is pending Sam's
+confirmation that EUCL agrees (see CONTENT_TODO.md).

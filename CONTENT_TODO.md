@@ -1,35 +1,48 @@
 # Content to-do for Sam
 
-Things only you can confirm. Nothing on the site is invented; anything still open shows up
-as a `{{TODO: ...}}` placeholder or is left out until you answer. Tick items off as you go.
+Things only you can confirm or fix. Nothing on the site is invented; where something is
+unknown, it is left out rather than guessed. Tick items off as you go.
 
 ## Decided
 
 - [x] **Positioning:** Backend Developer (Python & TypeScript), with frontend work shown
-      alongside it (2026-11-11).
-- [x] **Projects:** MalariaCheck, MediChain, Zunga, BlueSnap, Inventory Pro and the EUCL
-      internship. `maison` is left out (2026-11-11).
+      alongside it.
+- [x] **Projects:** MalariaCheck, EUCL internship, Zunga, BlueSnap, MediChain and Inventory
+      Pro, with RPS Arena under Experiments. `maison` is left out.
 - [x] **LinkedIn:** none. The site links to GitHub and email only.
 - [x] **Domain:** none. The site launches on a free `*.vercel.app` address.
+- [x] **Education:** Bachelor's degree in Information Technology, University of Rwanda,
+      2023 – 2027 (expected).
+- [x] **Training:** ALX and Paragon One removed (not taken).
 
-## Needed before launch
+## Please confirm before launch
 
+- [ ] **EUCL approval.** The internship case study describes responsibilities and a generic
+      architecture only (no code, data, screenshots or internal URLs). Please check that
+      EUCL is comfortable with `/work/eucl-internship` and confirm your official job title.
 - [ ] **Vercel address.** Pick the project name, which sets the URL. For example,
-      `sammugabo.vercel.app` or `mugabosam.vercel.app`, whichever is free.
-- [ ] **EUCL approval.** Can the site describe your internship responsibilities (not code,
-      data or screenshots)? Please also confirm your official job title.
-- [ ] **University details.** Exact degree name (for example "BSc (Hons) in Information
-      Technology") and expected graduation year.
-- [ ] **Availability line.** Confirm: "Open to internships, junior roles and freelance work:
-      Kigali, Rwanda (UTC+2) / remote".
+      `sammugabo.vercel.app`, if it is free.
+- [ ] **Read every case study once** (`content/work/*.mdx`). Each was written from your
+      READMEs and code. Correct anything that does not sound like you.
 
-## Needed for later phases
+## Worth fixing on GitHub (outside this site)
 
-- [ ] **Resend account** (free) for the contact form, created with popesir112@gmail.com.
-      This is Phase 7.
-- [ ] **Public résumé.** The website PDF will leave out your phone number. Keep the version
-      with your phone number for direct applications only.
+- [ ] **Committed database file.** `mugabosam/Inventory` contains `inventory/dreamhome`, a
+      SQLite file with one user account and its password hash. Delete it from the repo
+      (and its history if you can), and change that password anywhere you reuse it.
+- [ ] **BlueSnap homepage link.** The repo's website field points to
+      `blue-snap.vercel.app`, which returns 404. Remove it, or redeploy the page.
+- [ ] **Profile README claims.** Your GitHub profile says Inventory Pro has low-stock
+      alerts, but the alert panels query fields the models do not define, so they would
+      fail. Fix the code or soften the sentence.
+
+## Optional improvements
+
+- [ ] **Real screenshots.** Project covers are abstract faceted artwork, not screenshots. If
+      you capture real screenshots (for example of MalariaCheck running), put them in
+      `public/work/<slug>/` and change `cover` in that project's frontmatter.
+- [ ] **Resend account** (free) so the contact form can deliver email. Until a
+      `RESEND_API_KEY` is set, the form shows your email address instead.
 - [ ] **ML libraries.** The site lists scikit-learn, pandas and Streamlit (what your repos
-      show). Add any others you have actually used in a project.
-- [ ] **Dates for training.** When did you do ALX and the Paragon One externship?
+      show). Add any others you have used in a real project.
 - [ ] **Photo (optional).** A portrait for the About page, if you want one.

@@ -12,12 +12,13 @@ export default function HomePage() {
     >
       <p className="type-label text-fg-muted">Portfolio · Vol. 01</p>
       <h1 id="hero-title" className="mt-6">
-        <span className="block type-display">Built</span>
+        <span className="block type-display">Built</span>{" "}
         <span className="block font-display text-display italic">to last</span>
       </h1>
       <p className="mt-8 max-w-(--measure) text-lead text-fg-muted">
-        Sam Mugabo: software developer building Python backends and
-        machine-learning systems that keep working long after launch.
+        Sam Mugabo: backend developer in Python and TypeScript, building APIs,
+        interfaces and machine-learning models that keep working long after
+        launch.
       </p>
       <div className="mt-12 flex flex-wrap items-center gap-6">
         <Link

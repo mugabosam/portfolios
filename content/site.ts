@@ -11,11 +11,12 @@ export type SocialLink = { label: string; href: string };
 export const site = {
   name: "Sam Mugabo",
   monogram: "SM.",
-  role: "Software developer",
+  role: "Backend developer (Python & TypeScript)",
   /** Used for the default <title> and search snippets. */
-  title: "Sam Mugabo: Python Backend & ML Developer",
+  title: "Sam Mugabo: Backend Developer (Python & TypeScript)",
+  /** ≤ 155 characters. */
   description:
-    "Sam Mugabo builds Python backends and machine-learning systems in Kigali, Rwanda, engineered with patience and finished with care.",
+    "Backend developer in Kigali, Rwanda, building Python and TypeScript APIs, the frontends on top of them, and machine-learning models that last.",
   location: "Kigali, Rwanda",
   email: "popesir112@gmail.com",
   nav: [
@@ -24,7 +25,7 @@ export const site = {
     { label: "Resume", href: "/resume" },
     { label: "Contact", href: "/contact" },
   ] satisfies NavItem[],
-  /** LinkedIn is added once Sam confirms the profile URL (CONTENT_TODO.md). */
+  /** Sam has no LinkedIn yet; add it here if that changes. */
   socials: [
     { label: "GitHub", href: "https://github.com/mugabosam" },
   ] satisfies SocialLink[],

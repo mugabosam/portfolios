@@ -3,18 +3,19 @@
 Things only you can confirm. Nothing on the site is invented; anything still open shows up
 as a `{{TODO: ...}}` placeholder or is left out until you answer. Tick items off as you go.
 
+## Decided
+
+- [x] **Positioning:** Backend Developer (Python & TypeScript), with frontend work shown
+      alongside it (2026-11-11).
+- [x] **Projects:** MalariaCheck, MediChain, Zunga, BlueSnap, Inventory Pro and the EUCL
+      internship. `maison` is left out (2026-11-11).
+- [x] **LinkedIn:** none. The site links to GitHub and email only.
+- [x] **Domain:** none. The site launches on a free `*.vercel.app` address.
+
 ## Needed before launch
 
-- [ ] **LinkedIn URL.** The footer and contact section only link to GitHub until then.
-- [ ] **Domain.** Do you have a domain name, or should the site launch on a free
-      `*.vercel.app` address first?
-- [ ] **Positioning.** The brief says "Python Backend & ML Developer", but your strongest
-      professional work (EUCL) is a TypeScript/NestJS backend. Keep the brief's title, or use
-      something broader such as "Backend Developer (Python & TypeScript)"? This changes the
-      page title in `content/site.ts` and the hero copy.
-- [ ] **Sixth project.** The `maison` repo on GitHub is empty, so it can't be shown as a
-      project. Suggested replacement: Inventory Pro (Django, MySQL), which also supports the
-      Python backend story.
+- [ ] **Vercel address.** Pick the project name, which sets the URL. For example,
+      `sammugabo.vercel.app` or `mugabosam.vercel.app`, whichever is free.
 - [ ] **EUCL approval.** Can the site describe your internship responsibilities (not code,
       data or screenshots)? Please also confirm your official job title.
 - [ ] **University details.** Exact degree name (for example "BSc (Hons) in Information

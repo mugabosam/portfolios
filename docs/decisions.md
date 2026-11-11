@@ -54,3 +54,18 @@ Corepack 0.32 cannot run pnpm 12. `typecheck` runs `next typegen` first, because
 **Repository location.** The repo stays in OneDrive for now. Moving it would break the open
 editor session. If OneDrive sync causes `EPERM` errors in `node_modules` or `.next`, move the
 repo to a non-synced folder such as `C:\dev\portfolio`.
+
+## Content decisions (2026-11-11, from Sam)
+
+**Positioning: Backend Developer (Python & TypeScript).** This replaces the brief's "Python
+Backend & ML Developer". Sam's strongest professional work (EUCL) is a NestJS backend, and he
+also does frontend work, so the copy names APIs, interfaces and machine-learning models together.
+The page title and description live in `content/site.ts`.
+
+**The six projects.** MalariaCheck (AI/ML), MediChain (blockchain/health), Zunga (mobile),
+BlueSnap (mobile, offline P2P), Inventory Pro (Django, MySQL) and the EUCL internship (described
+as responsibilities only). `maison` is dropped because its repository is empty. Inventory Pro is
+Django, not PHP: both the GitHub repo and the local copy contain only Python and templates.
+
+**No LinkedIn, no custom domain.** The site links to GitHub and email, and launches on a free
+`vercel.app` address. `NEXT_PUBLIC_SITE_URL` can be set later if a domain is bought.

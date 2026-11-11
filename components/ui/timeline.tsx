@@ -25,7 +25,7 @@ export function TimelineItem({
   children,
   filled = false,
 }: {
-  period: string;
+  period?: string;
   title: string;
   org: string;
   children?: ReactNode;
@@ -38,8 +38,8 @@ export function TimelineItem({
         data-filled={filled}
         className="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full border border-fg bg-bg transition-colors duration-(--dur-ui) data-[filled=true]:bg-fg"
       />
-      <p className="type-label text-fg-muted">{period}</p>
-      <h3 className="mt-2 font-display text-h4">{title}</h3>
+      {period && <p className="mb-2 type-label text-fg-muted">{period}</p>}
+      <h3 className="font-display text-h4">{title}</h3>
       <p className="mt-1 text-fg-muted">{org}</p>
       {children && (
         <div className="mt-4 max-w-(--measure) text-fg-muted">{children}</div>

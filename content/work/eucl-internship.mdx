@@ -1,0 +1,89 @@
+---
+title: EUCL internship
+slug: eucl-internship
+summary: Backend and frontend work on an internal inventory and device management system at EUCL, Rwanda's electricity utility, from the first commit onward.
+year: 2026
+role: Software Development Intern
+category: [backend, web]
+stack: [TypeScript, NestJS, Prisma, PostgreSQL, Next.js, React]
+cover: /work/eucl-internship/cover.svg
+featured: false
+order: 2
+confidential: true
+---
+
+<Note>
+
+This is internal software, so this page describes my responsibilities and the general shape of the system only. No code, data, screenshots or internal addresses are shown.
+
+</Note>
+
+## Context
+
+EUCL (Energy Utility Corporation Limited) needed an internal system to keep track of its devices and equipment: what exists, where it is, who is responsible for it, and how that has changed over time.
+
+I joined as a software development intern in September 2026, working in a small team of developers.
+
+## My role
+
+- **Set up the backend from the first commit.** I scaffolded the REST API in NestJS with Prisma and PostgreSQL, and I have been its most active contributor since.
+- **Built the features staff use every day:** spreadsheet imports, device custody reports and a readable audit trail.
+- **Led a security pass** across the API and the frontend.
+- **Built frontend features** in Next.js, React and TypeScript, including PDF receipts, Excel templates and plain-language error messages.
+
+## Approach
+
+<Diagram
+  title="General architecture of the internal system"
+  description="Staff use a Next.js web app. It calls a NestJS REST API that authenticates each request, checks role-based permissions and reads or writes PostgreSQL through Prisma. Every change is written to an audit trail."
+  height={260}
+  nodes={[
+    { id: "web", label: "Web app", sub: "Next.js, React", x: 130, y: 130 },
+    { id: "api", label: "REST API", sub: "NestJS", x: 380, y: 130 },
+    {
+      id: "auth",
+      label: "Permissions",
+      sub: "roles, JWT",
+      x: 380,
+      y: 40,
+      w: 150,
+    },
+    { id: "orm", label: "Prisma", sub: "typed queries", x: 620, y: 130 },
+    { id: "db", label: "PostgreSQL", x: 840, y: 130 },
+    { id: "audit", label: "Audit trail", x: 620, y: 230, w: 150 },
+  ]}
+  edges={[
+    { from: "web", to: "api", label: "HTTPS" },
+    { from: "api", to: "auth" },
+    { from: "api", to: "orm" },
+    { from: "orm", to: "db" },
+    { from: "api", to: "audit" },
+  ]}
+/>
+
+The API is the contract. It is documented with OpenAPI, and the frontend works only through it. Permissions are role-based and enforced on the server, so the interface can never grant more than the API allows.
+
+## Technical highlights
+
+No code is shown here, but three pieces of work show how I approach a system like this.
+
+### Imports that are safe to retry
+
+Staff bring in devices from spreadsheets. Every row is validated, staff review what will be registered before anything is saved, and an import can be retried after a failure without creating duplicates. A half-finished upload should never leave the data worse than before.
+
+### An audit trail people can read
+
+Each change records who made it and when. The custody report lists everyone who has held a device, first to last, so a question about where something went can be answered from the system instead of from memory.
+
+### Security as routine work
+
+I led a security pass over both applications: token revocation, stricter request and session handling, HTTP security headers, and fixes for dependency advisories as they arrived. CI on GitHub Actions runs the test suites and Docker builds on every pull request.
+
+## Results
+
+The system is in active development, and I continue to work on it. The concrete outcomes so far are engineering ones: a documented API, automated tests around the parts that change data, and changes that go through pull requests and code review.
+
+## What I'd do next
+
+- **Measure the import path.** The largest spreadsheets are where performance will matter first, so they should be timed before they get slow.
+- **Write more of the "why" down.** Decisions about data and permissions outlive the people who made them, so they belong in the repository next to the code.

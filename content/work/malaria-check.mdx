@@ -1,0 +1,178 @@
+---
+title: MalariaCheck
+slug: malaria-check
+summary: A symptom-based malaria risk screener trained on 1,622 lab-confirmed hospital records, built to tell people plainly when a blood test cannot wait.
+year: 2026
+role: Solo project. Data, model and interface
+category: [ai-ml, web]
+stack: [Python, pandas, scikit-learn, Streamlit, Plotly]
+repo: https://github.com/mugabosam/Malaria-Detection
+cover: /work/malaria-check/cover.svg
+featured: true
+order: 1
+---
+
+## Context
+
+Malaria can become life-threatening within 24 hours, and its early symptoms (fever, headache, weakness) are easy to mistake for flu. Many people wait too long before getting tested.
+
+MalariaCheck gives a first, evidence-based assessment in under a minute and, above all, says when testing is urgent. It is a screening aid, not a diagnosis: only a laboratory blood test confirms malaria, and the app says so on every page.
+
+## My role
+
+I built it alone: cleaning the dataset, choosing and evaluating the model, and designing an interface shaped around safety rather than raw prediction.
+
+## Approach
+
+<Diagram
+  title="How a MalariaCheck assessment is made"
+  description="Hospital records are cleaned and used to train a depth-limited decision tree. A person's age and eleven yes or no symptoms go through the tree, then through two safety rules, before the result and next steps are shown."
+  height={300}
+  nodes={[
+    {
+      id: "data",
+      label: "Hospital records",
+      sub: "1,622 lab-confirmed",
+      x: 110,
+      y: 80,
+    },
+    {
+      id: "clean",
+      label: "Cleaning",
+      sub: "drop IDs, dates, leaked score",
+      x: 340,
+      y: 80,
+      w: 220,
+    },
+    {
+      id: "tree",
+      label: "Decision tree",
+      sub: "entropy, depth 6",
+      x: 580,
+      y: 80,
+    },
+    {
+      id: "input",
+      label: "Person's answers",
+      sub: "age + 11 symptoms",
+      x: 580,
+      y: 220,
+    },
+    {
+      id: "rules",
+      label: "Safety rules",
+      sub: "danger signs, fever",
+      x: 830,
+      y: 80,
+    },
+    {
+      id: "result",
+      label: "Result",
+      sub: "likelihood + next steps",
+      x: 830,
+      y: 220,
+      w: 190,
+    },
+  ]}
+  edges={[
+    { from: "data", to: "clean" },
+    { from: "clean", to: "tree", label: "train 70%" },
+    { from: "input", to: "tree" },
+    { from: "tree", to: "rules", label: "probability" },
+    { from: "rules", to: "result" },
+  ]}
+/>
+
+The dataset holds 1,622 anonymized admission records with laboratory-confirmed outcomes: 1,167 malaria cases and 455 patients whose illness turned out to be something else. Each record has the patient's age and eleven commonly reported symptoms. I removed identifiers, admission dates and other columns that carry no medical signal.
+
+The most important decision was what to leave out. The dataset includes a precomputed risk score, but that score is derived from the same symptoms. Training on it would let the model read the answer from the question, a problem known as data leakage, so it was excluded.
+
+I chose a decision tree because its reasoning is fully transparent. The app draws the trained tree, so anyone can follow the exact questions behind an assessment. The model was evaluated on a held-out 30% of the records that it never saw during training, split so both halves keep the same share of malaria cases.
+
+## Technical highlights
+
+### Training without leakage
+
+<Snippet file="malaria_app.py" note="Excerpt">
+
+```python
+@st.cache_resource
+def train_model(df):
+    # Risk_Score is derived from symptoms, so it is excluded to avoid leakage.
+    X = df.drop(columns=['Target', 'Risk_Score'], errors='ignore')
+    y = df['Target']
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42, stratify=y
+    )
+
+    clf = DecisionTreeClassifier(
+        criterion='entropy', max_depth=6, random_state=42)
+    clf.fit(X_train, y_train)
+
+    y_pred = clf.predict(X_test)
+    cm = confusion_matrix(y_test, y_pred)
+    tn, fp, fn, tp = cm.ravel()
+
+    metrics = {
+        'accuracy': accuracy_score(y_test, y_pred),
+        'sensitivity': tp / (tp + fn),   # malaria cases correctly flagged
+        'specificity': tn / (tn + fp),   # non-cases correctly cleared
+        ...
+    }
+```
+
+</Snippet>
+
+The split is stratified so the 30% test set keeps the dataset's balance of malaria and non-malaria cases. Depth is capped at six so the tree stays readable when the app draws it. Metrics come straight from the confusion matrix, so the app reports sensitivity and specificity, not only accuracy.
+
+### Safety rules above the model
+
+<Snippet file="malaria_app.py" note="Excerpt, trimmed with ...">
+
+```python
+# Symptoms that can indicate severe malaria and need urgent in-person care.
+DANGER_SIGNS = {
+    'Confusion': 'confusion or unusual drowsiness',
+    'Vomiting': 'repeated vomiting (risk of dehydration)',
+}
+...
+danger = [DANGER_SIGNS[f] for f in DANGER_SIGNS if answers.get(f)]
+
+if danger:
+    ...
+if prediction == 1:
+    ...
+else:
+    ...
+    if answers.get('Fever'):
+        st.warning("**You reported fever.** In a malaria-endemic "
+                   "area, any fever should be tested for malaria "
+                   "within 24 hours even when other symptoms are "
+                   "absent — early treatment prevents severe illness.")
+```
+
+</Snippet>
+
+Two rules sit above the model. Danger signs override everything: if someone reports confusion or repeated vomiting, the app shows an urgent-care warning and Rwanda's emergency number, 912, whatever the model predicts. And fever is never dismissed: even when malaria looks unlikely, a person with fever is told to get tested within 24 hours.
+
+## Results
+
+<Stats
+  items={[
+    { value: "88.9%", label: "Accuracy" },
+    { value: "89.1%", label: "Sensitivity" },
+    { value: "88.3%", label: "Specificity" },
+    { value: "1,622", label: "Records" },
+  ]}
+/>
+
+Measured on the held-out 30% test set. For a screening tool, sensitivity is the number that matters most: missing a real malaria case is far more dangerous than sending a healthy person for a quick, inexpensive test. The model flags roughly nine out of ten real cases.
+
+Nothing a person enters is stored or sent anywhere. Each assessment lives only in that browser session.
+
+## What I'd do next
+
+- **Test on other regions.** The training data comes from one region's hospital records. Before anyone relied on it elsewhere, it would need validating against data from other places.
+- **Tune for sensitivity on purpose.** The tree uses the default decision threshold. Lowering it would trade a few more false alarms for fewer missed cases, which is the right trade for screening.
+- **Pin the safety rules with tests.** The rules matter more than the model, so they deserve automated tests that fail if a future change weakens them.

@@ -1,0 +1,169 @@
+---
+title: BlueSnap
+slug: bluesnap
+summary: An offline social app for people in the same place. Chat, photos and voice notes travel phone to phone over Bluetooth and Wi-Fi, end-to-end encrypted, with no internet and no server.
+year: 2026
+role: Solo project. Architecture, encryption and app
+category: [mobile]
+stack: [Flutter, Dart, Riverpod, Hive, Nearby Connections]
+repo: https://github.com/mugabosam/BlueSnap
+cover: /work/bluesnap/cover.svg
+featured: false
+order: 4
+---
+
+## Context
+
+On a campus, at an event or anywhere with poor connectivity, mobile data is expensive or simply absent, yet the people you want to reach are often a few meters away. BlueSnap brings the familiar parts of a social app (a feed, stories and direct messages) to phones in the same place, with no internet at all. Your identity, messages and media live only on your device.
+
+## My role
+
+I built it alone: the transport layer, the encryption, local storage and the interface.
+
+## Approach
+
+<Diagram
+  title="How a BlueSnap message travels"
+  description="Two phones discover each other over Bluetooth Low Energy through Google Nearby Connections, which upgrades to Wi-Fi for throughput. Each phone keeps its identity key in the Android Keystore, derives a session key with X25519 and HKDF, and seals messages with AES-256-GCM. If the other phone is out of range, the message waits in a local queue."
+  height={300}
+  nodes={[
+    {
+      id: "a",
+      label: "Phone A",
+      sub: "identity key in Keystore",
+      x: 130,
+      y: 90,
+      w: 200,
+    },
+    { id: "seal", label: "Seal message", sub: "AES-256-GCM", x: 380, y: 90 },
+    {
+      id: "nearby",
+      label: "Nearby Connections",
+      sub: "BLE, then Wi-Fi",
+      x: 620,
+      y: 90,
+      w: 190,
+    },
+    { id: "b", label: "Phone B", sub: "verifies, decrypts", x: 850, y: 90 },
+    {
+      id: "queue",
+      label: "Local queue",
+      sub: "Hive, 7-day expiry",
+      x: 380,
+      y: 220,
+    },
+  ]}
+  edges={[
+    { from: "a", to: "seal", label: "X25519 + HKDF" },
+    { from: "seal", to: "nearby" },
+    { from: "nearby", to: "b" },
+    { from: "seal", to: "queue", label: "peer away", dashed: true },
+  ]}
+/>
+
+- **One real transport.** Google Nearby Connections handles Bluetooth Low Energy discovery and upgrades to Wi-Fi for throughput. I settled on that single transport rather than maintaining several half-working ones.
+- **Trust on first use.** Peer keys are pinned on first contact, and a changed key raises a warning instead of being trusted silently. Incoming connections need explicit approval, and every chat shows a safety-code fingerprint that two people can compare in person.
+- **Keys stay in hardware.** The private identity seed lives in the Android Keystore, never in plaintext, and app backups are disabled.
+- **Messages wait for people.** If a friend is out of range, the message is queued and delivered the next time their phone connects.
+
+Version 1 targets Android only. Nearby Connections has no iOS SDK; iOS would need Apple's MultipeerConnectivity instead.
+
+## Technical highlights
+
+### Session keys from identity keys
+
+<Snippet file="lib/services/crypto_service.dart" note="Excerpt, trimmed with ...">
+
+```dart
+/// Derive (and cache) the AES session key shared with [peerPublicKeyB64].
+Future<SecretKey?> _sessionKey(String peerPublicKeyB64) async {
+  ...
+    final shared = await _x25519.sharedSecretKey(
+      keyPair: _identityKeyPair!,
+      remotePublicKey: peerPub,
+    );
+    final hkdf = Hkdf(hmac: Hmac.sha256(), outputLength: 32);
+    final sessionKey = await hkdf.deriveKey(
+      secretKey: shared,
+      info: utf8.encode(_hkdfInfo),
+    );
+  ...
+}
+
+/// Encrypt [plaintext] for [peerPublicKeyB64].
+/// Returns base64(nonce ++ ciphertext ++ mac), or null if no session.
+Future<String?> encryptFor(String peerPublicKeyB64, String plaintext) async {
+  final key = await _sessionKey(peerPublicKeyB64);
+  if (key == null) return null;
+  final box = await _aes.encrypt(
+    utf8.encode(plaintext),
+    secretKey: key,
+  );
+  return base64.encode(box.concatenation());
+}
+```
+
+</Snippet>
+
+Each device has a long-lived X25519 identity key. Two devices derive the same shared secret, and HKDF-SHA256 stretches it into an AES-256 key. AES-GCM authenticates as well as encrypts, so a tampered message fails to decrypt instead of producing garbage.
+
+### Forward secrecy per connection
+
+<Snippet file="lib/services/crypto_service.dart" note="Excerpt, trimmed with ...">
+
+```dart
+// Canonical roles so both sides concatenate the DH results in one order.
+// "A" is the party with the lexicographically-smaller static public key.
+final amA = _compareBytes(myStaticPub.bytes, peerStatic.bytes) < 0;
+
+// The three shared secrets, always in A-order: (eph_A·stat_B),
+// (stat_A·eph_B), (eph_A·eph_B). Each party can compute all three.
+...
+final ikm = <int>[...dhES, ...dhSE, ...dhEE];
+final hkdf = Hkdf(hmac: Hmac.sha256(), outputLength: 32);
+final key = await hkdf.deriveKey(
+  secretKey: SecretKey(ikm),
+  info: utf8.encode('$_hkdfInfo-fs'),
+);
+```
+
+</Snippet>
+
+Identity keys alone mean a stolen key could decrypt old conversations. Each connection therefore also runs an ephemeral handshake that mixes both phones' identity keys with fresh one-time keys, the same shape as Noise-IK and X3DH. The one-time keys live only in memory and are wiped when the session ends. The tricky part is order: both phones must combine the three secrets in the same order, so the code assigns roles by comparing the two public keys instead of trusting who connected first.
+
+### Delivery that cannot duplicate
+
+<Snippet file="lib/services/message_queue_service.dart" note="Excerpt">
+
+```dart
+/// Persist an outgoing message for later delivery (idempotent on messageId).
+Future<void> enqueue({
+  required String messageId,
+  required String recipientId,
+  required String content,
+}) async {
+  if (_db.getQueued(messageId) != null) return;
+  await _db.saveQueued(QueuedMessage(
+    messageId: messageId,
+    recipientId: recipientId,
+    content: content,
+  ));
+  ...
+}
+```
+
+</Snippet>
+
+Messages are keyed by a stable ID from the moment they are written. Retries can then happen as often as needed: the receiver acknowledges by ID and discards anything it has already seen.
+
+## Results
+
+The results are engineering ones. Static analysis reports zero errors, and unit tests cover the crypto, the wire protocol, the message queue and safety checks.
+
+BlueSnap is built privacy-first, but it has not been formally audited, and I don't describe it as secure until someone independent has tried to break it.
+
+## What I'd do next
+
+- **An independent security review.** Encryption code deserves eyes that did not write it.
+- **iOS** through MultipeerConnectivity, behind the same transport interface.
+- **Multi-hop relay**, so a message can pass through other phones to reach someone out of direct range. It is not built today.

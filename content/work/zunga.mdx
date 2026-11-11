@@ -1,0 +1,176 @@
+---
+title: Zunga
+slug: zunga
+summary: A USSD shortcut layer for mobile money in Rwanda. It opens the carrier's own session already filled in, so people type only their PIN, and it never touches money.
+year: 2026
+role: Solo project. Product, Flutter app and Android integration
+category: [mobile]
+stack: [Flutter, Dart, Kotlin, Riverpod]
+repo: https://github.com/mugabosam/Zunga
+cover: /work/zunga/cover.svg
+featured: false
+order: 3
+---
+
+## Context
+
+Paying by mobile money in Rwanda means remembering strings like `*182*1*1*number*amount#` and stepping through carrier menus. A wrong digit sends money to the wrong place. Since July 2026, domestic interoperable payments also route through eKash, the national interoperability rail, which adds another set of codes: each bank has its own.
+
+Zunga replaces the strings with a clean screen. You enter an amount and a phone number or merchant code, tap Pay, and the carrier's own USSD session appears, already filled in. The only thing you type is your carrier PIN.
+
+One constraint shaped every decision: **Zunga never holds, moves or sees money.** The transfer happens entirely inside the carrier's session, and every fee shown there is the carrier's or eKash's.
+
+## My role
+
+I built it alone: product decisions, the Flutter app, the Kotlin platform channel that hands sessions to Android, the signed-config pipeline and CI.
+
+## Approach
+
+<Diagram
+  title="How Zunga turns a payment into a USSD session"
+  description="The user enters an amount and a number or merchant code. Zunga detects the network, picks the right dial code from a signed and verified config, and asks Android to run the carrier's own USSD session. If that is not possible, it opens the dialer with the code filled in."
+  height={300}
+  nodes={[
+    {
+      id: "input",
+      label: "Amount + number",
+      sub: "or MoMo Pay code",
+      x: 120,
+      y: 90,
+    },
+    {
+      id: "network",
+      label: "Network",
+      sub: "from prefix and SIMs",
+      x: 350,
+      y: 90,
+    },
+    {
+      id: "config",
+      label: "Dial codes",
+      sub: "Ed25519-signed",
+      x: 350,
+      y: 220,
+    },
+    {
+      id: "engine",
+      label: "USSD engine",
+      sub: "Kotlin channel",
+      x: 590,
+      y: 90,
+    },
+    {
+      id: "carrier",
+      label: "Carrier session",
+      sub: "user types PIN",
+      x: 830,
+      y: 90,
+    },
+    {
+      id: "dialer",
+      label: "Prefilled dialer",
+      sub: "always available",
+      x: 830,
+      y: 220,
+    },
+  ]}
+  edges={[
+    { from: "input", to: "network" },
+    { from: "network", to: "engine" },
+    { from: "config", to: "engine", label: "verified" },
+    { from: "engine", to: "carrier" },
+    { from: "engine", to: "dialer", label: "fallback", dashed: true },
+  ]}
+/>
+
+- **No app PIN and no onboarding wall.** Zunga stores no money and no secrets. The only PIN that matters is the carrier's, typed in the carrier's own dialog.
+- **Detect instead of asking.** The network comes from the number (078 and 079 for MTN, 072 and 073 for Airtel) and from the SIMs in the phone. The contact's name shows before you pay, and the carrier repeats the registered name in its own confirmation step.
+- **Codes are data.** Dial codes ship as signed JSON. A changed carrier menu can then be fixed by updating the config, without rewriting the app.
+- **No fake data.** There are no mock balances, contacts or transactions. Until on-device SMS tracking ships, the activity tab is an honest empty state.
+- **Three languages.** Kinyarwanda (the default on Kinyarwanda devices), English and French.
+
+## Technical highlights
+
+### Verifying the dial codes
+
+<Snippet file="lib/ussd/config_verifier.dart" note="Excerpt">
+
+```dart
+/// A compromised backend must not be able to redirect users' money:
+/// every config is signed offline, the public key is pinned in the
+/// binary, and version numbers are monotonic (no rollback).
+class ConfigVerifier {
+  ...
+  /// Verifies `signatureB64` over the exact UTF-8 bytes of `configJson`.
+  Future<bool> verify(String configJson, String signatureB64) async {
+    try {
+      final signature = Signature(
+        base64Decode(signatureB64),
+        publicKey: _publicKey,
+      );
+      return await _ed25519.verify(
+        utf8.encode(configJson),
+        signature: signature,
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Monotonic version gate: a config older than what we already trust
+  /// is a rollback attempt and must be rejected.
+  static bool acceptsVersion({required int incoming, required int current}) =>
+      incoming >= current;
+}
+```
+
+</Snippet>
+
+If the dial codes could be tampered with, so could the destination of someone's money. Configs are signed offline with Ed25519 and checked against a public key compiled into the app. Any failure, including a malformed signature, counts as "not verified". The version gate stops an attacker from replaying an older, valid config.
+
+### Never leave the user stuck
+
+<Snippet file="lib/ussd/engine.dart" note="Excerpt">
+
+```dart
+/// One entry point for every pay/dial action: run the session directly
+/// so the user only types their PIN; fall back to the prefilled dialer
+/// when the permission is missing or the direct call fails.
+Future<void> launchUssd(String code) async {
+  if (!await callUssd(code)) {
+    await dialManually(code);
+  }
+}
+```
+
+</Snippet>
+
+Running the session directly needs Android's call permission, which some people will refuse. Every path ends in the dialer with the code already typed, so a missing permission or an unexpected carrier menu never blocks a payment.
+
+### A CI gate for secrets
+
+<Snippet file=".github/workflows/ci.yml" note="Excerpt">
+
+```yaml
+# §6.2 gate: a logger/print call inside ussd/ or security/ could leak
+# a PIN. Fail the build outright.
+- name: Security grep gate — no logging in sensitive packages
+  run: |
+    if grep -rnE '\b(print|debugPrint|log\()' lib/ussd; then
+      echo '::error::Logging call found in lib/ussd or lib/security — PINs must never be loggable'
+      exit 1
+    fi
+```
+
+</Snippet>
+
+Code review catches most mistakes, but a stray debug print near PIN handling is one mistake too many. CI fails the build if any logging call appears in the USSD code.
+
+## Results
+
+There are no usage numbers yet, so the results are engineering ones. Zunga has 23 automated tests covering dial codes, routing, signature checks and the SMS parser. CI also builds an obfuscated release bundle for the Play Store on every push to main. The full code table covers MTN, Airtel and the eKash access codes for 17 banks and financial institutions.
+
+## What I'd do next
+
+- **Ship remote config updates.** Today the app verifies the config bundled with it. Next, it will fetch new signed configs from a server and cache them, using the same signature check and version gate, so a changed carrier menu can be fixed without an app update.
+- **Finish the activity feed.** The SMS parser exists. It reads carrier messages from allowlisted senders only, on the device, and never uploads them. It needs a screen and wider tests.

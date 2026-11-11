@@ -1,0 +1,169 @@
+---
+title: MediChain
+slug: medichain
+summary: Medical records on Polygon with role-based access, time-limited sharing, an emergency break-glass protocol and an audit trail of every action.
+year: 2026
+role: Solo project. Smart contracts, tests and frontend
+category: [blockchain, web]
+stack: [Solidity, Hardhat, OpenZeppelin, React, TypeScript]
+repo: https://github.com/mugabosam/Blockchain-Health
+cover: /work/medichain/cover.svg
+featured: false
+order: 5
+---
+
+## Context
+
+Medical records need to move quickly between the people treating a patient. Each access, though, should be the patient's decision, last only as long as needed, and leave a trace. MediChain puts those rules in a smart contract, where no single administrator can quietly change them.
+
+The design keeps the records themselves off-chain. The contract stores only content identifiers and integrity hashes, alongside the access rules and the audit trail.
+
+## My role
+
+I built it alone: the contract, its 55-test Hardhat suite, the deployment script and a React frontend with screens for each role (doctor, nurse, pharmacist, administrator and emergency access).
+
+## Approach
+
+<Diagram
+  title="Who can reach a record in MediChain"
+  description="A patient grants a provider time-limited access to one record or to all of them. In an emergency, a doctor or nurse can open 24-hour access without the patient. Every grant, revocation, emergency access and record change is written to an audit trail."
+  height={300}
+  nodes={[
+    { id: "patient", label: "Patient", sub: "owns records", x: 130, y: 90 },
+    {
+      id: "grant",
+      label: "grantAccess",
+      sub: "≤ 1 year, 60 s cooldown",
+      x: 380,
+      y: 90,
+      w: 210,
+    },
+    {
+      id: "core",
+      label: "MediChainCore",
+      sub: "AccessControl, Pausable",
+      x: 640,
+      y: 160,
+      w: 210,
+    },
+    {
+      id: "staff",
+      label: "Doctor or nurse",
+      sub: "clinical role",
+      x: 130,
+      y: 230,
+      w: 180,
+    },
+    {
+      id: "glass",
+      label: "emergencyAccess",
+      sub: "24-hour grant",
+      x: 380,
+      y: 230,
+      w: 190,
+    },
+    { id: "audit", label: "Audit trail", sub: "every action", x: 870, y: 160 },
+  ]}
+  edges={[
+    { from: "patient", to: "grant" },
+    { from: "grant", to: "core" },
+    { from: "staff", to: "glass" },
+    { from: "glass", to: "core", label: "flagged" },
+    { from: "core", to: "audit" },
+  ]}
+/>
+
+- **Standard building blocks.** The contract builds on OpenZeppelin's AccessControl, ReentrancyGuard and Pausable instead of hand-rolled versions. Every state-changing function is guarded, and an administrator can pause the contract in an emergency.
+- **Access that expires.** Grants cover one record or all of a patient's records and last at most a year. Each patient has a 60-second cooldown between grants, which limits automated abuse.
+- **Break-glass for emergencies.** A doctor or nurse can open 24 hours of access without the patient's signature, and the audit trail flags it.
+- **Rules for the whole life of a record.** Records are soft-deleted under a retention policy (10 years in general, 30 for surgical history). After a patient's death, an executor they designated takes over.
+- **Gas-aware reads.** Queries are paginated so they never hit the block gas limit.
+
+## Technical highlights
+
+### Time-limited grants
+
+<Snippet file="contracts/core/MediChainCore.sol" note="Excerpt, trimmed with ...">
+
+```solidity
+function grantAccess(
+    address _grantee,
+    uint256 _recordId,
+    RecordTypes.Role _role,
+    uint256 _durationSeconds
+)
+    external
+    notDeceased(msg.sender)
+{
+    require(_grantee != address(0), "Invalid grantee");
+    require(_grantee != msg.sender, "Cannot grant to self");
+    require(_durationSeconds > 0, "Duration must be positive");
+    require(_durationSeconds <= 365 days, "Max 1 year grant");
+
+    // Rate limiting
+    require(
+        block.timestamp >= lastGrantTimestamp[msg.sender] + GRANT_COOLDOWN,
+        "Grant cooldown: wait 60 seconds"
+    );
+    lastGrantTimestamp[msg.sender] = block.timestamp;
+    ...
+    _logAudit(msg.sender, _recordId, "GRANT", false);
+    emit AccessGranted(msg.sender, _grantee, _recordId, expiresAt);
+}
+```
+
+</Snippet>
+
+Every precondition fails loudly with a readable reason. Expiry is stored with the grant rather than enforced by a later clean-up job, so an expired grant stops working at exactly the right moment, even if nobody revokes it.
+
+### Break-glass access
+
+<Snippet file="contracts/core/MediChainCore.sol" note="Excerpt">
+
+```solidity
+function emergencyAccess(address _patient)
+    external
+    nonReentrant
+{
+    require(
+        hasRole(DOCTOR_ROLE, msg.sender) ||
+        hasRole(NURSE_ROLE, msg.sender),
+        "Only clinical staff for emergency access"
+    );
+
+    // Grant 24-hour blanket access
+    accessGrants[_patient][msg.sender][0] = RecordTypes.AccessGrant({
+        grantee: msg.sender,
+        role: RecordTypes.Role.PrimaryDoctor,
+        recordId: 0,
+        expiresAt: block.timestamp + 24 hours,
+        isActive: true
+    });
+
+    _logAudit(msg.sender, 0, "EMERGENCY_ACCESS", true);
+    emit EmergencyAccess(msg.sender, _patient, block.timestamp);
+}
+```
+
+</Snippet>
+
+An unconscious patient cannot sign a transaction, so clinical staff need a way in. The cost of that door is visibility: the access is time-boxed, written to the audit trail with an emergency flag, and emitted as an event that monitoring can watch.
+
+## Results
+
+<Stats
+  items={[
+    { value: "55", label: "Hardhat tests" },
+    { value: "8", label: "Test categories" },
+    { value: "7", label: "Record types" },
+    { value: "5", label: "Roles" },
+  ]}
+/>
+
+The suite covers record management, soft delete and retention, access control, emergency access, prescriptions, the audit trail, the death protocol and administration, plus gas benchmarks.
+
+## What I'd do next
+
+- **Separate administration from reading.** Today the administrator role can read any record. Administrators should manage roles, not see patient data.
+- **Review every break-glass.** Emergency access is logged but never reviewed. A required reason and a follow-up review by a second person would make abuse costly.
+- **Move to a current testnet.** The deployment script targets Mumbai, which Polygon has since retired. It should point at Amoy.

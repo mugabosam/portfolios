@@ -69,3 +69,37 @@ Django, not PHP: both the GitHub repo and the local copy contain only Python and
 
 **No LinkedIn, no custom domain.** The site links to GitHub and email, and launches on a free
 `vercel.app` address. `NEXT_PUBLIC_SITE_URL` can be set later if a domain is bought.
+
+## Phase 2: UI primitives (2026-11-11)
+
+**Full wordmark on mobile.** The brief allows an "SM." monogram on small screens. Axe flagged
+it (WCAG 2.5.3, label in name): the link's name "Sam Mugabo, home" did not contain the visible
+"SM.". "Sam Mugabo" fits even at 360px, so the header always shows the full name. "SM." remains
+the favicon.
+
+**`hocus:` state variant.** Hover styles (on devices that hover) and keyboard focus share one
+variant, so keyboard users see the same feedback as mouse users. `data-force="hover|focus|active"`
+triggers the same styles statically, which is how `/styleguide` shows every state without
+interaction and how axe can check them.
+
+**Hover motion uses transform and opacity only** (brief §6.2). The ghost button fills with a
+scaled layer, the solid button darkens with an opacity layer, and the link underline scales in.
+Text colour changes are transitioned, but they never move layout.
+
+**Linked tags extend their hit area** to about 50px tall with an invisible pseudo-element. The
+chip stays visually small, but the touch target still meets the 44px rule.
+
+**Preloader is pure CSS.** An animated `@property` integer drives the 0 to 100 counter, and the
+overlay fades out at 1.5s whether or not JavaScript runs. A small script lets visitors skip it
+(any click or key) and hides it for the rest of the session. Under reduced motion it never
+shows. It is decorative and `aria-hidden`. Phase 6 will mount it on the home page and may end it
+early when the 3D scene is ready.
+
+**Custom cursor deferred.** It is optional in the brief, and a cursor that lags the pointer
+hurts usability as often as it helps. It will be reconsidered in Phase 5 once real motion
+exists, and it will never apply under touch or reduced motion.
+
+**Playwright and axe added early.** Phase 2's "zero axe violations" needs a real browser, so
+`@playwright/test` and `@axe-core/playwright` arrive now rather than in Phase 9. `pnpm test:e2e`
+checks every route at desktop and mobile widths (WCAG 2.0/2.1/2.2 A and AA, plus best practices),
+including the open mobile menu.

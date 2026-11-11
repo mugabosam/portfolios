@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Design tokens: CSS custom properties are the source of truth (brief §4).
+   Tailwind utilities read them through @theme below, so a token changed here
+   changes everywhere. Contrast for every text pair is in docs/contrast.md.
+   ========================================================================== */
+
+:root {
+  /* Colour */
+  --bg: #000000;
+  --bg-elevated: #0b0b0b;
+  --surface-light: #f4f3f0; /* the one light "card" section */
+  --fg: #ffffff;
+  --fg-muted: #b5b5b5;
+  --fg-subtle: #8c8c8c; /* large text only (≥ 24px, or ≥ 18.66px bold) */
+  --fg-on-light: #0a0a0a;
+  --line: rgb(255 255 255 / 0.16); /* decorative dividers only */
+  --line-strong: rgb(255 255 255 / 0.6); /* control borders, ≥ 3:1 */
+  --focus: #ffffff;
+
+  /* Layout */
+  --content-max: 1440px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --measure: 65ch;
+  --header-h: 4.5rem;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-ui: 240ms;
+  --dur-reveal: 800ms;
+
+  color-scheme: dark;
+}
+
+/* Higher contrast when the visitor asks for it. */
+@media (prefers-contrast: more) {
+  :root {
+    --fg-muted: #e6e6e6;
+    --fg-subtle: #cccccc;
+    --line: rgb(255 255 255 / 0.4);
+    --line-strong: #ffffff;
+  }
+}
+
+/* Remove Tailwind's default palette and type scale: only our tokens exist. */
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --font-*: initial;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-surface-light: var(--surface-light);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-on-light: var(--fg-on-light);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-focus: var(--focus);
+
+  --font-display: var(--font-instrument-serif), "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+@theme {
+  /* Fluid type scale (brief §4.2). Labels never go below 12px. */
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6;
+  --text-wordmark: 1.625rem;
+  --text-wordmark--line-height: 1;
+  --text-lead: clamp(1.125rem, 1.4vw, 1.375rem);
+  --text-lead--line-height: 1.5;
+  --text-h3: clamp(1.75rem, 3.2vw, 3rem);
+  --text-h3--line-height: 1.05;
+  --text-manifesto: clamp(1.5rem, 2.6vw, 2.5rem);
+  --text-manifesto--line-height: 1.25;
+  --text-h2: clamp(2.5rem, 6vw, 5.5rem);
+  --text-h2--line-height: 0.95;
+  --text-display: clamp(4rem, 12vw, 11rem);
+  --text-display--line-height: 0.9;
+
+  --tracking-label: 0.2em;
+  --tracking-display: -0.015em;
+
+  /* 44px minimum touch target */
+  --spacing-tap: 2.75rem;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================================================
+   Composite utilities
+   ========================================================================== */
+
+/* Centred content column with fluid side gutters. */
+@utility container-site {
+  width: 100%;
+  max-width: calc(var(--content-max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility grid-site {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+/* Tiny, widely tracked uppercase UI text: eyebrows, nav, buttons, counters. */
+@utility type-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+@utility type-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  line-height: var(--text-display--line-height);
+  font-weight: 400;
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+
+@utility type-h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: var(--text-h2--line-height);
+  font-weight: 400;
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+
+/* The one light section. Re-points the colour tokens so every component
+   inside it stays legible without knowing it is on a light surface. */
+@utility surface-light {
+  --bg: var(--surface-light);
+  --fg: var(--fg-on-light);
+  --fg-muted: #474747;
+  --fg-subtle: #5c5c5c;
+  --line: rgb(10 10 10 / 0.16);
+  --line-strong: rgb(10 10 10 / 0.7);
+  --focus: var(--fg-on-light);
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+/* ==========================================================================
+   Components
+   ========================================================================== */
+
+@layer components {
+  /* Mobile menu: a native modal <dialog>, which makes the page behind it
+     inert (focus stays inside) and closes on Esc. Fades in and out. */
+  .menu-dialog {
+    opacity: 0;
+    translate: 0 -0.5rem;
+    transition:
+      opacity var(--dur-ui) var(--ease-out),
+      translate var(--dur-ui) var(--ease-out),
+      display var(--dur-ui) allow-discrete,
+      overlay var(--dur-ui) allow-discrete;
+  }
+
+  .menu-dialog[open] {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .menu-dialog[open] {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+  }
+
+  .menu-dialog::backdrop {
+    background-color: var(--bg);
+  }
+
+  html:has(.menu-dialog[open]) {
+    overflow: hidden;
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: var(--header-h);
+    /* Keep the scrollbar's space reserved so locking scroll (mobile menu)
+       never shifts the layout sideways. */
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    min-height: 100svh;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--fg);
+    color: var(--bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* Main receives programmatic focus from the skip link; no ring needed. */
+  main:focus {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

@@ -79,6 +79,8 @@
   --text-wordmark--line-height: 1;
   --text-lead: clamp(1.125rem, 1.4vw, 1.375rem);
   --text-lead--line-height: 1.5;
+  --text-h4: clamp(1.375rem, 1.8vw, 1.75rem);
+  --text-h4--line-height: 1.15;
   --text-h3: clamp(1.75rem, 3.2vw, 3rem);
   --text-h3--line-height: 1.05;
   --text-manifesto: clamp(1.5rem, 2.6vw, 2.5rem);
@@ -95,6 +97,55 @@
   --spacing-tap: 2.75rem;
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================================================
+   State variants
+   `hocus:` = hover (on devices that hover) or keyboard focus. Each variant
+   can also be forced with data-force="hover|active" so /styleguide can show
+   every state without interaction.
+   ========================================================================== */
+
+@custom-variant hocus {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+  &:focus-visible {
+    @slot;
+  }
+  &[data-force~="hover"],
+  &[data-force~="focus"] {
+    @slot;
+  }
+}
+
+@custom-variant group-hocus {
+  @media (hover: hover) {
+    :where(.group):hover & {
+      @slot;
+    }
+  }
+  :where(.group):focus-visible & {
+    @slot;
+  }
+  :where(.group):has(:focus-visible) & {
+    @slot;
+  }
+  :where(.group)[data-force~="hover"] &,
+  :where(.group)[data-force~="focus"] & {
+    @slot;
+  }
+}
+
+@custom-variant is-active {
+  &:active {
+    @slot;
+  }
+  &[data-force~="active"] {
+    @slot;
+  }
 }
 
 /* ==========================================================================
@@ -193,6 +244,51 @@
   html:has(.menu-dialog[open]) {
     overflow: hidden;
   }
+
+  /* Preloader: pure CSS so it can never block content. The counter runs
+     0 to 100, then the overlay fades out; 1.5s in total, with or without
+     JavaScript. JS may dismiss it earlier (skip, or assets ready). */
+  .preloader {
+    animation: preloader-out 400ms var(--ease-out) 1100ms forwards;
+  }
+
+  .preloader[data-done] {
+    display: none;
+  }
+
+  .preloader-count {
+    counter-reset: preload var(--preload);
+    animation: preloader-count 1000ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+
+  .preloader-count::after {
+    content: counter(preload);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .preloader {
+      display: none;
+    }
+  }
+}
+
+@property --preload {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes preloader-count {
+  to {
+    --preload: 100;
+  }
+}
+
+@keyframes preloader-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 /* ==========================================================================
@@ -240,7 +336,8 @@
     color: var(--bg);
   }
 
-  :focus-visible {
+  :focus-visible,
+  [data-force~="focus"] {
     outline: 2px solid var(--focus);
     outline-offset: 2px;
   }

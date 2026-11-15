@@ -1,45 +1,73 @@
-import Link from "next/link";
+import { HomeMotion } from "@/components/motion/home-motion";
+import { ContactSection } from "@/components/sections/contact";
+import { CraftSection } from "@/components/sections/craft";
+import { ExperienceSection } from "@/components/sections/experience";
+import { FeaturedSection } from "@/components/sections/featured";
+import { HeroSection } from "@/components/sections/hero";
+import { PhilosophySection } from "@/components/sections/philosophy";
+import { ToolkitSection } from "@/components/sections/toolkit";
+import { WorkSection } from "@/components/sections/work";
+import { ArtifactLayer } from "@/components/three/artifact-layer";
+import { site } from "@/content/site";
+import {
+  getFeaturedProject,
+  getProjects,
+  toSummary,
+} from "@/lib/content/projects";
+import { JsonLd } from "@/lib/json-ld";
+import { getSiteUrl } from "@/lib/site-url";
 
 /**
- * Phase 1 placeholder hero: proves tokens, fonts and layout. The full
- * eight-section home page replaces this in Phase 4.
+ * The home page: eight sections (brief §5.1–5.8). Every section is static,
+ * server-rendered HTML; motion (HomeMotion) and the 3D Artifact
+ * (ArtifactLayer) are progressive enhancements loaded after first paint.
  */
 export default function HomePage() {
+  const projects = getProjects();
+  const featured = getFeaturedProject();
+  const titles = Object.fromEntries(
+    projects.map((project) => [project.slug, project.title]),
+  );
+
+  const person = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: site.name,
+    jobTitle: "Backend Developer",
+    url: getSiteUrl().toString(),
+    email: `mailto:${site.email}`,
+    sameAs: site.socials.map((social) => social.href),
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Kigali",
+      addressCountry: "RW",
+    },
+    knowsAbout: [
+      "Python",
+      "TypeScript",
+      "Django",
+      "NestJS",
+      "PostgreSQL",
+      "Machine learning",
+      "Flutter",
+    ],
+  };
+
   return (
-    <section
-      aria-labelledby="hero-title"
-      className="relative container-site flex min-h-svh flex-col justify-center pt-(--header-h) pb-24"
-    >
-      <p className="type-label text-fg-muted">Portfolio · Vol. 01</p>
-      <h1 id="hero-title" className="mt-6">
-        <span className="block type-display">Built</span>{" "}
-        <span className="block font-display text-display italic">to last</span>
-      </h1>
-      <p className="mt-8 max-w-(--measure) text-lead text-fg-muted">
-        Sam Mugabo: backend developer in Python and TypeScript, building APIs,
-        interfaces and machine-learning models that keep working long after
-        launch.
-      </p>
-      <div className="mt-12 flex flex-wrap items-center gap-6">
-        <Link
-          href="/work"
-          className="inline-flex min-h-tap items-center border border-line-strong px-6 type-label transition-colors duration-(--dur-ui) hover:bg-fg hover:text-bg"
-        >
-          View selected work
-        </Link>
-        <Link
-          href="/contact"
-          className="inline-flex min-h-tap items-center type-label underline decoration-line-strong underline-offset-8 hover:decoration-fg"
-        >
-          Get in touch
-        </Link>
+    <>
+      <JsonLd data={person} />
+      <ArtifactLayer />
+      <HomeMotion />
+      <div className="relative z-10">
+        <HeroSection />
+        <CraftSection />
+        <FeaturedSection slug={featured.slug} />
+        <PhilosophySection />
+        <WorkSection projects={projects.map(toSummary)} />
+        <ExperienceSection />
+        <ToolkitSection titles={titles} />
+        <ContactSection />
       </div>
-      <p
-        className="absolute right-(--gutter) bottom-8 type-label text-fg-muted"
-        aria-hidden="true"
-      >
-        001 / 008
-      </p>
-    </section>
+    </>
   );
 }

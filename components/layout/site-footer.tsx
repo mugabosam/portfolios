@@ -15,7 +15,7 @@ const linkClass =
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line">
+    <footer className="relative z-10 border-t border-line bg-bg">
       <div className="container-site grid-site gap-y-12 py-16">
         <div className="col-span-12 md:col-span-6">
           <p className="font-display text-wordmark italic">{site.name}</p>

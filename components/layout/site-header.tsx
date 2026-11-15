@@ -98,17 +98,38 @@ export function SiteHeader() {
             onClick={openMenu}
             aria-expanded={open}
             aria-controls={menuId}
-            className="inline-flex min-h-tap min-w-tap items-center justify-end type-label md:hidden"
+            className="menu-toggle inline-flex min-h-tap min-w-tap items-center justify-end type-label md:hidden"
           >
             Menu
           </button>
         </div>
+
+        {/* Without JavaScript the menu dialog cannot open, so small screens
+            get the links as a plain second row instead. */}
+        <noscript>
+          <style>{`@media (max-width: 47.99rem) { .menu-toggle { display: none !important; } .noscript-nav { display: flex !important; } }`}</style>
+        </noscript>
+        <nav
+          aria-label="Primary (no script)"
+          className="noscript-nav container-site hidden flex-wrap gap-x-6 pb-2"
+        >
+          {site.nav.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="inline-flex min-h-tap items-center type-label"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
       </header>
 
       <dialog
         ref={dialogRef}
         id={menuId}
         aria-label="Site menu"
+        data-lenis-prevent
         onClose={() => setOpen(false)}
         className="menu-dialog fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none border-0 bg-bg p-0 text-fg md:hidden"
       >

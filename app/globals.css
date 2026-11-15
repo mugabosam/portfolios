@@ -245,6 +245,123 @@
     overflow: hidden;
   }
 
+  /* The 3D Artifact layer fades in once its first frame is ready; each
+     section then sets --artifact-opacity. Still images hand over to it. */
+  .artifact-layer {
+    opacity: 0;
+    transition: opacity 800ms var(--ease-out);
+  }
+
+  [data-artifact="3d"] .artifact-layer {
+    opacity: 1;
+  }
+
+  [data-artifact-canvas] {
+    opacity: var(--artifact-opacity, 1);
+    transition: opacity 700ms var(--ease-out);
+  }
+
+  .artifact-still {
+    transition: opacity 600ms var(--ease-out);
+  }
+
+  @media (min-width: 48rem) {
+    [data-artifact="3d"] [data-orbit-stage] .artifact-still {
+      opacity: 0;
+    }
+  }
+
+  /* "Scroll to explore": a thin line with a travelling segment. */
+  .scroll-cue {
+    position: relative;
+    display: block;
+    width: 1px;
+    height: 3rem;
+    overflow: hidden;
+    background-color: var(--line);
+  }
+
+  .scroll-cue::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--fg);
+    animation: scroll-cue 2.4s var(--ease-out) infinite;
+  }
+
+  /* Orbit fallback: six stills placed on a circle, slowly turning. */
+  .orbit {
+    --orbit-radius: calc(min(64vh, 36rem) / 2);
+  }
+
+  .orbit-facet {
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg))
+      translateX(var(--orbit-radius)) rotate(calc(var(--i) * -60deg));
+  }
+
+  .orbit-ring {
+    animation: orbit-spin 60s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue::after,
+    .orbit-ring {
+      animation: none;
+    }
+  }
+
+  /* Lenis smooth scrolling (its recommended base styles). */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+
+  /* Résumé in print and in the generated PDF: black on white, no chrome. */
+  @media print {
+    :root {
+      --bg: #ffffff;
+      --bg-elevated: #ffffff;
+      --fg: #0a0a0a;
+      --fg-muted: #3d3d3d;
+      --fg-subtle: #5c5c5c;
+      --line: rgb(10 10 10 / 0.2);
+      --line-strong: rgb(10 10 10 / 0.7);
+    }
+
+    header.fixed,
+    footer,
+    .noscript-nav {
+      display: none !important;
+    }
+
+    .resume {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      font-size: 10.5pt;
+    }
+
+    .resume-block,
+    .resume-entry {
+      break-inside: avoid;
+    }
+
+    .resume a {
+      text-decoration: none;
+    }
+  }
+
   /* Case studies: numbered section headings, quiet bullets, code blocks. */
   .case-body {
     counter-reset: case-section;
@@ -334,6 +451,24 @@
 @keyframes preloader-count {
   to {
     --preload: 100;
+  }
+}
+
+@keyframes scroll-cue {
+  0% {
+    translate: 0 -100%;
+  }
+  60% {
+    translate: 0 0;
+  }
+  100% {
+    translate: 0 100%;
+  }
+}
+
+@keyframes orbit-spin {
+  to {
+    rotate: 360deg;
   }
 }
 

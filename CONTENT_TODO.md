@@ -17,6 +17,11 @@ unknown, it is left out rather than guessed. Tick items off as you go.
 
 ## Please confirm before launch
 
+- [ ] **Vercel.** You are logged out of the Vercel CLI, so the project was not created from
+      here. Import the GitHub repository at vercel.com/new (framework preset: Next.js, no other
+      settings needed); every pull request then gets a preview URL and `main` is production.
+      Add the optional environment variables from `.env.example` in the project settings.
+
 - [ ] **EUCL approval.** The internship case study describes responsibilities and a generic
       architecture only (no code, data, screenshots or internal URLs). Please check that
       EUCL is comfortable with `/work/eucl-internship` and confirm your official job title.
@@ -37,6 +42,15 @@ unknown, it is left out rather than guessed. Tick items off as you go.
       fail. Fix the code or soften the sentence.
 
 ## Optional improvements
+
+- [ ] **GitHub token for the contribution graph.** Create a fine-grained personal access token
+      with no permissions at github.com/settings/personal-access-tokens, and set it as
+      `GITHUB_TOKEN` in the Vercel project. The graph then reads GitHub's official API; until
+      then it uses a public mirror of the same numbers.
+
+- [ ] **Dedicated passport photo.** The smaller portrait in "Seen from every side" is a
+      head-and-shoulders crop of the suit photo. If you have a sharper close-up, save it as
+      `public/portrait/sam-passport.jpg` (3:4, at least 600px wide) and it replaces the crop.
 
 - [ ] **Real screenshots.** Project covers are abstract faceted artwork, not screenshots. If
       you capture real screenshots (for example of MalariaCheck running), put them in

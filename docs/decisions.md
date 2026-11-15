@@ -150,3 +150,128 @@ README:
 **EUCL case study is responsibilities-only.** It has no code, data, screenshots or internal
 URLs, and an architecture diagram generic enough to describe many systems. It is pending Sam's
 confirmation that EUCL agrees (see CONTENT_TODO.md).
+
+## Phases 4 to 6: home page, motion and 3D (2026-11-11 to 2026-11-15)
+
+**Sam's portrait replaces the Artifact in the hero and the closing section** (Sam's request,
+2026-11-15). The photo is converted to black and white so it stays inside the monochrome palette,
+and the two sections mirror each other with the same image. The 3D Artifact now makes its entrance
+at the orbit stage ("Selected work") and reappears behind the experience timeline. A passport photo
+will replace the smaller Artifact in "Seen from every side" once Sam provides it. Because every
+remaining 3D moment is desktop-only, the WebGL bundle is not loaded below the `md` breakpoint at all.
+
+**One canvas, driven by a plain mutable object.** Scroll triggers write targets into
+`lib/motion/artifact-state.ts`; the render loop eases towards them every frame. React state is
+kept out of the 60fps path.
+
+**The render loop is governed from inside the WebGL tree.** Next.js keeps the previous page's DOM
+hidden for instant back navigation, and effects in that hidden tree are disconnected, so a guard
+in the DOM tree could not stop the loop. `FrameloopGuard` lives inside the Fiber root, watches the
+canvas with an IntersectionObserver, and switches the loop to `never` when the canvas is hidden,
+scrolled away, faded out by a section, or in a background tab.
+
+**Procedural lighting instead of an HDRI.** Thin strip Lightformers on black give the hard
+white-and-black facets of a cut stone in photographs, with nothing to download. The static
+fallback image (`public/artifact/still.webp`, 25 KB) is captured from the live scene with
+`pnpm artifact:still`, so it always matches.
+
+**three.js pinned to 0.182.** 0.183 and later log a `THREE.Clock` deprecation warning from React
+Three Fiber's internals on every page load; the site must ship with a clean console.
+
+**Scroll triggers are created top to bottom**, and anything that moves while a section is pinned
+lives in that pin's own timeline. Triggers created before a pin do not know about the pinned
+distance, which once left every hero tween at progress 0.
+
+**Low-end threshold is fewer than four cores** (not "four or fewer" as the brief words it), plus
+no WebGL2, Save-Data, under 4 GB device memory, reduced motion, or a narrow viewport. Many
+mid-range laptops have exactly four cores and run the scene well.
+
+**`priority` on next/image is deprecated in Next 16**; the hero image uses `loading="eager"` and
+`fetchPriority="high"` instead.
+
+**No Suspense around cached data.** React streams late content into a hidden placeholder and
+moves it into place with an inline script. With JavaScript disabled that content stays hidden, so
+the GitHub strip (cached at build time, refreshed daily) renders without a Suspense boundary.
+
+**Partial Prefetching is off.** With it on, a request for an unknown case-study slug returned the
+static shell with status 200 and streamed the 404 content afterwards, a soft 404. Every page is
+fully static anyway, so the feature bought nothing here.
+
+**The preloader is built but not mounted on the home page.** With the portrait as the LCP image
+and the 3D scene arriving later and off-screen, there is nothing worth making visitors wait for.
+It remains on `/styleguide` and can be mounted in one line if a future hero needs it.
+
+**Custom cursor dropped.** Optional in the brief; the cursor-following project preview on desktop
+gives the same editorial feel without taking over the pointer.
+
+## Phase 7: pages and features (2026-11-15)
+
+**Contact form delivers through a route handler** (`/api/contact`) with Resend, called with
+`fetch` rather than the SDK. Order of checks: honeypot, per-IP rate limit, Zod validation,
+Turnstile (only when keys are set), then email. The rate limit is in memory per serverless
+instance, which blunts casual scripts; a global limit would need a store such as Upstash.
+
+**The form degrades twice.** Without JavaScript it posts as a normal form and lands on
+`/contact/sent` or `/contact/error`, both static pages. Without a `RESEND_API_KEY`, the page shows
+the email address instead of a form, so nothing on the site is ever a dead control.
+
+**The public résumé omits the phone number.** `/resume` and `public/resume.pdf` are generated
+from the same page (`pnpm resume:pdf` prints it with headless Chromium), so they cannot drift.
+The CV with the phone number stays outside the repository.
+
+## GitHub contribution graph (2026-11-15, Sam's request)
+
+**Drawn, not embedded.** Third-party contribution images are green, cached unpredictably and
+invisible to screen readers. The site fetches the calendar at build time (refreshed daily),
+normalises it, and draws its own SVG in white at five opacities, with month and weekday labels,
+a title on every cell, and the headline numbers repeated in prose.
+
+**Two sources.** GitHub's GraphQL API needs a token, even for public data, so when `GITHUB_TOKEN`
+is set the official API is used; otherwise a public mirror (github-contributions-api.jogruber.de)
+supplies the same numbers. Both were checked against each other (501 contributions on
+2026-11-15). If neither answers, the block renders nothing rather than an invented graph.
+
+**One idle frame loop belongs to Next.js.** After a visit to the home page, every other page
+runs a 60 Hz `requestAnimationFrame` loop from inside Next.js's hidden-page (Activity) bookkeeping,
+with an empty callback. Pages reached without visiting the home page do not have it, and the same
+loop does not appear for the site's own code (ScrollTrigger is disabled on teardown, the 3D loop is
+stopped by `FrameloopGuard`, and the cursor preview only animates while a row is hovered). It is
+upstream behaviour in Next 16.4 and costs no measurable work; it is recorded here so nobody hunts
+for it again.
+
+**CSS stays external.** `experimental.inlineCss` was tried: it removes one render-blocking
+request, but Next.js also embeds the inlined styles in the hydration payload, so every page's
+HTML grew by about 22 KB compressed, more than twice the stylesheet it replaced. A 10 KB external
+stylesheet, cached once for the whole site, is the better trade.
+
+**No Suspense boundaries on the home page, even around static sections.** Selective hydration
+(one boundary per section, so React hydrates in short tasks) was tried to cut mobile blocking
+time. Under Cache Components every boundary is emitted after the static shell as a streamed
+segment, hidden until a script reveals it, so with JavaScript disabled those sections vanished.
+The page stays one static tree.
+
+## Phase 8: performance hardening (2026-11-15)
+
+**What moved the numbers.** Zod out of the browser bundle (29 KB and the CSP `eval` violation),
+the contribution graph drawn as five paths instead of 365 rectangles, the 3D bundle loaded only
+when the visitor nears the orbit stage, GSAP loaded on idle (desktop) or on first touch (phones),
+no pinning and no text splitting on phones, heading reveals built lazily as each heading nears,
+Lenis skipped on touch devices, a preload for the hero portrait, and portraits sized by width
+with an explicit aspect ratio so their box is definite before the file arrives.
+
+**The initial JavaScript budget (≤ 180 KB gzipped) cannot be met by any page on this stack.**
+A page with almost no content of its own (`/contact/sent`) ships 178 KB gzipped of Next.js 16
+and React 19 runtime. The home page ships 189 KB, so the site's own code is about 11 KB. The
+budget is recorded against the framework baseline in docs/performance.md rather than quietly
+redefined.
+
+**The home page is the one page below the mobile performance budget** (82 to 88 against the
+brief's 90). Its first paint on a 4× slowed CPU is bounded by parsing a 1,600-element page and
+the inline hydration payload that Next.js emits for the whole tree; the hero image itself is
+11 KB, preloaded and ready within the first second. The two remaining levers are structural
+(fewer sections on the home page, or a framework without an inline payload), so they are left
+as recommendations. Lighthouse CI guards the home page at 0.75 and every inner page at 0.9.
+
+**Lighthouse variance on this machine is real.** The same page measured 65 and 100 a minute
+apart on desktop (software WebGL, background processes). Numbers in docs/performance.md are the
+median of repeated runs, and CI runs each URL twice.

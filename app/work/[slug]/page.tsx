@@ -14,7 +14,7 @@ import {
   getProject,
   getProjects,
 } from "@/lib/content/projects";
-import { categoryLabels } from "@/lib/content/schema";
+import { categoryLabels } from "@/lib/content/categories";
 import { pad3 } from "@/lib/format";
 import { JsonLd } from "@/lib/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
@@ -150,7 +150,8 @@ export default async function CaseStudyPage({
           alt=""
           width={1600}
           height={1000}
-          priority
+          loading="eager"
+          fetchPriority="high"
           unoptimized
           className="h-auto w-full border border-line"
         />

@@ -75,6 +75,7 @@ export function toSummary(project: Project): import("./schema").ProjectSummary {
     cover,
     role,
     confidential,
+    featured,
   } = project;
   return {
     slug,
@@ -87,5 +88,6 @@ export function toSummary(project: Project): import("./schema").ProjectSummary {
     cover,
     role,
     confidential,
+    featured,
   };
 }

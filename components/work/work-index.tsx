@@ -8,7 +8,7 @@ import {
   categories,
   categoryLabels,
   type ProjectSummary,
-} from "@/lib/content/schema";
+} from "@/lib/content/categories";
 import { cn } from "@/lib/cn";
 
 type Filter = Category | "all";
@@ -51,7 +51,8 @@ const noopSubscribe = () => () => {};
 
 /**
  * Project list with category filters. Without JavaScript every project is
- * listed and the filter buttons stay hidden, so nothing on screen is dead.
+ * listed and the filter buttons stay invisible (but keep their space, so the
+ * list never shifts), so nothing on screen is dead.
  */
 export function WorkIndex({ projects }: { projects: ProjectSummary[] }) {
   const hydrated = useSyncExternalStore(
@@ -74,8 +75,8 @@ export function WorkIndex({ projects }: { projects: ProjectSummary[] }) {
       <div
         role="group"
         aria-label="Filter projects by category"
-        hidden={!hydrated}
-        className="mb-12 flex flex-wrap gap-2"
+        aria-hidden={!hydrated}
+        className={cn("mb-12 flex flex-wrap gap-2", !hydrated && "invisible")}
       >
         {filters.map((filter) => {
           const count =

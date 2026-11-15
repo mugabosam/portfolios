@@ -1,22 +1,13 @@
 import { z } from "zod";
 
-/** Project categories, in the order the /work filters show them. */
-export const categories = [
-  "backend",
-  "ai-ml",
-  "web",
-  "mobile",
-  "blockchain",
-] as const;
-export type Category = (typeof categories)[number];
+import { categories } from "./categories";
 
-export const categoryLabels: Record<Category, string> = {
-  backend: "Backend",
-  "ai-ml": "AI / ML",
-  web: "Web",
-  mobile: "Mobile",
-  blockchain: "Blockchain",
-};
+export {
+  categories,
+  categoryLabels,
+  type Category,
+  type ProjectSummary,
+} from "./categories";
 
 /**
  * Frontmatter for content/work/*.mdx (brief §5.9). Unknown keys are rejected
@@ -49,18 +40,3 @@ export const projectSchema = z
   .strict();
 
 export type ProjectFrontmatter = z.infer<typeof projectSchema>;
-
-/** The serializable subset of a project that list views and client components need. */
-export type ProjectSummary = Pick<
-  ProjectFrontmatter,
-  | "slug"
-  | "title"
-  | "summary"
-  | "year"
-  | "category"
-  | "stack"
-  | "order"
-  | "cover"
-  | "role"
-  | "confidential"
->;

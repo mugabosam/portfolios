@@ -3,6 +3,7 @@ import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { SkipLink } from "@/components/ui/skip-link";
 import { site } from "@/content/site";
 import { getSiteUrl } from "@/lib/site-url";
@@ -37,6 +38,19 @@ export const metadata: Metadata = {
   applicationName: site.name,
   authors: [{ name: site.name, url: "https://github.com/mugabosam" }],
   creator: site.name,
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    title: site.title,
+    description: site.description,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: site.title,
+    description: site.description,
+  },
+  alternates: { canonical: "/" },
 };
 
 export const viewport: Viewport = {
@@ -52,6 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body>
         <SkipLink />
+        <SmoothScroll />
         <SiteHeader />
         <main id="main" tabIndex={-1}>
           {children}

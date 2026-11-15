@@ -1,3 +1,8 @@
 allowBuilds:
   sharp: false
   unrs-resolver: false
+# One three.js everywhere. 0.183+ logs a THREE.Clock deprecation warning from
+# React Three Fiber's internals (docs/decisions.md).
+overrides:
+  three: 0.182.0
+  "@types/three": 0.182.0

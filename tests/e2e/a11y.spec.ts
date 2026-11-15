@@ -1,15 +1,35 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const routes = ["/", "/work", "/about", "/resume", "/contact", "/styleguide"];
+const routes = [
+  "/",
+  "/work",
+  "/work/malaria-check",
+  "/work/eucl-internship",
+  "/about",
+  "/resume",
+  "/contact",
+  "/contact/sent",
+  "/contact/error",
+  "/styleguide",
+  "/this-page-does-not-exist",
+];
 
 for (const route of routes) {
   test(`${route} has no axe violations`, async ({ page }) => {
+    test.setTimeout(60_000);
     await page.goto(route);
-    // Let finite CSS animations (preloader demo) finish so contrast is measured at rest.
+    // Let finite animations (preloader demo, reveals) settle so contrast is
+    // measured at rest. Infinite ones (scroll cue, orbit) never finish.
     await page.evaluate(() =>
-      Promise.all(
-        document.getAnimations().map((animation) => animation.finished),
+      Promise.allSettled(
+        document
+          .getAnimations()
+          .filter(
+            (animation) =>
+              animation.effect?.getTiming().iterations !== Infinity,
+          )
+          .map((animation) => animation.finished),
       ),
     );
 

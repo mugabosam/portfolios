@@ -48,15 +48,16 @@ unknown, it is left out rather than guessed. Tick items off as you go.
       `GITHUB_TOKEN` in the Vercel project. The graph then reads GitHub's official API; until
       then it uses a public mirror of the same numbers.
 
-- [ ] **Dedicated passport photo.** The smaller portrait in "Seen from every side" is a
-      head-and-shoulders crop of the suit photo. If you have a sharper close-up, save it as
-      `public/portrait/sam-passport.jpg` (3:4, at least 600px wide) and it replaces the crop.
+- [ ] **Colour portrait (optional).** The portraits are black and white because the colour
+      original was no longer on this computer. If you prefer colour, save the original photo
+      and I can regenerate `sam-hero.jpg` (4:5 crop) and `sam-full.jpg` from it.
 
-- [ ] **Real screenshots.** Project covers are abstract faceted artwork, not screenshots. If
+- [ ] **Real screenshots.** Project banners are abstract network artwork, not screenshots. If
       you capture real screenshots (for example of MalariaCheck running), put them in
       `public/work/<slug>/` and change `cover` in that project's frontmatter.
 - [ ] **Resend account** (free) so the contact form can deliver email. Until a
       `RESEND_API_KEY` is set, the form shows your email address instead.
 - [ ] **ML libraries.** The site lists scikit-learn, pandas and Streamlit (what your repos
       show). Add any others you have used in a real project.
-- [ ] **Photo (optional).** A portrait for the About page, if you want one.
+- [ ] **Check `/api/sam`.** The hero card and the three endpoints say what you are open to and
+      what you are doing now (`content/api.ts`). Update them when that changes.

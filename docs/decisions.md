@@ -275,3 +275,57 @@ as recommendations. Lighthouse CI guards the home page at 0.75 and every inner p
 **Lighthouse variance on this machine is real.** The same page measured 65 and 100 a minute
 apart on desktop (software WebGL, background processes). Numbers in docs/performance.md are the
 median of repeated runs, and CI runs each URL twice.
+
+## UI revision: "Kigali morning" (2026-11-20, Sam's request)
+
+Sam asked for a more professional, developer-focused look with smooth motion, no ring or gem
+anywhere, and a coherent colour palette. This overrides the brief's monochrome, jewelry-inspired
+direction (brief §2 to §6), so the changes below replace the earlier design decisions.
+
+**Palette.** Light and cool, built from the Rwandan flag and used with restraint: paper
+`#F5F7FA`, navy ink `#0B1B2B` for text and every code panel, sky `#0070A8` for links and
+anything interactive (`#00A1DE` for graphics only), sun `#FAD201` for the one primary action in
+view, and green `#1E8E5A` for "live" status only (`#146C43` when it is text). Every pair is
+checked in docs/contrast.md.
+
+**Type.** Mona Sans for everything, its width axis widened for heavy, sentence-case headlines;
+JetBrains Mono only for real code, file paths and requests, with ligatures off so code shows
+exactly what was typed. Instrument Serif and Inter are gone, and so are uppercase tracked
+labels, numbered section counters and middle-dot meta strings.
+
+**Removed: the 3D Artifact, GSAP and the scroll choreography.** three.js, React Three Fiber,
+drei and GSAP are uninstalled, along with the preloader, pinned sections, split-text reveals,
+the orbit stage and the faceted gem covers. The portrait replaces the Artifact. Motion is now
+CSS only: one entrance sequence on the hero card, a header that settles onto a blurred
+background as the page scrolls, a timeline line drawn by a scroll-driven animation, a one-time
+sweep on the contribution graph, card lift on hover or focus, and the copy confirmation. Lenis
+stays on desktop. Everything is static under `prefers-reduced-motion`.
+
+**The hero is a real API.** The card next to the portrait shows `GET /api/sam` and its JSON,
+with tabs for `/api/sam/stack` and `/api/sam/now`. Those three route handlers exist, are
+prerendered at build time, and return exactly the objects the card renders (both read
+`content/api.ts`), so the card cannot drift from the endpoint. A unit test checks that every
+endpoint shown has a route.
+
+**Project cards show real code.** Each card opens with a few lines from the project's
+repository, highlighted at build time with a navy Shiki theme. The lines are copied from the
+case-study excerpts, and a unit test fails if a quoted line does not appear in the case study.
+EUCL is confidential, so its card shows the general architecture as a tree instead, and a test
+enforces that confidential work never gets a code peek.
+
+**Home page structure.** Hero, selected work (MalariaCheck featured, four more as cards, all six
+on /work), how I work, experience as a commit-graph timeline, stack with GitHub activity and
+repositories, then one dark closing band with a copy-email button. Inventory Pro appears on
+/work, not on the home page, to keep the grid to two by two.
+
+**Covers** are now abstract component networks on navy (`pnpm covers`), seeded by the slug. They
+are decorative and do not describe any project's real architecture. **Open Graph images** use
+the same palette and Mona Sans, with a small response card; the static font files for them are
+in `assets/fonts/` under the OFL.
+
+**A layout bug worth remembering.** A `<pre>` with long lines sets the min-content width of its
+grid or flex ancestors, which widened the whole page to 686px on phones. Code areas now use
+`contain: inline-size`, and the card grids use `minmax(0, 1fr)` columns.
+
+**Scroll-driven animations never "finish".** The axe test waited for every animation to end and
+timed out on the header and timeline; it now waits only for time-based animations.

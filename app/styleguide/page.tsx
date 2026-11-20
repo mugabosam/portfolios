@@ -106,7 +106,7 @@ const typeScale = [
   {
     name: "Mono",
     spec: "JetBrains Mono, code only",
-    sample: "GET /api/sam",
+    sample: "lib/ussd/config_verifier.dart",
     className: "font-mono text-small",
   },
 ] as const;
@@ -125,7 +125,7 @@ const buttonVariants: {
   icon?: ButtonIcon;
   dark?: boolean;
 }[] = [
-  { variant: "primary", label: "See selected work" },
+  { variant: "primary", label: "View work", icon: "arrow" },
   { variant: "secondary", label: "Download CV", icon: "download" },
   { variant: "inverse", label: "GitHub", icon: "github", dark: true },
   { variant: "link", label: "Code on GitHub", icon: "external" },

@@ -1,8 +1,8 @@
+import { HomeMotion } from "@/components/motion/home-motion";
+import { Intro } from "@/components/motion/intro";
+import { ActivitySection } from "@/components/sections/activity";
 import { ContactSection } from "@/components/sections/contact";
-import { ExperienceSection } from "@/components/sections/experience";
 import { HeroSection } from "@/components/sections/hero";
-import { PrinciplesSection } from "@/components/sections/principles";
-import { ToolkitSection } from "@/components/sections/toolkit";
 import { WorkSection } from "@/components/sections/work";
 import { site } from "@/content/site";
 import { getProjects, toSummary } from "@/lib/content/projects";
@@ -10,22 +10,20 @@ import { JsonLd } from "@/lib/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 
 /**
- * The home page: who Sam is, the work, how he works, experience, stack and
- * GitHub activity, then how to reach him. Everything is static,
- * server-rendered HTML; the few client pieces (API card tabs, copy button,
- * graph sweep) only add to it.
+ * The home page, kept to four scenes: the hero, selected work, a year on
+ * GitHub, and contact. Everything is static, server-rendered HTML. The intro
+ * and the hero's scroll scene are CSS; HomeMotion adds the GSAP layer
+ * (stacked work cards, line reveals, counters, magnetic buttons) after the
+ * first paint, and nothing in it is needed to read the page.
  */
 export default function HomePage() {
   const projects = getProjects();
-  const titles = Object.fromEntries(
-    projects.map((project) => [project.slug, project.title]),
-  );
 
   const person = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: site.name,
-    jobTitle: "Backend Developer",
+    jobTitle: "Software Developer",
     url: getSiteUrl().toString(),
     email: `mailto:${site.email}`,
     sameAs: site.socials.map((social) => social.href),
@@ -35,24 +33,26 @@ export default function HomePage() {
       addressCountry: "RW",
     },
     knowsAbout: [
-      "Python",
       "TypeScript",
-      "Django",
+      "Python",
+      "React",
+      "Next.js",
       "NestJS",
+      "Django",
       "PostgreSQL",
-      "Machine learning",
       "Flutter",
+      "Machine learning",
     ],
   };
 
   return (
     <>
       <JsonLd data={person} />
+      <Intro />
+      <HomeMotion />
       <HeroSection />
       <WorkSection projects={projects.map(toSummary)} />
-      <PrinciplesSection />
-      <ExperienceSection />
-      <ToolkitSection titles={titles} />
+      <ActivitySection />
       <ContactSection />
     </>
   );

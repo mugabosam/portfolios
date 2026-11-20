@@ -9,7 +9,7 @@ import { site } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Get in touch with ${site.name} about backend work, machine-learning projects, internships or junior roles.`,
+  description: `Get in touch with ${site.name} about software development roles, web and mobile products, APIs or machine-learning projects.`,
   alternates: { canonical: "/contact" },
 };
 
@@ -22,7 +22,7 @@ export default function ContactPage() {
     <>
       <PageHeader
         title="Let’s talk"
-        intro="Have a backend to build, a model to ship, or a team with room for a junior developer who takes testing seriously? Write to me."
+        intro="Have a product to build, a team to join or a system that needs work, front or back? Write to me."
       />
 
       <section

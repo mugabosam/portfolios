@@ -119,6 +119,31 @@ const pairs = [
   ["--leaf", "#1e8e5a", "--surface", "#ffffff", "Live dot", NON_TEXT],
   // Navy code panels and the contact band
   ["#ffffff", "#ffffff", "--code", "#0b1b2b", "Headings on navy", AA_TEXT],
+  // Home hero: white text on the sky gradient, at its lightest points
+  [
+    "#ffffff",
+    "#ffffff",
+    "Hero sky, top",
+    "#0876b3",
+    "Header over the hero (wordmark, tablet nav)",
+    AA_TEXT,
+  ],
+  [
+    "#ffffff",
+    "#ffffff",
+    "Hero sky",
+    "#0070a8",
+    "Hero headline, buttons",
+    AA_TEXT,
+  ],
+  [
+    "rgb(255 255 255 / 0.85)",
+    "rgb(255 255 255 / 0.85)",
+    "Hero sky, lower",
+    "#006399",
+    "Hero stack caption",
+    AA_TEXT,
+  ],
   ["--code-fg", "#d6e2ee", "--code", "#0b1b2b", "Code, text on navy", AA_TEXT],
   [
     "--code-muted",

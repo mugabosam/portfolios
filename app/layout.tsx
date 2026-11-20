@@ -9,6 +9,7 @@ import { site } from "@/content/site";
 import { getSiteUrl } from "@/lib/site-url";
 
 import "./globals.css";
+import "./scenes.css";
 
 const sans = Mona_Sans({
   subsets: ["latin"],
@@ -51,9 +52,23 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
+/**
+ * Runs before the first paint: if the home page's intro already played in
+ * this tab, mark it seen so a reload does not show it again.
+ */
+const introScript = `try{if(sessionStorage.getItem("intro-seen"))document.documentElement.dataset.intro="seen"}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      className={`${sans.variable} ${mono.variable}`}
+      // The intro script may add data-intro before React hydrates.
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: introScript }} />
+      </head>
       <body>
         <SkipLink />
         <SmoothScroll />

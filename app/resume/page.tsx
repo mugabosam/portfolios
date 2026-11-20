@@ -13,7 +13,7 @@ import { getProjects } from "@/lib/content/projects";
 
 export const metadata: Metadata = {
   title: "Résumé",
-  description: `Résumé of ${site.name}: backend developer (Python and TypeScript) in Kigali, Rwanda. Experience, projects, skills and education, with a PDF to download.`,
+  description: `Résumé of ${site.name}: software developer in Kigali, Rwanda, working across frontend and backend. Experience, projects, skills and education, with a PDF to download.`,
   alternates: { canonical: "/resume" },
 };
 
@@ -106,12 +106,12 @@ export default function ResumePage() {
 
       <Block title="Profile">
         <p className="max-w-(--measure) text-ink-2">
-          Backend developer and Information Technology student at the University
-          of Rwanda, interning at EUCL, where I set up and maintain the backend
-          of an internal inventory and device management system. I build
-          backends in Python (Django) and TypeScript (NestJS) with React
-          frontends, train small machine-learning models, and write Flutter apps
-          for local problems.
+          Software developer working across the stack, and Information
+          Technology student at the University of Rwanda. At EUCL I set up the
+          backend of an internal inventory and device management system and
+          build features across its NestJS API and Next.js frontend. I build
+          interfaces in React and Flutter, APIs in TypeScript (NestJS) and
+          Python (Django), and small machine-learning models.
         </p>
       </Block>
 

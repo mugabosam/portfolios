@@ -31,7 +31,7 @@ function clip(text: string, max: number) {
   return `${text.slice(0, text.lastIndexOf(" ", max)).replace(/[,.;:]$/, "")}…`;
 }
 
-/** One card per case study: title, summary, and the project as a response. */
+/** One card per case study: the title in giant type, the summary, the facts. */
 export default async function Image({
   params,
 }: {
@@ -41,22 +41,17 @@ export default async function Image({
   const project = getProject(slug);
   if (!project)
     return ogImage({
-      title: "Case study",
+      big: "Case study",
       subtitle: "Work by Sam Mugabo",
-      request: "/work",
-      lines: [],
+      panel: { label: "Work", value: "Case studies", note: "" },
     });
   return ogImage({
-    title: project.title,
+    big: project.title,
     subtitle: clip(project.summary, 120),
-    request: `/work/${project.slug}`,
-    lines: [
-      { key: "year", value: String(project.year) },
-      {
-        key: "type",
-        value: project.category.map((c) => categoryLabels[c]).join(", "),
-      },
-      { key: "stack", value: project.stack.slice(0, 2).join(", ") },
-    ],
+    panel: {
+      label: project.category.map((c) => categoryLabels[c]).join(", "),
+      value: `Case study, ${project.year}`,
+      note: project.stack.slice(0, 4).join(", "),
+    },
   });
 }

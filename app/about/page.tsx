@@ -18,7 +18,7 @@ import { getProjects } from "@/lib/content/projects";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `${site.name} is a backend developer in Kigali working in Python and TypeScript, with machine-learning and Flutter projects on the side. Background, skills and values.`,
+  description: `${site.name} is a software developer in Kigali who works across the stack: React and Flutter interfaces, NestJS and Django APIs, PostgreSQL and machine learning. Background, skills and values.`,
   alternates: { canonical: "/about" },
 };
 
@@ -39,7 +39,7 @@ export default function AboutPage() {
     <>
       <PageHeader
         title="About me"
-        intro="I’m a backend developer and Information Technology student in Kigali. I build APIs in Python and TypeScript, train small machine-learning models, and write Flutter apps for problems I see around me."
+        intro="I’m a software developer in Kigali. I build the whole product: interfaces in React and Flutter, APIs in NestJS and Django, and the data and machine-learning models underneath."
       />
 
       <div className="container-site grid-site gap-y-12 pb-24 md:pb-32">
@@ -66,8 +66,8 @@ export default function AboutPage() {
               <p>
                 I started on the security side: Cisco networking courses, a
                 cybersecurity hackathon, and an interest in how systems fail.
-                That habit of asking what breaks first is still how I approach a
-                backend.
+                That habit of asking what breaks first is still how I approach
+                every layer of a system.
               </p>
               <p>
                 Since September 2026 I have been a software development intern
@@ -81,8 +81,9 @@ export default function AboutPage() {
               </p>
               <p>
                 I am finishing a Bachelor’s degree in Information Technology at
-                the University of Rwanda, expected in 2027, and I am looking for
-                internships and junior backend roles, in Kigali or remote.
+                the University of Rwanda, expected in 2027. I am open to
+                software development roles, frontend, backend or full-stack, in
+                Kigali or remote.
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">

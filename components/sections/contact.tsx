@@ -3,40 +3,55 @@ import { CopyEmail } from "@/components/ui/copy-email";
 import { availability } from "@/content/profile";
 import { site } from "@/content/site";
 
-/** The page's closing band: the one dark section, and the way to reach Sam. */
+/**
+ * The closing band. It opens from a rounded card to the full width as it
+ * scrolls into view (CSS scroll-driven, .contact-band), then the headline
+ * rises line by line.
+ */
 export function ContactSection() {
   const github = site.socials.find((social) => social.label === "GitHub");
   return (
-    <section
-      id="contact"
-      aria-labelledby="contact-title"
-      className="bg-ink text-white [--focus:var(--code-key)]"
-    >
-      <div className="container-site grid-site gap-y-10 py-24 md:py-28">
-        <div className="col-span-12 lg:col-span-7">
-          <p className="inline-flex items-center gap-2.5 text-small font-medium text-code-fg">
+    <section id="contact" aria-labelledby="contact-title" className="pb-2">
+      <div className="contact-band bg-ink text-white [--focus:var(--code-key)]">
+        <div
+          aria-hidden="true"
+          className="contact-glow pointer-events-none absolute inset-0"
+        />
+        <div className="relative container-site py-24 md:py-36">
+          <p className="inline-flex items-center gap-2.5 rounded-full border border-white/15 py-1.5 pr-4 pl-3 text-small font-medium text-code-fg">
             <span className="live-dot" aria-hidden="true" />
             {availability.status}
           </p>
-          <h2 id="contact-title" className="mt-5 type-h1 text-white">
-            Have a backend to build? Let’s talk.
+          <h2
+            id="contact-title"
+            data-split
+            className="mt-8 max-w-5xl text-[clamp(3rem,9vw,8.5rem)] leading-[0.9] font-[820] tracking-[-0.04em] text-white [font-stretch:78%]"
+          >
+            Have something to build? Let’s talk.
           </h2>
-          <p className="mt-5 max-w-xl text-lead text-code-fg">
-            A short note about what you’re building is enough. I reply within a
-            few days. {availability.where}
-          </p>
-        </div>
-        <div className="col-span-12 flex flex-col items-start gap-4 lg:col-span-5 lg:items-end lg:justify-end">
-          <CopyEmail email={site.email} tone="dark" />
-          <div className="flex flex-wrap gap-3">
-            <Button variant="primary" href="/contact">
-              Write to me
-            </Button>
-            {github && (
-              <Button variant="inverse" href={github.href} icon="github">
-                GitHub
+          <div className="mt-12 flex flex-col gap-10 border-t border-white/15 pt-10 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-md" data-fade>
+              <p className="text-lead text-code-fg">
+                A short note about the role or the product is enough. I reply
+                within a few days. {availability.where}
+              </p>
+              <CopyEmail email={site.email} tone="dark" className="mt-6" />
+            </div>
+            <div className="flex flex-wrap gap-3" data-fade>
+              <Button
+                variant="primary"
+                href="/contact"
+                icon="arrow"
+                data-magnetic
+              >
+                Write to me
               </Button>
-            )}
+              {github && (
+                <Button variant="inverse" href={github.href} icon="github">
+                  GitHub
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>

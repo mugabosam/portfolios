@@ -29,6 +29,14 @@ export function ArrowLeftIcon(props: IconProps) {
   );
 }
 
+export function ArrowUpRightIcon(props: IconProps) {
+  return (
+    <svg {...stroke} {...props}>
+      <path d="M4.5 11.5l7-7M5.5 4.5h6v6" />
+    </svg>
+  );
+}
+
 /** Marks links that leave the site. */
 export function ExternalIcon(props: IconProps) {
   return (

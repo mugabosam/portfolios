@@ -75,33 +75,37 @@ test.describe("navigation", () => {
   });
 });
 
-test.describe("hero API card", () => {
-  test("tabs switch endpoints with the keyboard", async ({ page }) => {
+test.describe("home page", () => {
+  test("the intro plays once per visit", async ({ page }) => {
     await page.goto("/");
-    const whoami = page.getByRole("tab", { name: "whoami" });
-    await expect(whoami).toHaveAttribute("aria-selected", "true");
-    await whoami.focus();
-    await page.keyboard.press("ArrowRight");
-    const stack = page.getByRole("tab", { name: "stack" });
-    await expect(stack).toBeFocused();
-    await expect(stack).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("tabpanel")).toContainText("/api/sam/stack");
-    await expect(page.getByRole("tabpanel")).toContainText('"backend"');
-    await page.keyboard.press("End");
-    await expect(page.getByRole("tabpanel")).toContainText("/api/sam/now");
+    const intro = page.locator(".intro");
+    await expect(intro).toHaveCount(1);
+    // It lifts away on its own.
+    await expect(intro).toBeHidden({ timeout: 5000 });
+    await page.reload();
+    await expect(page.locator("html")).toHaveAttribute("data-intro", "seen");
+    await expect(page.locator(".intro")).toBeHidden();
   });
 
-  test("the endpoints it shows are real", async ({ request }) => {
-    for (const [path, key] of [
-      ["/api/sam", "name"],
-      ["/api/sam/stack", "backend"],
-      ["/api/sam/now", "role"],
-    ] as const) {
-      const response = await request.get(path);
-      expect(response.status()).toBe(200);
-      expect(response.headers()["content-type"]).toContain("application/json");
-      expect(Object.keys(await response.json())).toContain(key);
-    }
+  test("the hero says who Sam is and leads to the work", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "I build software from the database to the interface.",
+    );
+    await expect(
+      page.getByText("Software development roles", { exact: true }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "View work" }).click();
+    await expect(page.locator("#work-title")).toBeInViewport();
+  });
+
+  test("work cards stack on large screens", async ({ page, isMobile }) => {
+    test.skip(isMobile, "The deck only pins on large screens.");
+    await page.goto("/");
+    // GSAP arrives once the browser is idle and pins every card but the last.
+    await expect(page.locator("#work .pin-spacer")).toHaveCount(3, {
+      timeout: 10_000,
+    });
   });
 
   test("the email can be copied", async ({ browser, browserName }) => {
@@ -115,6 +119,8 @@ test.describe("hero API card", () => {
     const page = await context.newPage();
     await page.goto("/");
     const contact = page.locator("#contact");
+    // Its content fades in once scrolled into view.
+    await contact.scrollIntoViewIfNeeded();
     await contact.getByRole("button", { name: "Copy" }).click();
     await expect(contact.getByRole("status")).toHaveText(
       "Email address copied",
@@ -240,7 +246,7 @@ test.describe("contact", () => {
 });
 
 test.describe("motion and fallbacks", () => {
-  test("reduced motion disables smooth scroll and keeps every section", async ({
+  test("reduced motion: no intro, no smooth scroll, every section", async ({
     browser,
   }) => {
     const context = await browser.newContext({
@@ -257,16 +263,16 @@ test.describe("motion and fallbacks", () => {
       ),
     ).toBe(false);
     // Every section is still there and readable.
-    for (const id of [
-      "hero",
-      "work",
-      "principles",
-      "experience",
-      "toolkit",
-      "contact",
-    ]) {
+    await expect(page.locator(".intro")).toBeHidden();
+    for (const id of ["hero", "work", "activity", "contact"]) {
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
+    // The hero is one screen tall: no scroll scene.
+    expect(
+      await page
+        .locator("#hero")
+        .evaluate((el) => el.getBoundingClientRect().height),
+    ).toBeLessThanOrEqual(800);
     await context.close();
   });
 
@@ -278,16 +284,14 @@ test.describe("motion and fallbacks", () => {
     const page = await context.newPage();
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "I build the APIs",
+      "I build software",
     );
-    // The hero's API response is server-rendered.
-    await expect(page.getByRole("tabpanel")).toContainText('"Sam Mugabo"');
-    await expect(page.locator("#work article")).toHaveCount(5);
+    await expect(page.locator("#work article")).toHaveCount(4);
     await expect(
-      page.getByRole("heading", { name: "Public repositories" }),
+      page.getByRole("heading", { name: "Shipping in public" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "A year on GitHub" }),
+      page.getByRole("heading", { name: "Have something to build?" }),
     ).toBeVisible();
     expect(
       await page.evaluate(

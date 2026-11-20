@@ -31,7 +31,7 @@ const utc = (date: string) => new Date(`${date}T00:00:00Z`);
  * the home page's HTML and parse time stay low. The headline numbers appear
  * as real text, and the SVG carries them in its accessible name.
  */
-export async function ContributionGraph() {
+export async function ContributionGraph({ className }: { className?: string }) {
   const calendar = await getContributionCalendar();
   if (!calendar) return null;
 
@@ -67,27 +67,31 @@ export async function ContributionGraph() {
   const accessibleName = `${number.format(summary.total)} GitHub contributions between ${longDate.format(utc(summary.from))} and ${longDate.format(utc(summary.to))}, on ${summary.active} days. Busiest day: ${longDate.format(utc(summary.busiest.date))} with ${summary.busiest.count} contributions.`;
 
   const tiles = [
-    { value: number.format(summary.total), label: "Contributions, last year" },
-    { value: String(summary.active), label: "Active days" },
-    { value: String(summary.longestStreak), label: "Longest streak, days" },
     {
+      count: summary.total,
+      value: number.format(summary.total),
+      label: "Contributions, last year",
+    },
+    {
+      count: summary.active,
+      value: String(summary.active),
+      label: "Active days",
+    },
+    {
+      count: summary.longestStreak,
+      value: String(summary.longestStreak),
+      label: "Longest streak, days",
+    },
+    {
+      count: summary.busiest.count,
       value: String(summary.busiest.count),
       label: `Busiest day (${month.format(utc(summary.busiest.date))} ${Number(summary.busiest.date.slice(-2))})`,
     },
   ];
 
   return (
-    <div className="mt-16">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h3 className="type-h3">A year on GitHub</h3>
-        <p className="text-small text-ink-3">
-          {calendar.source === "github"
-            ? "From the GitHub API, refreshed daily"
-            : "Public GitHub data, refreshed daily"}
-        </p>
-      </div>
-
-      <div className="mt-6 overflow-hidden rounded-xl border border-line bg-surface">
+    <div className={className}>
+      <div className="overflow-hidden rounded-[1.75rem] border border-line bg-surface">
         <dl className="grid grid-cols-2 border-b border-line sm:grid-cols-4">
           {tiles.map((item, index) => (
             <div
@@ -95,7 +99,10 @@ export async function ContributionGraph() {
               className={`flex flex-col gap-1 p-5 sm:p-6 ${index % 2 === 1 ? "border-l border-line" : ""} ${index > 1 ? "border-t border-line sm:border-t-0" : ""} ${index === 2 ? "sm:border-l" : ""}`}
             >
               <dt className="text-caption text-ink-3">{item.label}</dt>
-              <dd className="order-first text-h3 font-bold [font-stretch:108%] tabular-nums">
+              <dd
+                data-count={item.count}
+                className="order-first text-[clamp(1.75rem,3vw,2.5rem)] leading-none font-[780] [font-stretch:90%] tabular-nums"
+              >
                 {item.value}
               </dd>
             </div>
@@ -165,6 +172,11 @@ export async function ContributionGraph() {
           </div>
         </div>
       </div>
+      <p className="mt-3 text-small text-ink-3">
+        {calendar.source === "github"
+          ? "From the GitHub API, refreshed daily."
+          : "Public GitHub data, refreshed daily."}
+      </p>
       <p className="sr-only">{accessibleName}</p>
     </div>
   );

@@ -7,7 +7,12 @@ import type {
 
 import { cn } from "@/lib/cn";
 
-import { DownloadIcon, ExternalIcon, GitHubIcon } from "./icons";
+import {
+  ArrowUpRightIcon,
+  DownloadIcon,
+  ExternalIcon,
+  GitHubIcon,
+} from "./icons";
 
 /**
  * primary: sun fill, the one main action in view.
@@ -16,7 +21,7 @@ import { DownloadIcon, ExternalIcon, GitHubIcon } from "./icons";
  * link: sky text, underlined.
  */
 export type ButtonVariant = "primary" | "secondary" | "inverse" | "link";
-export type ButtonIcon = "external" | "download" | "github";
+export type ButtonIcon = "external" | "download" | "github" | "arrow";
 /** Styleguide only: renders a state without interaction. */
 export type ForcedState = "hover" | "focus" | "active";
 
@@ -43,21 +48,32 @@ type NativeButtonProps = BaseProps &
 export type ButtonProps = LinkButtonProps | NativeButtonProps;
 
 const base =
-  "group inline-flex min-h-tap items-center justify-center gap-2.5 whitespace-nowrap rounded-md text-small font-semibold transition-[background-color,border-color,color,translate,box-shadow] duration-(--dur-ui) ease-out is-active:translate-y-px disabled:pointer-events-none disabled:opacity-50";
+  "group inline-flex min-h-tap items-center justify-center gap-2.5 whitespace-nowrap text-small font-semibold transition-[background-color,border-color,color,translate,box-shadow] duration-(--dur-ui) ease-out is-active:translate-y-px disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-sun px-5 text-ink shadow-[inset_0_-2px_0_rgb(11_27_43/0.12)] hocus:-translate-y-px hocus:bg-sun-deep",
+    "rounded-full bg-sun px-6 text-ink shadow-[inset_0_-2px_0_rgb(11_27_43/0.12)] hocus:-translate-y-px hocus:bg-sun-deep",
   secondary:
-    "border border-line-strong bg-surface px-5 text-ink hocus:-translate-y-px hocus:border-ink",
+    "rounded-full border border-line-strong bg-surface px-6 text-ink hocus:-translate-y-px hocus:border-ink",
   inverse:
-    "border border-code-muted px-5 text-white hocus:-translate-y-px hocus:border-white hocus:bg-white/5",
+    "rounded-full border border-white/45 px-6 text-white hocus:-translate-y-px hocus:border-white hocus:bg-white/5",
   // Small inline padding gives the focus ring room; negative margin keeps alignment.
   link: "-mx-1 rounded-sm px-1 text-sky underline decoration-sky/35 decoration-1 underline-offset-[5px] hocus:decoration-sky",
 };
 
-function Icon({ icon }: { icon: ButtonIcon }) {
+function Icon({ icon, variant }: { icon: ButtonIcon; variant: ButtonVariant }) {
   if (icon === "github") return <GitHubIcon className="size-4 shrink-0" />;
+  if (icon === "arrow")
+    return (
+      <span
+        className={cn(
+          "-mr-3 inline-flex size-8 shrink-0 items-center justify-center rounded-full transition-transform duration-(--dur-move) ease-(--ease-out) group-hocus:rotate-45",
+          variant === "inverse" ? "bg-white text-ink" : "bg-ink text-white",
+        )}
+      >
+        <ArrowUpRightIcon className="size-3.5" />
+      </span>
+    );
   if (icon === "download")
     return (
       <DownloadIcon className="size-4 shrink-0 transition-transform duration-(--dur-ui) ease-out group-hocus:translate-y-0.5" />
@@ -93,9 +109,9 @@ export function Button(props: ButtonProps) {
     const leading = icon === "github";
     const content = (
       <>
-        {icon && leading && <Icon icon={icon} />}
+        {icon && leading && <Icon icon={icon} variant={variant} />}
         <span>{children}</span>
-        {icon && !leading && <Icon icon={icon} />}
+        {icon && !leading && <Icon icon={icon} variant={variant} />}
         {newTab && <span className="sr-only"> (opens in a new tab)</span>}
       </>
     );
@@ -139,9 +155,9 @@ export function Button(props: ButtonProps) {
       data-force={forceState}
       {...rest}
     >
-      {icon && icon === "github" && <Icon icon={icon} />}
+      {icon && icon === "github" && <Icon icon={icon} variant={variant} />}
       <span>{children}</span>
-      {icon && icon !== "github" && <Icon icon={icon} />}
+      {icon && icon !== "github" && <Icon icon={icon} variant={variant} />}
     </button>
   );
 }

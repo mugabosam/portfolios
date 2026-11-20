@@ -388,13 +388,6 @@
     font-family: inherit;
   }
 
-  /* Without JavaScript the endpoint tabs cannot switch: show only the first. */
-  @media (scripting: none) {
-    .api-tabs [aria-selected="false"] {
-      display: none;
-    }
-  }
-
   /* Status dot: a soft pulse that says "live". Static under reduced motion. */
   .live-dot {
     position: relative;
@@ -412,25 +405,6 @@
     border-radius: inherit;
     background-color: var(--leaf);
     animation: live-pulse 2.4s var(--ease-out) infinite;
-  }
-
-  /* Hero API card: the request goes out, the status arrives, then the body
-     lines appear in order. One sequence, once, on page load. */
-  .api-response .api-status {
-    animation: api-pop 360ms var(--ease-out) 420ms both;
-  }
-
-  .api-response .api-line {
-    animation: api-line 420ms var(--ease-out) both;
-    animation-delay: calc(640ms + var(--line, 0) * 55ms);
-  }
-
-  .api-response[data-swap] .api-status {
-    animation-delay: 80ms;
-  }
-
-  .api-response[data-swap] .api-line {
-    animation-delay: calc(140ms + var(--line, 0) * 35ms);
   }
 
   /* Experience: the branch line draws as the timeline scrolls through view. */
@@ -460,8 +434,6 @@
 
   @media (prefers-reduced-motion: reduce) {
     .live-dot::after,
-    .api-response .api-status,
-    .api-response .api-line,
     .commit-line {
       animation: none !important;
     }
@@ -595,20 +567,6 @@
   100% {
     opacity: 0;
     scale: 2.6;
-  }
-}
-
-@keyframes api-pop {
-  from {
-    opacity: 0;
-    scale: 0.92;
-  }
-}
-
-@keyframes api-line {
-  from {
-    opacity: 0;
-    translate: -0.375rem 0;
   }
 }
 

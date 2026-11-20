@@ -26,8 +26,8 @@ export function SiteFooter() {
             {site.name}
           </p>
           <p className="mt-3 max-w-xs text-small text-ink-2">
-            Backend developer in {site.location}. Python, TypeScript and the
-            interfaces on top of them.
+            Software developer in {site.location}. Interfaces, APIs and the data
+            underneath.
           </p>
         </div>
 
@@ -54,11 +54,6 @@ export function SiteFooter() {
                 </a>
               </li>
             ))}
-            <li>
-              <a href="/api/sam" className={linkClass}>
-                /api/sam
-              </a>
-            </li>
           </ul>
         </div>
 

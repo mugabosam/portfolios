@@ -1,9 +1,8 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { endpoints } from "@/content/api";
 import { peeks } from "@/content/showcase";
 import { cn } from "@/lib/cn";
 import { parseProjectFile } from "@/lib/content/parse";
@@ -38,12 +37,19 @@ describe("code peeks", () => {
   });
 });
 
-describe("/api/sam", () => {
-  it("has a route handler for every endpoint shown in the hero", () => {
-    for (const endpoint of endpoints) {
-      const file = path.join(process.cwd(), "app", endpoint.path, "route.ts");
-      expect(existsSync(file), file).toBe(true);
-    }
+describe("hero", () => {
+  it("has a transparent cut-out portrait", async () => {
+    const file = path.join(
+      process.cwd(),
+      "public",
+      "portrait",
+      "sam-cutout.webp",
+    );
+    const header = readFileSync(file).subarray(0, 32);
+    // RIFF....WEBPVP8X with the alpha flag (bit 4 of the first flags byte).
+    expect(header.toString("ascii", 0, 4)).toBe("RIFF");
+    expect(header.toString("ascii", 8, 16)).toBe("WEBPVP8X");
+    expect(header[20]! & 0x10).toBe(0x10);
   });
 });
 

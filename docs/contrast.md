@@ -28,6 +28,9 @@ UI component boundaries and focus indicators 3:1 (SC 1.4.11).
 | `--focus (--sky)` `#0070a8` | `--paper` `#f5f7fa` | Focus outline | 5.04:1 | 3:1 | Pass |
 | `--leaf` `#1e8e5a` | `--surface` `#ffffff` | Live dot | 4.14:1 | 3:1 | Pass |
 | `#ffffff` `#ffffff` | `--code` `#0b1b2b` | Headings on navy | 17.41:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `Hero sky, top` `#0876b3` | Header over the hero (wordmark, tablet nav) | 4.94:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `Hero sky` `#0070a8` | Hero headline, buttons | 5.41:1 | 4.5:1 | Pass |
+| `rgb(255 255 255 / 0.85)` `rgb(255 255 255 / 0.85)` | `Hero sky, lower` `#006399` | Hero stack caption | 5.15:1 | 4.5:1 | Pass |
 | `--code-fg` `#d6e2ee` | `--code` `#0b1b2b` | Code, text on navy | 13.25:1 | 4.5:1 | Pass |
 | `--code-muted` `#8ea3ba` | `--code` `#0b1b2b` | Comments, punctuation | 6.72:1 | 4.5:1 | Pass |
 | `--code-key` `#6cc9f2` | `--code` `#0b1b2b` | Keys, keywords, links on navy | 9.35:1 | 4.5:1 | Pass |

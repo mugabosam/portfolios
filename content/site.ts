@@ -11,12 +11,12 @@ export type SocialLink = { label: string; href: string };
 export const site = {
   name: "Sam Mugabo",
   monogram: "SM.",
-  role: "Backend developer (Python & TypeScript)",
+  role: "Software developer (frontend and backend)",
   /** Used for the default <title> and search snippets. */
-  title: "Sam Mugabo: Backend Developer (Python & TypeScript)",
+  title: "Sam Mugabo: Software Developer",
   /** ≤ 155 characters. */
   description:
-    "Backend developer in Kigali, Rwanda, building Python and TypeScript APIs, the frontends on top of them, and machine-learning models that last.",
+    "Software developer in Kigali, Rwanda. I build products end to end: React and Flutter interfaces, NestJS and Django APIs, and the data underneath.",
   location: "Kigali, Rwanda",
   email: "popesir112@gmail.com",
   nav: [

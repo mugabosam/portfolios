@@ -17,7 +17,7 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
     <Link
       href="/"
       onClick={onClick}
-      className="-ml-1 inline-flex min-h-tap items-center gap-2.5 rounded-md px-1 text-[1.0625rem] font-semibold tracking-[-0.01em] [font-stretch:108%]"
+      className="header-brand -ml-1 inline-flex min-h-tap items-center gap-2.5 rounded-md px-1 text-[1.0625rem] font-semibold tracking-[-0.01em] [font-stretch:108%]"
     >
       <LogoMark className="size-7 shrink-0" />
       {site.name}
@@ -37,6 +37,7 @@ const github = site.socials.find((social) => social.label === "GitHub");
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const menuId = useId();
 
@@ -58,9 +59,40 @@ export function SiteHeader() {
     return () => query.removeEventListener("change", onChange);
   }, [open]);
 
+  // Slide away while reading down the page, come back on the way up.
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    let last = window.scrollY;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const delta = y - last;
+      if (Math.abs(delta) < 6) return;
+      if (delta > 0 && y > 480) header.dataset.hidden = "";
+      else delete header.dataset.hidden;
+      last = y;
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+      delete header.dataset.hidden;
+    };
+  }, []);
+
   return (
     <>
-      <header className="site-header fixed inset-x-0 top-0 z-50 text-ink">
+      <header
+        ref={headerRef}
+        data-home={pathname === "/" ? "" : undefined}
+        style={{ viewTransitionName: "site-header" }}
+        className="site-header fixed inset-x-0 top-0 z-50 text-ink"
+      >
         <div className="container-site flex h-(--header-h) items-center justify-between gap-6">
           <Wordmark />
 
@@ -73,16 +105,13 @@ export function SiteHeader() {
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={cn(
-                        "relative inline-flex min-h-tap items-center rounded-md px-3 text-small font-medium transition-colors duration-(--dur-ui)",
-                        active ? "text-ink" : "text-ink-2 hocus:text-ink",
-                      )}
+                      className="header-link relative inline-flex min-h-tap items-center rounded-md px-3 text-small font-medium transition-colors duration-(--dur-ui)"
                     >
                       {item.label}
                       <span
                         aria-hidden="true"
                         className={cn(
-                          "absolute inset-x-3 bottom-2 h-0.5 origin-left rounded-full bg-sky transition-transform duration-(--dur-move) ease-(--ease-out)",
+                          "header-underline absolute inset-x-3 bottom-2 h-0.5 origin-left rounded-full transition-transform duration-(--dur-move) ease-(--ease-out)",
                           active ? "scale-x-100" : "scale-x-0",
                         )}
                       />
@@ -91,11 +120,11 @@ export function SiteHeader() {
                 );
               })}
               {github && (
-                <li className="ml-2 border-l border-line pl-3">
+                <li className="header-divider ml-2 border-l pl-3">
                   <a
                     href={github.href}
                     rel="me noopener"
-                    className="inline-flex min-h-tap min-w-tap items-center justify-center rounded-md text-ink-2 transition-colors duration-(--dur-ui) hocus:text-ink"
+                    className="header-link inline-flex min-h-tap min-w-tap items-center justify-center rounded-md transition-colors duration-(--dur-ui)"
                   >
                     <GitHubIcon className="size-5" />
                     <span className="sr-only">GitHub</span>
@@ -110,7 +139,7 @@ export function SiteHeader() {
             onClick={openMenu}
             aria-expanded={open}
             aria-controls={menuId}
-            className="menu-toggle -mr-2 inline-flex min-h-tap items-center rounded-md px-2 text-small font-semibold md:hidden"
+            className="menu-toggle header-brand -mr-2 inline-flex min-h-tap items-center rounded-md px-2 text-small font-semibold md:hidden"
           >
             Menu
           </button>

@@ -1,20 +1,21 @@
+import { availability } from "@/content/profile";
 import { ogContentType, ogImage, ogSize } from "@/lib/og";
 
 export const alt =
-  "Sam Mugabo, backend developer in Kigali: I build the APIs and data behind useful software.";
+  "Sam Mugabo, software developer in Kigali: I build software from the database to the interface.";
 export const size = ogSize;
 export const contentType = ogContentType;
 
 export default function Image() {
   return ogImage({
-    title: "I build the APIs and data behind useful software.",
-    subtitle: "Python and TypeScript APIs, and the interfaces on top of them.",
-    request: "/api/sam",
-    lines: [
-      { key: "name", value: "Sam Mugabo" },
-      { key: "role", value: "Backend developer" },
-      { key: "based_in", value: "Kigali, Rwanda" },
-      { key: "open_to", value: "junior roles" },
-    ],
+    big: "Build",
+    figure: true,
+    title: "I build software from the database to the interface.",
+    subtitle: "React and Flutter, NestJS and Django, PostgreSQL.",
+    panel: {
+      label: "Available for",
+      value: availability.roles,
+      note: availability.where,
+    },
   });
 }

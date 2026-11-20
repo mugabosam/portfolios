@@ -5,15 +5,23 @@
  */
 
 export const availability = {
-  status: "Open to internships and junior backend roles",
-  where: "Based in Kigali, Rwanda (UTC+2). Happy to work remotely.",
+  status: "Open to software development roles",
+  /** What kind of role, shown under "Available for". */
+  roles: "Software development roles",
+  where: "Frontend, backend or full-stack. Remote or in Kigali (UTC+2).",
+};
+
+/** What Sam is building right now, for the hero's "Now" card. */
+export const now = {
+  text: "Building an inventory and device management system at EUCL: the NestJS API and its Next.js frontend.",
+  href: "/work/eucl-internship",
 };
 
 export const positioning =
-  "Backend systems and machine-learning tools, engineered with patience and finished with care.";
+  "Software from the database to the interface, engineered with patience and finished with care.";
 
 export const manifesto =
-  "Software is never only software. It carries the decisions behind it, the edge cases someone cared enough to handle, the quiet reliability nobody notices until it is gone. I build backends and models the slow way: tested, documented and made to be read by the next engineer. Each release should leave a system a little more honest than I found it.";
+  "Software is never only software. It carries the decisions behind it, the edge cases someone cared enough to handle, the quiet reliability nobody notices until it is gone. I build software the slow way: tested, documented and made to be read by the next engineer. Each release should leave a system a little more honest than I found it.";
 
 export type TimelineEntry = {
   /** Omitted when the date is not known. */

@@ -1,11 +1,8 @@
 Fonts in this folder are used only to draw the Open Graph images (lib/og.tsx).
-Both are licensed under the SIL Open Font License, Version 1.1:
+They are licensed under the SIL Open Font License, Version 1.1:
 
-MonaSans-SemiExpanded-*.ttf: Copyright 2023 The Mona Sans Project Authors
-(https://github.com/github/mona-sans)
-
-JetBrainsMono-Medium.ttf: Copyright 2020 The JetBrains Mono Project Authors
-(https://github.com/JetBrains/JetBrainsMono)
+MonaSans-SemiExpanded-*.ttf and MonaSans-Condensed-Black.ttf:
+Copyright 2023 The Mona Sans Project Authors (https://github.com/github/mona-sans)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

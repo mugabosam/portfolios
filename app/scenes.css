@@ -1,0 +1,872 @@
+/* ==========================================================================
+   Scenes: the home page's choreography that lives in CSS.
+
+   1. Intro: a 0 to 100 count on navy; the curtain lifts with a curved edge.
+   2. Hero: sunrise on load (sun, letters, figure, copy, panel in turn).
+   3. Hero, large screens: the scene pins while the sky turns to night, the
+      sun sets, the word and the white panel leave (scroll-driven).
+   4. Header tone over the hero, and hide-on-scroll.
+   5. Work deck, contact band, page transitions.
+
+   Everything has a static fallback: without scroll-driven animations the
+   hero is one screen tall; under reduced motion nothing moves.
+   ========================================================================== */
+
+@property --intro-n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* 1 when the header sits over the hero's sky (white text), 0 elsewhere. */
+@property --on-hero {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --on-hero-nav {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* ── 1. Intro ─────────────────────────────────────────────────────────── */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: var(--gutter);
+  padding-bottom: calc(var(--gutter) + 0.75rem);
+  background-color: var(--ink);
+  color: #fff;
+  animation: intro-out 900ms cubic-bezier(0.76, 0, 0.24, 1) 1050ms forwards;
+}
+
+.intro[data-done],
+html[data-intro="seen"] .intro {
+  display: none;
+}
+
+.intro-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: var(--text-lead);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.intro-line {
+  display: block;
+  overflow: clip;
+}
+
+.intro-line > span {
+  display: block;
+  animation: rise-in 900ms var(--ease-out) both;
+}
+
+.intro-line + .intro-line > span {
+  animation-delay: 90ms;
+}
+
+.intro-count {
+  /* Three tabular digits wide from the start, so the count never shifts. */
+  display: inline-block;
+  min-width: 3ch;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 19vw, 15rem);
+  font-weight: 900;
+  font-stretch: 75%;
+  line-height: 0.74;
+  font-variant-numeric: tabular-nums;
+  counter-reset: intro var(--intro-n);
+  animation: intro-count 1000ms cubic-bezier(0.65, 0, 0.35, 1) 40ms forwards;
+}
+
+.intro-count::after {
+  content: counter(intro);
+}
+
+.intro-bar {
+  position: absolute;
+  inset: auto 0 0;
+  height: 5px;
+  background-color: var(--sun);
+  transform-origin: left;
+  animation: intro-bar 1000ms cubic-bezier(0.65, 0, 0.35, 1) 40ms both;
+}
+
+/* ── 2. Hero ──────────────────────────────────────────────────────────── */
+
+.hero {
+  /* How long the hero waits for the intro curtain. */
+  --intro: 1.15s;
+  position: relative;
+  isolation: isolate;
+}
+
+html[data-intro="seen"] .hero {
+  --intro: 0s;
+}
+
+.hero-stage {
+  position: relative;
+  /* The panel leaves to the right; never widen the page. */
+  overflow-x: clip;
+}
+
+.hero-sky {
+  position: relative;
+  height: 100svh;
+  min-height: 40rem;
+  overflow: hidden;
+  color: #fff;
+  /* The glow stays behind the figure; every place text sits keeps at least
+     4.5:1 for white (see the hero pairs in docs/contrast.md). */
+  background:
+    radial-gradient(
+      45% 45% at 58% 32%,
+      rgb(38 166 226 / 0.85) 0%,
+      rgb(38 166 226 / 0) 72%
+    ),
+    linear-gradient(168deg, #0876b3 0%, #0070a8 46%, #005482 100%);
+}
+
+/* The sun: rises behind Sam's head on load, sets on scroll. */
+.hero-sun {
+  position: absolute;
+  z-index: 1;
+  top: 15%;
+  left: 50%;
+  width: min(88vw, 30rem);
+  aspect-ratio: 1;
+  margin-left: calc(min(88vw, 30rem) / -2);
+  pointer-events: none;
+}
+
+.hero-sun-disc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #ffe676 0%,
+    #fbd816 42%,
+    #fad201 66%,
+    rgb(250 210 1 / 0) 70.7%
+  );
+  animation: sun-rise 1900ms var(--ease-out) var(--intro) both;
+}
+
+.hero-sun-disc::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(250 210 1 / 0.3) 0%,
+    rgb(250 210 1 / 0) 58%
+  );
+}
+
+/* BUILD: condensed, black weight, white. Letters rise and squeeze in. */
+.hero-word {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--header-h) + 3svh);
+  left: var(--gutter);
+  margin: 0;
+  display: flex;
+  font-family: var(--font-display);
+  font-size: clamp(6.5rem, 33vw, 17rem);
+  font-weight: 900;
+  font-stretch: 75%;
+  line-height: 0.8;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Each letter's mask also squeezes from wide to condensed as it rises. */
+.hero-letter-mask {
+  display: inline-block;
+  overflow: clip;
+  padding-block: 0.06em 0.02em;
+  margin-block: -0.06em -0.02em;
+  animation: word-squeeze 1500ms var(--ease-out)
+    calc(var(--intro) + 80ms + var(--i, 0) * 75ms) both;
+}
+
+.hero-letter {
+  display: inline-block;
+  animation: letter-rise 1200ms cubic-bezier(0.16, 1, 0.3, 1)
+    calc(var(--intro) + 100ms + var(--i, 0) * 75ms) both;
+}
+
+/* Night: a navy layer that covers the sky as the scene scrolls. */
+.hero-night {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-figure {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+}
+
+/* Unlayered, so it wins over the Portrait's own utility classes. */
+.hero .hero-figure-img {
+  height: 66%;
+  width: auto;
+  max-width: none;
+  animation: figure-rise 1700ms var(--ease-out) calc(var(--intro) + 40ms) both;
+}
+
+/* A scrim at the bottom keeps the copy readable over the figure (phones). */
+.hero-copy {
+  position: absolute;
+  z-index: 4;
+  inset: auto 0 0;
+  padding-top: 7rem;
+  padding-bottom: 1.75rem;
+  background: linear-gradient(
+    to top,
+    rgb(0 52 82 / 0.92) 0%,
+    rgb(0 52 82 / 0.75) 45%,
+    rgb(0 52 82 / 0) 100%
+  );
+}
+
+.hero-copy-inner > * {
+  animation: rise-in 1000ms var(--ease-out)
+    calc(var(--intro) + 450ms + var(--i, 0) * 110ms) both;
+}
+
+.hero-title {
+  max-width: 21ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.1vw, 1.875rem);
+  font-weight: 650;
+  font-stretch: 104%;
+  line-height: 1.18;
+  letter-spacing: -0.018em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.hero-stack {
+  display: none;
+}
+
+/* Phones and tablets: the white panel follows the sky as a normal block. */
+.hero-panel {
+  position: relative;
+  z-index: 5;
+  background-color: var(--surface);
+}
+
+.hero-panel-box {
+  width: 100%;
+  max-width: calc(var(--content-max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding: 3rem var(--gutter) 3.5rem;
+  display: grid;
+  gap: 2rem;
+}
+
+.hero-panel-item {
+  animation: rise-in 900ms var(--ease-out)
+    calc(var(--intro) + 650ms + var(--i, 0) * 100ms) both;
+}
+
+@media (min-width: 40rem) {
+  .hero-panel-box {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .hero-panel-item:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 64rem) {
+  .hero-sky {
+    min-height: 42rem;
+  }
+
+  .hero-sun {
+    top: -5%;
+    left: 56%;
+    width: min(58svh, 36vw);
+    margin-left: calc(min(58svh, 36vw) / -2);
+  }
+
+  .hero-word {
+    top: 19%;
+    left: max(var(--gutter), calc((100% - var(--content-max)) / 2));
+    font-size: clamp(8rem, 18.5vw, 19rem);
+  }
+
+  /* Centred at 57.5%: the figure crosses into the white panel. */
+  .hero-figure {
+    left: 15%;
+  }
+
+  .hero .hero-figure-img {
+    height: 92%;
+  }
+
+  .hero-copy {
+    inset: auto 0 9svh;
+    padding: 0 var(--gutter);
+    background: none;
+  }
+
+  .hero-copy-inner {
+    max-width: 27rem;
+  }
+
+  .hero-stack {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .hero-panel {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    width: 33%;
+    max-width: 30rem;
+    background: none;
+  }
+
+  .hero-panel-box {
+    height: 100%;
+    max-width: none;
+    margin: 0;
+    padding: calc(var(--header-h) + 3.5rem) 2.25rem 2.25rem 3.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    border-radius: 1.75rem;
+    background-color: var(--surface);
+    box-shadow: -24px 0 60px -30px rgb(0 40 70 / 0.35);
+    animation: panel-in 1300ms cubic-bezier(0.76, 0, 0.24, 1)
+      calc(var(--intro) - 150ms) both;
+  }
+
+  .hero-panel-item:last-child {
+    margin-top: auto;
+  }
+}
+
+/* ── 3. Hero scroll scene (large screens) ─────────────────────────────── */
+
+@supports (animation-timeline: view()) {
+  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+    .hero {
+      height: 215svh;
+      view-timeline: --hero-scene block;
+      /* Ignore the page's scroll-padding: progress 0 is the very top. */
+      view-timeline-inset: 0;
+    }
+
+    .hero-stage {
+      position: sticky;
+      top: 0;
+    }
+
+    .hero-night,
+    .hero-sun,
+    .hero-word,
+    .hero-figure,
+    .hero-copy,
+    .hero-panel {
+      animation-timeline: --hero-scene;
+      animation-range: contain 0% contain 100%;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-delay: 0s;
+    }
+
+    .hero-night {
+      animation-name: scene-night;
+    }
+
+    .hero-sun {
+      animation-name: scene-sun;
+    }
+
+    .hero-word {
+      animation-name: scene-word;
+    }
+
+    .hero-figure {
+      animation-name: scene-figure;
+    }
+
+    .hero-copy {
+      animation-name: scene-copy;
+    }
+
+    .hero-panel {
+      animation-name: scene-panel;
+    }
+  }
+}
+
+/* ── 4. Header ────────────────────────────────────────────────────────── */
+
+.header-brand {
+  color: color-mix(in srgb, #fff calc(var(--on-hero) * 100%), var(--ink));
+}
+
+.header-link {
+  color: color-mix(in srgb, #fff calc(var(--on-hero-nav) * 100%), var(--ink-2));
+}
+
+.header-link[aria-current="page"],
+.header-link:focus-visible {
+  color: color-mix(in srgb, #fff calc(var(--on-hero-nav) * 100%), var(--ink));
+}
+
+@media (hover: hover) {
+  .header-link:hover {
+    color: color-mix(in srgb, #fff calc(var(--on-hero-nav) * 100%), var(--ink));
+  }
+}
+
+.header-underline {
+  background-color: color-mix(
+    in srgb,
+    var(--sun) calc(var(--on-hero-nav) * 100%),
+    var(--sky)
+  );
+}
+
+.header-divider {
+  border-color: color-mix(
+    in srgb,
+    rgb(255 255 255 / 0.35) calc(var(--on-hero-nav) * 100%),
+    var(--line)
+  );
+}
+
+.site-header {
+  transition: translate 520ms var(--ease-out);
+}
+
+.site-header[data-hidden]:not(:focus-within) {
+  translate: 0 -100%;
+}
+
+@supports (animation-timeline: scroll()) {
+  /* Home: white over the sky until the header settles onto paper. */
+  .site-header[data-home] {
+    animation:
+      header-settle linear both,
+      header-tone linear both;
+    animation-timeline: scroll(root), scroll(root);
+    animation-range:
+      0 72px,
+      0 72px;
+  }
+
+  @media (min-width: 64rem) {
+    /* The nav sits over the white panel: only the brand turns white. */
+    .site-header[data-home] {
+      animation-name: header-settle, header-tone-brand;
+    }
+  }
+
+  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* Through the night scene the header stays clear; the nav turns white
+         once the panel has left, and everything settles after the scene. */
+      .site-header[data-home] {
+        animation-name: header-settle, header-tone-scene;
+        animation-range:
+          115svh calc(115svh + 72px),
+          0 calc(115svh + 72px);
+      }
+    }
+  }
+}
+
+/* ── 5. Work deck ─────────────────────────────────────────────────────── */
+
+.deck-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  border-radius: inherit;
+  background-color: rgb(11 27 43 / 0.6);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 64rem) and (min-height: 40rem) {
+  .deck-card {
+    height: min(38rem, calc(100svh - var(--header-h) - 8rem));
+  }
+}
+
+/* A soft sky light that follows the pointer across a card. */
+[data-spotlight]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: radial-gradient(
+    30rem circle at var(--mx, 50%) var(--my, 50%),
+    rgb(0 161 222 / 0.11),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  [data-spotlight]:hover::before {
+    opacity: 1;
+  }
+}
+
+/* ── 5. Contact band ──────────────────────────────────────────────────── */
+
+.contact-band {
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-glow {
+  background: radial-gradient(
+    55% 75% at 92% 0%,
+    rgb(0 161 222 / 0.32),
+    transparent 70%
+  );
+}
+
+/* SplitText line masks: room for descenders and accents. */
+.split-line-mask {
+  padding-block: 0.06em 0.16em;
+  margin-block: -0.06em -0.16em;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .contact-band {
+      animation: band-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 85%;
+    }
+  }
+}
+
+/* ── 5. Page transitions (React <ViewTransition>, app/template.tsx) ───── */
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(.page) {
+  animation: page-out 280ms cubic-bezier(0.5, 0, 0.75, 0) both;
+}
+
+::view-transition-new(.page) {
+  animation: page-in 700ms cubic-bezier(0.16, 1, 0.3, 1) 160ms both;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* ── Reduced motion: a still page ─────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none;
+  }
+
+  .hero {
+    --intro: 0s;
+  }
+
+  .hero-sun-disc,
+  .hero-word,
+  .hero-letter,
+  .hero-letter-mask,
+  .hero .hero-figure-img,
+  .hero-copy-inner > *,
+  .hero-panel-box,
+  .hero-panel-item {
+    animation: none !important;
+  }
+
+  .site-header {
+    transition: none;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* ── Keyframes ────────────────────────────────────────────────────────── */
+
+@keyframes intro-count {
+  to {
+    --intro-n: 100;
+  }
+}
+
+@keyframes intro-bar {
+  from {
+    scale: 0 1;
+  }
+}
+
+@keyframes intro-out {
+  0% {
+    translate: 0 0;
+    border-radius: 0;
+  }
+  100% {
+    translate: 0 -100%;
+    border-bottom-left-radius: 50% 14vh;
+    border-bottom-right-radius: 50% 14vh;
+    visibility: hidden;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}
+
+@keyframes sun-rise {
+  from {
+    opacity: 0;
+    translate: 0 38%;
+    scale: 0.72;
+  }
+}
+
+@keyframes letter-rise {
+  from {
+    translate: 0 105%;
+  }
+}
+
+@keyframes word-squeeze {
+  from {
+    font-stretch: 125%;
+  }
+}
+
+@keyframes figure-rise {
+  from {
+    translate: 0 9%;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    translate: 105% 0;
+  }
+}
+
+@keyframes scene-night {
+  0% {
+    opacity: 0;
+  }
+  75%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scene-sun {
+  0% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+  }
+  84% {
+    translate: 0 72svh;
+    scale: 1.25;
+    opacity: 1;
+  }
+  100% {
+    translate: 0 100svh;
+    scale: 1.25;
+    opacity: 0;
+  }
+}
+
+@keyframes scene-word {
+  0% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+  }
+  55%,
+  100% {
+    translate: -3vw -10svh;
+    scale: 1.2;
+    opacity: 0;
+  }
+}
+
+@keyframes scene-figure {
+  0% {
+    translate: 0 0;
+    scale: 1;
+    opacity: 1;
+  }
+  82% {
+    translate: -6vw 3svh;
+    scale: 1.08;
+    opacity: 1;
+  }
+  100% {
+    translate: -6vw 10svh;
+    scale: 1.08;
+    opacity: 0;
+  }
+}
+
+@keyframes scene-copy {
+  0% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  32%,
+  100% {
+    opacity: 0;
+    translate: 0 -6svh;
+  }
+}
+
+@keyframes scene-panel {
+  0% {
+    translate: 0 0;
+  }
+  42%,
+  100% {
+    translate: 115% 0;
+  }
+}
+
+@keyframes header-tone {
+  from {
+    --on-hero: 1;
+    --on-hero-nav: 1;
+  }
+  to {
+    --on-hero: 0;
+    --on-hero-nav: 0;
+  }
+}
+
+@keyframes header-tone-brand {
+  from {
+    --on-hero: 1;
+    --on-hero-nav: 0;
+  }
+  to {
+    --on-hero: 0;
+    --on-hero-nav: 0;
+  }
+}
+
+@keyframes header-tone-scene {
+  0% {
+    --on-hero: 1;
+    --on-hero-nav: 0;
+  }
+  14% {
+    --on-hero-nav: 0;
+  }
+  28%,
+  60% {
+    --on-hero: 1;
+    --on-hero-nav: 1;
+  }
+  100% {
+    --on-hero: 0;
+    --on-hero-nav: 0;
+  }
+}
+
+@keyframes band-open {
+  from {
+    clip-path: inset(0 var(--gutter) round 2.5rem);
+  }
+  to {
+    clip-path: inset(0 0 round 0);
+  }
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    translate: 0 -1.5rem;
+    filter: blur(6px);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 3rem;
+  }
+}

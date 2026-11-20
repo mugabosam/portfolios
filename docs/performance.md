@@ -1,36 +1,38 @@
 # Performance
 
-Measured on 2026-11-20, after revision 2 (poster hero, GSAP and scroll scenes back), against
-the production build (`pnpm build && pnpm start`) with Lighthouse 13.6 in headless Edge on a
-Windows laptop, using Lighthouse's default simulated throttling (mobile: Moto G Power class CPU
-at 4× slowdown, slow 4G; desktop: no throttling). Runs on this machine are noisy, so the ranges
-below come from repeated runs. The numbers to compare against production are PageSpeed Insights
-on the deployed URL.
+Measured on 2026-11-20, after revision 3 (one page, assistant, all blue), against the
+production build (`pnpm build && pnpm start`) with Lighthouse 13.6 in headless Edge on a Windows
+laptop, using Lighthouse's default simulated throttling (mobile: Moto G Power class CPU at 4×
+slowdown, slow 4G; desktop: no throttling). Runs on this machine are very noisy: with other
+programs busy, the same build measured 60 to 66 on mobile and the unchanged résumé page 80. The
+table is from a quieter moment, with home and résumé measured alternately so the noise shows.
+The numbers to compare against production are PageSpeed Insights on the deployed URL.
 
-## Lighthouse scores, home page
+## Lighthouse scores
 
-| Device  | Performance | Accessibility | Best Practices | SEO | LCP         | CLS   | TBT          |
-| ------- | ----------: | ------------: | -------------: | --: | ----------- | ----- | ------------ |
-| Mobile  |     87 – 91 |           100 |            100 | 100 | 3.2 – 3.3 s | 0.006 | 110 – 220 ms |
-| Desktop |          98 |           100 |            100 | 100 | 0.7 s       | 0.024 | 0 ms         |
-
-Before this revision the home page measured 66 to 84 on mobile. The page is smaller now: four
-sections instead of six, no API card, no repository strip. Inner pages did not change
-structurally; they measured 93 to 100 on 2026-11-15, and /work measured 83 on mobile on
-2026-11-20.
+| Page      | Device  | Performance | Accessibility | Best Practices | SEO | LCP   | CLS   | TBT        |
+| --------- | ------- | ----------: | ------------: | -------------: | --: | ----- | ----- | ---------- |
+| `/`       | Mobile  |     90 – 91 |           100 |            100 | 100 | 3.4 s | 0.002 | 60–80 ms   |
+| `/`       | Desktop |          99 |           100 |            100 | 100 | 0.7 s | 0.025 | 0 ms       |
+| `/resume` | Mobile  |     98 – 99 |           100 |            100 | 100 | 0.9 s | 0     | 100–150 ms |
 
 Budgets from the brief: performance ≥ 90 (mobile) and ≥ 95 (desktop); accessibility, best
 practices and SEO 100; LCP < 2.5 s; CLS < 0.05; INP < 200 ms (TBT is the lab proxy).
-Lighthouse CI guards the home page at 0.75 and every other page at 0.9.
+Lighthouse CI guards the home page at 0.75 and the résumé at 0.9.
+
+Two changes in this revision were made for speed after measuring: the opening chat exchange no
+longer streams word by word while the page loads, and the BUILD letters only squeeze (a layout
+change every frame) on large screens. Phones load GSAP only at the first scroll or tap and never
+load ScrollTrigger.
 
 ## Why the motion costs little
 
-- **The opening is CSS.** The intro count, the sunrise and the night-fall scroll scene are CSS
+- **The opening is CSS.** The intro count, the sunrise and the hero's scroll scene are CSS
   animations and scroll-driven animations; the scroll scene runs off the main thread. The
   hero figure is never hidden during its entrance, only offset, so it can paint at once.
-- **GSAP loads late.** ScrollTrigger and SplitText arrive on idle on desktop and on the first
-  scroll or touch on phones, so a phone that never scrolls (Lighthouse included) never loads
-  them.
+- **GSAP loads late.** It arrives on idle on desktop and at the first scroll or tap on phones,
+  so a phone that never scrolls (Lighthouse included) never loads it. ScrollTrigger is loaded
+  only for the pinned deck on large screens.
 - **The hero figure is preloaded** (a 70 KB transparent WebP with `fetchpriority="high"`).
   Mobile LCP is still about 3.2 s under simulated throttling, as it was before this revision.
 - **Layout shift.** The intro count reserves three digits of width, which took mobile CLS
@@ -40,15 +42,14 @@ Lighthouse CI guards the home page at 0.75 and every other page at 0.9.
 
 ## Initial JavaScript (gzipped, from `<script>` tags in the HTML)
 
-| Page            | Files |  Total |
-| --------------- | ----: | -----: |
-| `/contact/sent` |     9 | 179 KB |
-| `/work`         |    10 | 181 KB |
-| `/`             |    10 | 188 KB |
+| Page      | Files |  Total |
+| --------- | ----: | -----: |
+| `/resume` |     9 | 181 KB |
+| `/`       |    11 | 198 KB |
 
-`/contact/sent` is close to the framework baseline. The home page adds about 9 KB of its own
-code (header, intro, copy button, graph reveal, the GSAP loader). GSAP itself is a separate
-lazy chunk, fetched only as described above.
+The framework accounts for most of it on both pages. The home page's own code (header, intro,
+assistant, project sheet, copy button, graph reveal, the GSAP loader) is about 16 KB; GSAP is a
+separate lazy chunk, fetched only as described above.
 
 ## Frame loops at rest
 

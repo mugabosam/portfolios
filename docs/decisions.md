@@ -387,3 +387,61 @@ reduced motion nothing moves (no intro, no pinning, instant page swaps).
 
 **Fonts for Open Graph images.** `MonaSans-Condensed-Black.ttf` was added for the giant word;
 `JetBrainsMono-Medium.ttf` was removed, since the cards no longer show code.
+
+## Revision 3: one page for recruiters, an assistant, all blue (2026-11-20, Sam's requests)
+
+Sam's requests, in his order: no code anywhere, because most recruiters are not programmers;
+short project summaries instead of long write-ups; the whole portfolio on one page, with the
+navigation moving between sections as you scroll; the logo was invisible when the page turned
+dark; the hero's side panel should look like an AI chat with questions and answers, and work like
+a terminal where a visitor can ask for the CV, send a message or ask anything; the hero's blue as
+the background all the way down instead of navy; no "Designed and built with Next.js" or "Last
+updated" lines; a way to count visitors; and a "View work" button that actually scrolls to the
+work.
+
+**One page.** Home is hero, work, about, experience and contact. The header links scroll to those
+sections (through Lenis on desktop) and the link of the section in view is marked current.
+`/about`, `/work`, `/work/<slug>` and `/contact` were removed and redirect to their section.
+`/resume` stays as the printable résumé behind the CV download. `/styleguide`, the case-study
+pages, the MDX pipeline, Shiki and the code peeks are gone, along with `@mdx-js/mdx`,
+`@shikijs/rehype`, `shiki`, `remark-gfm` and `yaml`.
+
+**Projects in plain words.** `content/projects.ts` replaces the MDX files. Each project has a
+one-sentence summary, one number to remember ("9 in 10", "17 banks"), and a short problem, what
+was built, result and role, written from the earlier case studies. Cards show the summary, the
+tools and the number; "See the details" opens a modal sheet with the rest. A unit test fails if
+project text reads like code. The longer write-ups remain in git history.
+
+**The assistant.** The hero's white panel is a chat. It opens with two scripted questions and
+answers, offers suggestion buttons, and takes typed input. It is not a language model: it matches
+words in what the visitor types against answers in `content/assistant.ts`, and it says so ("Answers
+written by Sam"). "cv" downloads the CV; "contact" asks for a name, an email and a message, shows
+them back, and sends them through `/api/contact` when Resend is configured (otherwise it opens the
+visitor's email app with the message filled in); "projects" lists the projects and opens their
+sheets. Replies show typing dots and stream in word by word; the opening exchange arrives a
+message at a time, because streaming every word during page load cost about two seconds of style
+work on a throttled phone. Without JavaScript the opening exchange is still there and the
+suggestions are plain links. The no-JavaScript contact form, its status pages and the form
+component were removed; the endpoint stays for the assistant.
+
+**All blue.** The navy sections (night-fall scene, work, contact band) are now the hero's blue:
+`--canvas` `#00609A` for the page and `--sky-deep` `#004A75` for buttons and chat bubbles.
+The hero no longer turns to night; the sun still sets as the scene scrolls, and the sky's bottom
+edge blends into the page blue so there is no seam. About and experience are white sheets on the
+blue; the contact band is the sky again, with a sun rising in its corner. The header has three
+modes read from the section under it: clear over the hero (nav in a deep-blue pill), blue glass
+over blue sections, paper over light pages; on blue the logo turns into a white square so it is
+always visible. Every new colour pair is in docs/contrast.md.
+
+**Visitor counts.** Vercel Web Analytics (`@vercel/analytics`), loaded only when built on Vercel
+(its script lives at `/_vercel/insights/`, which exists only there). It is cookie-free and needs
+no consent banner. Sam has to press Enable in the project's Analytics tab once.
+
+**Scrolling fixes.** "View work" was a router link; same-page links are now plain anchors
+handled by Lenis on desktop and by the browser on phones. Lenis' own anchor option was turned off
+because it scrolls even when another handler has already dealt with the click. Phones no longer
+load ScrollTrigger at all (one-time reveals use an IntersectionObserver), because its page
+measurement cancelled a smooth jump that was already under way; only the pinned deck on large
+screens uses it.
+
+**Footer.** Only the copyright line remains.

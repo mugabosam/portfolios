@@ -22,14 +22,17 @@ unknown, it is left out rather than guessed. Tick items off as you go.
       here. Import the GitHub repository at vercel.com/new (framework preset: Next.js, no other
       settings needed); every pull request then gets a preview URL and `main` is production.
       Add the optional environment variables from `.env.example` in the project settings.
+- [ ] **Turn on visitor counts.** In the Vercel project, open **Analytics** and press
+      **Enable**. The site already includes the tracker; it counts visitors from then on.
 
-- [ ] **EUCL approval.** The internship case study describes responsibilities and a generic
-      architecture only (no code, data, screenshots or internal URLs). Please check that
-      EUCL is comfortable with `/work/eucl-internship` and confirm your official job title.
+- [ ] **EUCL approval.** The "EUCL device system" card describes what you built in plain
+      words only (no code, data, screenshots or internal URLs). Please check that EUCL is
+      comfortable with it, and confirm your official job title (shown under Experience).
 - [ ] **Vercel address.** Pick the project name, which sets the URL. For example,
       `sammugabo.vercel.app`, if it is free.
-- [ ] **Read every case study once** (`content/work/*.mdx`). Each was written from your
-      READMEs and code. Correct anything that does not sound like you.
+- [ ] **Read every project summary once** (`content/projects.ts`) and the assistant's answers
+      (`content/assistant.ts`). They were written from your READMEs and code. Correct anything
+      that does not sound like you.
 
 ## Worth fixing on GitHub (outside this site)
 
@@ -55,9 +58,9 @@ unknown, it is left out rather than guessed. Tick items off as you go.
 
 - [ ] **Real screenshots.** Project banners are abstract network artwork, not screenshots. If
       you capture real screenshots (for example of MalariaCheck running), put them in
-      `public/work/<slug>/` and change `cover` in that project's frontmatter.
-- [ ] **Resend account** (free) so the contact form can deliver email. Until a
-      `RESEND_API_KEY` is set, the form shows your email address instead.
+      `public/work/<slug>/` and change `cover` for that project in `content/projects.ts`.
+- [ ] **Resend account** (free) so the assistant can send messages itself. Until a
+      `RESEND_API_KEY` is set, it opens the visitor's email app with the message ready.
 - [ ] **ML libraries.** The site lists scikit-learn, pandas and Streamlit (what your repos
       show). Add any others you have used in a real project.
 - [ ] **Check the hero panel.** It says what you are open to and what you are building now

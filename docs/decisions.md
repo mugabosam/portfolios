@@ -329,3 +329,61 @@ grid or flex ancestors, which widened the whole page to 686px on phones. Code ar
 
 **Scroll-driven animations never "finish".** The axe test waited for every animation to end and
 timed out on the header and timeline; it now waits only for time-based animations.
+
+## Revision 2: motion, positioning and a poster hero (2026-11-20, Sam's request)
+
+Sam asked for the animation to come back (without any ring), for `/api/sam` to go ("nothing is
+in it"), to be presented as a software developer who covers frontend and backend, to be open to
+any software role rather than internships or junior roles, for a home page with fewer things on
+it but stronger motion, and for a hero that looks like a reference he sent (a bold coloured
+panel with a giant word, the person crossing into a white panel, a pill button and a small
+status card). The palette and type from the "Kigali morning" revision stay.
+
+**Positioning.** "Software developer (frontend and backend)" everywhere: metadata, JSON-LD,
+manifest, résumé, About, contact copy, footer and Open Graph images. Availability reads "Open to
+software development roles"; nothing says junior or internship. The EUCL case study keeps its
+real title (Software Development Intern), because that is a fact about the job.
+
+**Removed.** The `/api/sam` route handlers, `content/api.ts` and the hero's API card; the home
+page's "How I work", experience timeline, stack list and repository strip (all still on /about
+or /resume, except the repository strip, which is gone).
+
+**The hero, after Sam's reference.** Taken from the reference: the layout (a coloured panel with
+a giant word, the figure crossing into a white panel with nav, an "available for" block and a
+small card at the bottom right, a pill button, overlapping round badges). Not taken: its orange,
+its word and its testimonial and "trusted by" avatars, which would be invented. Instead: the
+flag's sky with a sun disc behind Sam's head, the word BUILD in Mona Sans condensed black, a
+"Now" card with what he is building at EUCL, and badges for his main languages with the true
+count of the rest. The figure is a cut-out made from his photo (background removed by flood fill
+from the white wall, collar and cuffs kept by hand, edges decontaminated so no white fringe shows
+on navy).
+
+**Motion.** One orchestrated opening and one scroll scene, then quieter effects:
+
+- Intro: a 0 to 100 count on navy whose curtain lifts with a curved edge (once per tab: a
+  sessionStorage flag read by an inline script before the first paint, and a module flag for
+  client-side navigations). CSS only, so it also plays without JavaScript.
+- Sunrise: the sun rises, the letters of BUILD rise and squeeze from wide to condensed (Mona
+  Sans' width axis), the figure lifts, the copy and the white panel arrive in turn.
+- Night fall (large screens): the hero pins for about one screen of scrolling while the copy
+  and panel leave, the sky turns navy, the sun sets and the figure fades, so the hero hands over
+  seamlessly to the navy work section. Pure CSS scroll-driven animation on a sticky stage; the
+  view timeline's inset is set to 0, because by default it honours the page's scroll-padding and
+  started 80px early.
+- Work deck (GSAP ScrollTrigger, large screens): each project card pins and the next one slides
+  over it while the covered card shrinks and dims.
+- Headlines rise line by line inside masks (GSAP SplitText; masks get extra padding so
+  descenders are not clipped). GitHub numbers count up. Primary buttons are magnetic, cards
+  carry a pointer spotlight, and the hero's sun, word and figure drift at different depths.
+- The contact band opens from a rounded card to full width (CSS scroll-driven).
+- Page transitions: React's `<ViewTransition>` in `app/template.tsx`; the old page fades up and
+  blurs out, the new one rises in, and the header stays put.
+- The header is white over the hero and blends to ink as it settles (registered custom
+  properties animated on the scroll timeline), and it slides away while reading down.
+
+GSAP loads after the first paint, as before: on idle on desktop, on the first sign of intent on
+phones. Without scroll-driven animation support the hero is one screen tall and static; under
+reduced motion nothing moves (no intro, no pinning, instant page swaps).
+
+**Fonts for Open Graph images.** `MonaSans-Condensed-Black.ttf` was added for the giant word;
+`JetBrainsMono-Medium.ttf` was removed, since the cards no longer show code.

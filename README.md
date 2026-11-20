@@ -1,12 +1,14 @@
 # Sam Mugabo: portfolio
 
-Personal portfolio of Sam Mugabo, backend developer (Python and TypeScript) in Kigali, Rwanda.
+Personal portfolio of Sam Mugabo, software developer (frontend and backend) in Kigali, Rwanda.
 
-A light, developer-focused site in a palette taken from the Rwandan flag: a hero whose card is a
-real JSON endpoint (`/api/sam`), project cards that open with real code from each repository,
-six written case studies, a commit-graph timeline, live GitHub activity and a contact form. It is
-built with Next.js 16 (App Router, Cache Components), strict TypeScript and Tailwind CSS v4,
-with CSS-only motion and Lenis smooth scrolling, and deployed on Vercel.
+A developer portfolio in a palette taken from the Rwandan flag. The home page is four scenes: a
+hero where Sam's cut-out figure stands in front of a rising sun and the giant word BUILD, and the
+sky turns to night as you scroll; a deck of project cards that stack as they pin; a year of
+GitHub activity; and a contact band that opens to full width. Six written case studies, an
+About page, a résumé and a contact form complete it. It is built with Next.js 16 (App Router,
+Cache Components, React view transitions), strict TypeScript and Tailwind CSS v4, with CSS
+scroll-driven animation, GSAP (ScrollTrigger, SplitText) and Lenis, and deployed on Vercel.
 
 The original build brief is in [docs/PORTFOLIO_BUILD_PROMPT.md](docs/PORTFOLIO_BUILD_PROMPT.md);
 every place where the site departs from it is logged in [docs/decisions.md](docs/decisions.md).
@@ -53,7 +55,10 @@ Commits follow Conventional Commits; a hook enforces them and formats staged fil
 **Global copy, links and navigation:** `content/site.ts`.
 **Experience, education, skills, values, manifesto:** `content/profile.ts`.
 **Smaller projects under "Experiments":** `content/experiments.ts`.
-**The `/api/sam` responses shown in the hero:** `content/api.ts`.
+**What you are open to and building now (hero panel, contact band):** `availability` and `now`
+in `content/profile.ts`.
+**Hero and scroll scenes (intro, sunrise, night fall, deck, contact band):** `app/scenes.css` and
+`components/motion/home-motion.tsx`.
 **Code shown on each project card:** `content/showcase.ts` (lines must come from the case study).
 **Design tokens (colour, type, spacing, motion):** `app/globals.css`, top of the file.
 
@@ -94,14 +99,15 @@ Commits follow Conventional Commits; a hook enforces them and formats staged fil
    `<Snippet>` excerpts, or an architecture tree if the work is confidential. The unit tests
    check both rules.
 
-6. Optionally link the project from skills in `content/profile.ts` (`usedIn: ["project-name"]`)
-   and from `components/sections/github-strip.tsx` if it has a public repository.
+6. Optionally link the project from skills in `content/profile.ts` (`usedIn: ["project-name"]`).
+   The home page shows the featured project and the next three by `order`.
 
 ### Replacing the portraits
 
-`public/portrait/sam-hero.jpg` (home page hero, a 4:5 head-to-waist crop) and
-`public/portrait/sam-full.jpg` (About page, full length, 3:4). Both are shown in black and white;
-the site does not convert them, so prepare them as monochrome JPEGs under 300 KB.
+`public/portrait/sam-cutout.webp` (home page hero: head to mid-thigh with the background removed,
+transparent WebP; `assets/og/sam-cutout.png` is the same figure for the link-preview image) and
+`public/portrait/sam-full.jpg` (About page, full length, 3:4). Both are black and white; the
+site does not convert them. A new cut-out needs a photo against a plain light wall.
 
 ## Environment variables
 
@@ -128,9 +134,10 @@ in `next.config.ts`.
 ## Where things live
 
 ```
-app/            routes: (site)/page.tsx is the home page; work, about, resume, contact, api
-components/     ui primitives, home sections, motion (Lenis, reveal), mdx, layout
-content/        site.ts, profile.ts, api.ts, showcase.ts, experiments.ts, work/*.mdx
+app/            routes: (site)/page.tsx is the home page; work, about, resume, contact, api;
+                template.tsx (page transitions); scenes.css (the home page's CSS motion)
+components/     ui primitives, home sections, motion (intro, GSAP layer, Lenis), mdx, layout
+content/        site.ts, profile.ts, showcase.ts, experiments.ts, work/*.mdx
 lib/            content loaders, Zod schemas, Shiki highlighter, contact schema, OG image, utils
 public/         portraits, project banners, résumé PDF, icons
 scripts/        contrast report, banner generator, résumé PDF

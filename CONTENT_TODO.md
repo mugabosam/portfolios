@@ -5,8 +5,9 @@ unknown, it is left out rather than guessed. Tick items off as you go.
 
 ## Decided
 
-- [x] **Positioning:** Backend Developer (Python & TypeScript), with frontend work shown
-      alongside it.
+- [x] **Positioning:** Software Developer, frontend and backend (changed from "Backend
+      Developer" on 2026-11-20). Open to software development roles of any level, not only
+      internships or junior roles.
 - [x] **Projects:** MalariaCheck, EUCL internship, Zunga, BlueSnap, MediChain and Inventory
       Pro, with RPS Arena under Experiments. `maison` is left out.
 - [x] **LinkedIn:** none. The site links to GitHub and email only.
@@ -59,5 +60,5 @@ unknown, it is left out rather than guessed. Tick items off as you go.
       `RESEND_API_KEY` is set, the form shows your email address instead.
 - [ ] **ML libraries.** The site lists scikit-learn, pandas and Streamlit (what your repos
       show). Add any others you have used in a real project.
-- [ ] **Check `/api/sam`.** The hero card and the three endpoints say what you are open to and
-      what you are doing now (`content/api.ts`). Update them when that changes.
+- [ ] **Check the hero panel.** It says what you are open to and what you are building now
+      (`availability` and `now` in `content/profile.ts`). Update them when that changes.

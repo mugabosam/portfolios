@@ -18,19 +18,6 @@
   initial-value: 0;
 }
 
-/* 1 when the header sits over the hero's sky (white text), 0 elsewhere. */
-@property --on-hero {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
-}
-
-@property --on-hero-nav {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
-}
-
 /* ── 1. Intro ─────────────────────────────────────────────────────────── */
 
 .intro {
@@ -43,7 +30,7 @@
   gap: 2rem;
   padding: var(--gutter);
   padding-bottom: calc(var(--gutter) + 0.75rem);
-  background-color: var(--ink);
+  background-color: var(--sky-deep);
   color: #fff;
   animation: intro-out 900ms cubic-bezier(0.76, 0, 0.24, 1) 1050ms forwards;
 }
@@ -132,12 +119,14 @@ html[data-intro="seen"] .hero {
   /* The glow stays behind the figure; every place text sits keeps at least
      4.5:1 for white (see the hero pairs in docs/contrast.md). */
   background:
+    /* The bottom edge always ends in the page's blue: no seam below. */
+    linear-gradient(to bottom, rgb(0 96 154 / 0) 62%, var(--canvas) 100%),
     radial-gradient(
       45% 45% at 58% 32%,
       rgb(38 166 226 / 0.85) 0%,
       rgb(38 166 226 / 0) 72%
     ),
-    linear-gradient(168deg, #0876b3 0%, #0070a8 46%, #005482 100%);
+    linear-gradient(168deg, #0876b3 0%, #0070a8 46%, var(--canvas) 100%);
 }
 
 /* The sun: rises behind Sam's head on load, sets on scroll. */
@@ -197,30 +186,26 @@ html[data-intro="seen"] .hero {
   white-space: nowrap;
 }
 
-/* Each letter's mask also squeezes from wide to condensed as it rises. */
 .hero-letter-mask {
   display: inline-block;
   overflow: clip;
   padding-block: 0.06em 0.02em;
   margin-block: -0.06em -0.02em;
-  animation: word-squeeze 1500ms var(--ease-out)
-    calc(var(--intro) + 80ms + var(--i, 0) * 75ms) both;
+}
+
+/* On large screens each letter also squeezes from wide to condensed as it
+   rises. It re-lays out the word every frame, so phones skip it. */
+@media (min-width: 64rem) {
+  .hero-letter-mask {
+    animation: word-squeeze 1500ms var(--ease-out)
+      calc(var(--intro) + 80ms + var(--i, 0) * 75ms) both;
+  }
 }
 
 .hero-letter {
   display: inline-block;
   animation: letter-rise 1200ms cubic-bezier(0.16, 1, 0.3, 1)
     calc(var(--intro) + 100ms + var(--i, 0) * 75ms) both;
-}
-
-/* Night: a navy layer that covers the sky as the scene scrolls. */
-.hero-night {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-color: var(--ink);
-  opacity: 0;
-  pointer-events: none;
 }
 
 .hero-figure {
@@ -285,7 +270,7 @@ html[data-intro="seen"] .hero {
   display: none;
 }
 
-/* Phones and tablets: the white panel follows the sky as a normal block. */
+/* Phones and tablets: the assistant follows the sky as a normal block. */
 .hero-panel {
   position: relative;
   z-index: 5;
@@ -294,27 +279,13 @@ html[data-intro="seen"] .hero {
 
 .hero-panel-box {
   width: 100%;
-  max-width: calc(var(--content-max) + 2 * var(--gutter));
+  max-width: 40rem;
   margin-inline: auto;
-  padding: 3rem var(--gutter) 3.5rem;
-  display: grid;
-  gap: 2rem;
+  padding: 2.5rem var(--gutter) 3rem;
 }
 
-.hero-panel-item {
-  animation: rise-in 900ms var(--ease-out)
-    calc(var(--intro) + 650ms + var(--i, 0) * 100ms) both;
-}
-
-@media (min-width: 40rem) {
-  .hero-panel-box {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-
-  .hero-panel-item:last-child {
-    grid-column: 1 / -1;
-  }
+.assistant-log {
+  max-height: 26rem;
 }
 
 @media (min-width: 64rem) {
@@ -340,8 +311,11 @@ html[data-intro="seen"] .hero {
     left: 15%;
   }
 
+  /* The base of the figure fades into the sky, so it never ends in a hard
+     line when the scene scrolls away. */
   .hero .hero-figure-img {
     height: 92%;
+    mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
   }
 
   .hero-copy {
@@ -375,10 +349,9 @@ html[data-intro="seen"] .hero {
     height: 100%;
     max-width: none;
     margin: 0;
-    padding: calc(var(--header-h) + 3.5rem) 2.25rem 2.25rem 3.75rem;
+    padding: calc(var(--header-h) + 1rem) 1.5rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
     border-radius: 1.75rem;
     background-color: var(--surface);
     box-shadow: -24px 0 60px -30px rgb(0 40 70 / 0.35);
@@ -386,8 +359,8 @@ html[data-intro="seen"] .hero {
       calc(var(--intro) - 150ms) both;
   }
 
-  .hero-panel-item:last-child {
-    margin-top: auto;
+  .assistant-log {
+    max-height: none;
   }
 }
 
@@ -407,7 +380,6 @@ html[data-intro="seen"] .hero {
       top: 0;
     }
 
-    .hero-night,
     .hero-sun,
     .hero-word,
     .hero-figure,
@@ -419,10 +391,6 @@ html[data-intro="seen"] .hero {
       animation-fill-mode: both;
       animation-duration: auto;
       animation-delay: 0s;
-    }
-
-    .hero-night {
-      animation-name: scene-night;
     }
 
     .hero-sun {
@@ -449,79 +417,121 @@ html[data-intro="seen"] .hero {
 
 /* ── 4. Header ────────────────────────────────────────────────────────── */
 
+/* The header reads what is underneath it (site-header.tsx sets data-tone):
+   clear over the hero's sky, navy glass over dark sections (the logo turns
+   white so it stays visible), paper glass over light ones. Without a tone
+   (other pages, no JavaScript) it keeps its scroll-driven default. */
+
 .header-brand {
-  color: color-mix(in srgb, #fff calc(var(--on-hero) * 100%), var(--ink));
+  color: var(--ink);
 }
 
 .header-link {
-  color: color-mix(in srgb, #fff calc(var(--on-hero-nav) * 100%), var(--ink-2));
+  color: var(--ink-2);
 }
 
-.header-link[aria-current="page"],
+.header-link[aria-current],
 .header-link:focus-visible {
-  color: color-mix(in srgb, #fff calc(var(--on-hero-nav) * 100%), var(--ink));
+  color: var(--ink);
 }
 
 @media (hover: hover) {
   .header-link:hover {
-    color: color-mix(in srgb, #fff calc(var(--on-hero-nav) * 100%), var(--ink));
+    color: var(--ink);
   }
 }
 
 .header-underline {
-  background-color: color-mix(
-    in srgb,
-    var(--sun) calc(var(--on-hero-nav) * 100%),
-    var(--sky)
-  );
+  background-color: var(--sky);
 }
 
-.header-divider {
-  border-color: color-mix(
-    in srgb,
-    rgb(255 255 255 / 0.35) calc(var(--on-hero-nav) * 100%),
-    var(--line)
-  );
+.site-header[data-tone] {
+  animation: none;
+  transition:
+    background-color 360ms var(--ease-out),
+    border-color 360ms var(--ease-out),
+    backdrop-filter 360ms var(--ease-out);
 }
 
-.site-header {
-  transition: translate 520ms var(--ease-out);
+.site-header[data-tone="hero"] {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-.site-header[data-hidden]:not(:focus-within) {
-  translate: 0 -100%;
+.site-header[data-tone="blue"] {
+  background-color: rgb(0 84 136 / 0.86);
+  border-bottom-color: rgb(255 255 255 / 0.12);
 }
 
-@supports (animation-timeline: scroll()) {
-  /* Home: white over the sky until the header settles onto paper. */
-  .site-header[data-home] {
-    animation:
-      header-settle linear both,
-      header-tone linear both;
-    animation-timeline: scroll(root), scroll(root);
-    animation-range:
-      0 72px,
-      0 72px;
+.site-header[data-tone="hero"] .header-brand,
+.site-header[data-tone="blue"] .header-brand,
+.site-header[data-tone="blue"] .header-link[aria-current],
+.site-header[data-tone="blue"] .header-link:focus-visible {
+  color: #fff;
+}
+
+.site-header[data-tone="blue"] .header-link {
+  color: rgb(255 255 255 / 0.78);
+}
+
+@media (hover: hover) {
+  .site-header[data-tone="blue"] .header-link:hover {
+    color: #fff;
   }
+}
 
-  @media (min-width: 64rem) {
-    /* The nav sits over the white panel: only the brand turns white. */
-    .site-header[data-home] {
-      animation-name: header-settle, header-tone-brand;
-    }
+.site-header[data-tone="blue"] .header-underline {
+  background-color: var(--sun);
+}
+
+/* On blue the mark inverts: a white square with a sky chevron. */
+.site-header[data-tone="hero"] .logo-mark,
+.site-header[data-tone="blue"] .logo-mark {
+  --logo-bg: #fff;
+  --logo-fg: var(--sky);
+}
+
+/* Over the hero the nav floats in a navy pill, readable over both the sky
+   and the white assistant panel. */
+.header-nav {
+  transition:
+    background-color 360ms var(--ease-out),
+    padding 360ms var(--ease-out);
+}
+
+.site-header[data-tone="hero"] .header-nav {
+  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  border-radius: 999px;
+  background-color: rgb(0 74 117 / 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.site-header[data-tone="hero"] .header-link {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.site-header[data-tone="hero"] .header-link[aria-current],
+.site-header[data-tone="hero"] .header-link:focus-visible {
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .site-header[data-tone="hero"] .header-link:hover {
+    color: #fff;
   }
+}
 
-  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: view()) {
-      /* Through the night scene the header stays clear; the nav turns white
-         once the panel has left, and everything settles after the scene. */
-      .site-header[data-home] {
-        animation-name: header-settle, header-tone-scene;
-        animation-range:
-          115svh calc(115svh + 72px),
-          0 calc(115svh + 72px);
-      }
-    }
+.site-header[data-tone="hero"] .header-underline {
+  background-color: var(--sun);
+}
+
+/* Smooth in-page jumps where Lenis is not running (touch screens). */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lenis) {
+    scroll-behavior: smooth;
   }
 }
 
@@ -532,7 +542,7 @@ html[data-intro="seen"] .hero {
   inset: 0;
   z-index: 30;
   border-radius: inherit;
-  background-color: rgb(11 27 43 / 0.6);
+  background-color: rgb(0 50 82 / 0.55);
   opacity: 0;
   pointer-events: none;
 }
@@ -576,7 +586,7 @@ html[data-intro="seen"] .hero {
 .contact-glow {
   background: radial-gradient(
     55% 75% at 92% 0%,
-    rgb(0 161 222 / 0.32),
+    rgb(120 210 250 / 0.28),
     transparent 70%
   );
 }
@@ -594,6 +604,122 @@ html[data-intro="seen"] .hero {
       animation-timeline: view();
       animation-range: entry 0% entry 85%;
     }
+  }
+}
+
+/* ── 5. Assistant ─────────────────────────────────────────────────────── */
+
+/* The panel's parts arrive after the intro, in order. */
+.assistant > * {
+  animation: rise-in 800ms var(--ease-out) calc(var(--intro, 0s) + 500ms) both;
+}
+
+.assistant > :nth-child(2) {
+  animation-delay: calc(var(--intro, 0s) + 600ms);
+}
+
+.assistant > :nth-child(3) {
+  animation-delay: calc(var(--intro, 0s) + 700ms);
+}
+
+/* Each message waits for its moment (--at): user lines slide in, replies
+   show "typing" dots and then stream in word by word. */
+.msg-user,
+.msg-body {
+  animation: msg-in 380ms var(--ease-out) var(--at, 0ms) both;
+}
+
+.msg-avatar {
+  animation: msg-in 300ms var(--ease-out) calc(var(--at, 0ms) - 650ms) both;
+}
+
+.msg-word {
+  display: inline;
+  animation: word-in 360ms var(--ease-out)
+    calc(var(--at, 0ms) + var(--w, 0) * 26ms) both;
+}
+
+.msg-dots {
+  position: absolute;
+  top: 0;
+  left: 2.375rem;
+  display: flex;
+  gap: 4px;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  border-top-left-radius: 0.375rem;
+  background-color: var(--paper);
+  opacity: 0;
+  pointer-events: none;
+  animation: dots-life 650ms linear calc(var(--at, 0ms) - 650ms) forwards;
+}
+
+.msg-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--ink-3);
+  animation: dot-bounce 600ms ease-in-out calc(var(--at, 0ms) - 650ms) 1 both;
+}
+
+.msg-dots span:nth-child(2) {
+  animation-delay: calc(var(--at, 0ms) - 550ms);
+}
+
+.msg-dots span:nth-child(3) {
+  animation-delay: calc(var(--at, 0ms) - 450ms);
+}
+
+/* Without JavaScript the input cannot answer; the suggestions still work
+   as plain links. */
+@media (scripting: none) {
+  .assistant-form {
+    display: none;
+  }
+}
+
+/* ── 5. Project sheet ─────────────────────────────────────────────────── */
+
+.project-sheet {
+  opacity: 0;
+  translate: 0 1.5rem;
+  scale: 0.97;
+  transition:
+    opacity 360ms var(--ease-out),
+    translate 480ms var(--ease-out),
+    scale 480ms var(--ease-out),
+    display 480ms allow-discrete,
+    overlay 480ms allow-discrete;
+}
+
+.project-sheet[open] {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+}
+
+@starting-style {
+  .project-sheet[open] {
+    opacity: 0;
+    translate: 0 1.5rem;
+    scale: 0.97;
+  }
+}
+
+.project-sheet::backdrop {
+  background-color: rgb(0 50 82 / 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+html:has(.project-sheet[open]) {
+  overflow: hidden;
+}
+
+/* Cards cannot open their sheet without JavaScript. */
+@media (scripting: none) {
+  .project-open {
+    display: none;
   }
 }
 
@@ -642,8 +768,17 @@ html[data-intro="seen"] .hero {
   .hero .hero-figure-img,
   .hero-copy-inner > *,
   .hero-panel-box,
-  .hero-panel-item {
+  .assistant > *,
+  .msg-user,
+  .msg-avatar,
+  .msg-body,
+  .msg-word,
+  .msg-dots,
+  .msg-dots span,
+  .project-sheet,
+  .project-sheet::backdrop {
     animation: none !important;
+    transition: none !important;
   }
 
   .site-header {
@@ -724,16 +859,6 @@ html[data-intro="seen"] .hero {
   }
 }
 
-@keyframes scene-night {
-  0% {
-    opacity: 0;
-  }
-  75%,
-  100% {
-    opacity: 1;
-  }
-}
-
 @keyframes scene-sun {
   0% {
     translate: 0 0;
@@ -767,20 +892,9 @@ html[data-intro="seen"] .hero {
 }
 
 @keyframes scene-figure {
-  0% {
-    translate: 0 0;
-    scale: 1;
-    opacity: 1;
-  }
-  82% {
+  to {
     translate: -6vw 3svh;
-    scale: 1.08;
-    opacity: 1;
-  }
-  100% {
-    translate: -6vw 10svh;
-    scale: 1.08;
-    opacity: 0;
+    scale: 1.06;
   }
 }
 
@@ -806,44 +920,38 @@ html[data-intro="seen"] .hero {
   }
 }
 
-@keyframes header-tone {
+@keyframes msg-in {
   from {
-    --on-hero: 1;
-    --on-hero-nav: 1;
-  }
-  to {
-    --on-hero: 0;
-    --on-hero-nav: 0;
+    opacity: 0;
+    translate: 0 0.5rem;
   }
 }
 
-@keyframes header-tone-brand {
+@keyframes word-in {
   from {
-    --on-hero: 1;
-    --on-hero-nav: 0;
-  }
-  to {
-    --on-hero: 0;
-    --on-hero-nav: 0;
+    opacity: 0;
+    filter: blur(3px);
   }
 }
 
-@keyframes header-tone-scene {
-  0% {
-    --on-hero: 1;
-    --on-hero-nav: 0;
-  }
-  14% {
-    --on-hero-nav: 0;
-  }
-  28%,
-  60% {
-    --on-hero: 1;
-    --on-hero-nav: 1;
+@keyframes dots-life {
+  0%,
+  99% {
+    opacity: 1;
   }
   100% {
-    --on-hero: 0;
-    --on-hero-nav: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes dot-bounce {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -3px;
   }
 }
 
@@ -868,5 +976,56 @@ html[data-intro="seen"] .hero {
   from {
     opacity: 0;
     translate: 0 3rem;
+  }
+}
+
+/* ── The home page sits on the hero's blue all the way down ──────────── */
+
+html:has(.hero),
+html:has(.hero) body {
+  background-color: var(--canvas);
+}
+
+/* The contact band: the sky again, with the sun rising at the end. */
+.contact-band {
+  background: linear-gradient(
+    168deg,
+    #0876b3 0%,
+    #0070a8 46%,
+    var(--canvas) 100%
+  );
+}
+
+.contact-sun {
+  position: absolute;
+  right: -6rem;
+  bottom: -14rem;
+  width: min(30rem, 70vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #ffe676 0%,
+    #fbd816 42%,
+    #fad201 66%,
+    rgb(250 210 1 / 0) 70.7%
+  );
+  pointer-events: none;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .contact-sun {
+      animation: sun-up linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 60%;
+    }
+  }
+}
+
+@keyframes sun-up {
+  from {
+    translate: 0 40%;
+    scale: 0.8;
   }
 }

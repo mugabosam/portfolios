@@ -9,7 +9,7 @@ import {
   training,
 } from "@/content/profile";
 import { site } from "@/content/site";
-import { getProjects } from "@/lib/content/projects";
+import { projects } from "@/content/projects";
 
 export const metadata: Metadata = {
   title: "Résumé",
@@ -68,8 +68,6 @@ function Entry({
  * prints this page to public/resume.pdf, so the two never drift apart.
  */
 export default function ResumePage() {
-  const projects = getProjects().filter((project) => !project.confidential);
-
   return (
     <article className="resume container-site pt-[calc(var(--header-h)+3.5rem)] pb-24 md:pt-[calc(var(--header-h)+5rem)]">
       <header className="flex flex-wrap items-end justify-between gap-8 pb-12">
@@ -159,28 +157,19 @@ export default function ResumePage() {
               key={project.slug}
               period={String(project.year)}
               title={project.title}
-              org={project.stack.join(", ")}
+              org={project.tools.join(", ")}
             >
               <p>{project.summary}</p>
-              <p className="mt-1">
-                <a
-                  href={`/work/${project.slug}`}
-                  className="text-sky underline decoration-sky/35 underline-offset-4"
-                >
-                  Case study
-                </a>
-                {project.repo && (
-                  <>
-                    {", "}
-                    <a
-                      href={project.repo}
-                      className="text-sky underline decoration-sky/35 underline-offset-4"
-                    >
-                      {project.repo.replace("https://", "")}
-                    </a>
-                  </>
-                )}
-              </p>
+              {project.repo && (
+                <p className="mt-1">
+                  <a
+                    href={project.repo}
+                    className="text-sky underline decoration-sky/35 underline-offset-4"
+                  >
+                    {project.repo.replace("https://", "")}
+                  </a>
+                </p>
+              )}
             </Entry>
           ))}
         </div>

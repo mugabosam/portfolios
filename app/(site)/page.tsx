@@ -1,24 +1,22 @@
 import { HomeMotion } from "@/components/motion/home-motion";
 import { Intro } from "@/components/motion/intro";
-import { ActivitySection } from "@/components/sections/activity";
+import { AboutSection } from "@/components/sections/about";
 import { ContactSection } from "@/components/sections/contact";
+import { ExperienceSection } from "@/components/sections/experience";
 import { HeroSection } from "@/components/sections/hero";
 import { WorkSection } from "@/components/sections/work";
 import { site } from "@/content/site";
-import { getProjects, toSummary } from "@/lib/content/projects";
 import { JsonLd } from "@/lib/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 
 /**
- * The home page, kept to four scenes: the hero, selected work, a year on
- * GitHub, and contact. Everything is static, server-rendered HTML. The intro
- * and the hero's scroll scene are CSS; HomeMotion adds the GSAP layer
- * (stacked work cards, line reveals, counters, magnetic buttons) after the
- * first paint, and nothing in it is needed to read the page.
+ * The whole portfolio on one page: the hero (with the assistant), selected
+ * work, about, experience and contact. The header links scroll to these
+ * sections and follow the one in view. Everything is static,
+ * server-rendered HTML; the intro and the hero's scroll scene are CSS, and
+ * HomeMotion adds the GSAP layer after the first paint.
  */
 export default function HomePage() {
-  const projects = getProjects();
-
   const person = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -51,8 +49,9 @@ export default function HomePage() {
       <Intro />
       <HomeMotion />
       <HeroSection />
-      <WorkSection projects={projects.map(toSummary)} />
-      <ActivitySection />
+      <WorkSection />
+      <AboutSection />
+      <ExperienceSection />
       <ContactSection />
     </>
   );

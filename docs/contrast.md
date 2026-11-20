@@ -31,6 +31,10 @@ UI component boundaries and focus indicators 3:1 (SC 1.4.11).
 | `#ffffff` `#ffffff` | `Hero sky, top` `#0876b3` | Header over the hero (wordmark, tablet nav) | 4.94:1 | 4.5:1 | Pass |
 | `#ffffff` `#ffffff` | `Hero sky` `#0070a8` | Hero headline, buttons | 5.41:1 | 4.5:1 | Pass |
 | `rgb(255 255 255 / 0.85)` `rgb(255 255 255 / 0.85)` | `Hero sky, lower` `#006399` | Hero stack caption | 5.15:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `--canvas` `#00609a` | Text on the blue page | 6.69:1 | 4.5:1 | Pass |
+| `--code-fg` `#d6e2ee` | `--canvas` `#00609a` | Work intro | 5.09:1 | 4.5:1 | Pass |
+| `rgb(255 255 255 / 0.85)` `rgb(255 255 255 / 0.85)` | `--canvas` `#00609a` | Footer text and links | 5.30:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `--sky-deep` `#004a75` | Chat bubbles, dark buttons | 9.39:1 | 4.5:1 | Pass |
 | `--code-fg` `#d6e2ee` | `--code` `#0b1b2b` | Code, text on navy | 13.25:1 | 4.5:1 | Pass |
 | `--code-muted` `#8ea3ba` | `--code` `#0b1b2b` | Comments, punctuation | 6.72:1 | 4.5:1 | Pass |
 | `--code-key` `#6cc9f2` | `--code` `#0b1b2b` | Keys, keywords, links on navy | 9.35:1 | 4.5:1 | Pass |

@@ -68,7 +68,9 @@ function Icon({ icon, variant }: { icon: ButtonIcon; variant: ButtonVariant }) {
       <span
         className={cn(
           "-mr-3 inline-flex size-8 shrink-0 items-center justify-center rounded-full transition-transform duration-(--dur-move) ease-(--ease-out) group-hocus:rotate-45",
-          variant === "inverse" ? "bg-white text-ink" : "bg-ink text-white",
+          variant === "inverse"
+            ? "bg-white text-sky-deep"
+            : "bg-sky-deep text-white",
         )}
       >
         <ArrowUpRightIcon className="size-3.5" />
@@ -115,8 +117,9 @@ export function Button(props: ButtonProps) {
         {newTab && <span className="sr-only"> (opens in a new tab)</span>}
       </>
     );
-    const internal =
-      (href.startsWith("/") || href.startsWith("#")) && !download;
+    // Same-page "#section" links stay plain anchors, so the smooth scroller
+    // (smooth-scroll.tsx) or the browser handles them, not the router.
+    const internal = href.startsWith("/") && !download;
     if (internal) {
       return (
         <Link href={href} className={classes} data-force={forceState} {...rest}>

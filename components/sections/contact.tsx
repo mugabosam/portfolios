@@ -12,13 +12,17 @@ export function ContactSection() {
   const github = site.socials.find((social) => social.label === "GitHub");
   return (
     <section id="contact" aria-labelledby="contact-title" className="pb-2">
-      <div className="contact-band bg-ink text-white [--focus:var(--code-key)]">
+      <div
+        data-tone="blue"
+        className="contact-band text-white [--focus:var(--sun)]"
+      >
         <div
           aria-hidden="true"
           className="contact-glow pointer-events-none absolute inset-0"
         />
+        <div aria-hidden="true" className="contact-sun" />
         <div className="relative container-site py-24 md:py-36">
-          <p className="inline-flex items-center gap-2.5 rounded-full border border-white/15 py-1.5 pr-4 pl-3 text-small font-medium text-code-fg">
+          <p className="inline-flex items-center gap-2.5 rounded-full border border-white/30 bg-sky-deep/40 py-1.5 pr-4 pl-3 text-small font-medium text-white">
             <span className="live-dot" aria-hidden="true" />
             {availability.status}
           </p>
@@ -29,22 +33,31 @@ export function ContactSection() {
           >
             Have something to build? Let’s talk.
           </h2>
-          <div className="mt-12 flex flex-col gap-10 border-t border-white/15 pt-10 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mt-12 flex flex-col gap-10 border-t border-white/25 pt-10 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-md" data-fade>
-              <p className="text-lead text-code-fg">
+              <p className="text-lead text-white">
                 A short note about the role or the product is enough. I reply
-                within a few days. {availability.where}
+                within a few days. You can also leave a message with the
+                assistant at the top of the page.
               </p>
               <CopyEmail email={site.email} tone="dark" className="mt-6" />
             </div>
             <div className="flex flex-wrap gap-3" data-fade>
               <Button
                 variant="primary"
-                href="/contact"
+                href={`mailto:${site.email}`}
                 icon="arrow"
                 data-magnetic
               >
-                Write to me
+                Email me
+              </Button>
+              <Button
+                variant="inverse"
+                href="/resume.pdf"
+                download
+                icon="download"
+              >
+                Download CV
               </Button>
               {github && (
                 <Button variant="inverse" href={github.href} icon="github">

@@ -8,13 +8,7 @@ module.exports = {
     collect: {
       startServerCommand: "pnpm start -p 3100",
       startServerReadyPattern: "Ready",
-      url: [
-        "http://localhost:3100/",
-        "http://localhost:3100/work",
-        "http://localhost:3100/work/malaria-check",
-        "http://localhost:3100/about",
-        "http://localhost:3100/contact",
-      ],
+      url: ["http://localhost:3100/", "http://localhost:3100/resume"],
       numberOfRuns: 2,
       settings: {
         preset: "mobile",

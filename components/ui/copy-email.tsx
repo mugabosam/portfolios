@@ -49,7 +49,7 @@ export function CopyEmail({
     <div
       className={cn(
         "inline-flex max-w-full items-stretch overflow-hidden rounded-md border",
-        dark ? "border-code-line bg-white/5" : "border-line-strong bg-surface",
+        dark ? "border-white/30 bg-white/10" : "border-line-strong bg-surface",
         className,
       )}
     >
@@ -57,7 +57,7 @@ export function CopyEmail({
         href={`mailto:${email}`}
         className={cn(
           "inline-flex min-h-tap min-w-0 items-center truncate px-4 font-mono text-small transition-colors duration-(--dur-ui)",
-          dark ? "text-white hocus:text-code-key" : "text-ink hocus:text-sky",
+          dark ? "text-white hocus:text-sun" : "text-ink hocus:text-sky",
         )}
       >
         {email}
@@ -83,7 +83,7 @@ export function CopyEmail({
             <CheckIcon
               className={cn(
                 "absolute inset-0 size-4 transition-[opacity,scale] duration-(--dur-move) ease-(--ease-out)",
-                dark ? "text-code-number" : "text-leaf-ink",
+                dark ? "text-white" : "text-leaf-ink",
                 state === "copied" ? "opacity-100" : "scale-50 opacity-0",
               )}
             />

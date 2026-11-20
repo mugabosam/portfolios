@@ -1,10 +1,9 @@
-import Link from "next/link";
 import type { CSSProperties } from "react";
 
+import { Assistant } from "@/components/assistant/assistant";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRightIcon } from "@/components/ui/icons";
 import { Portrait } from "@/components/ui/portrait";
-import { availability, now, skillGroups } from "@/content/profile";
+import { skillGroups } from "@/content/profile";
 
 /** The giant word, one span per letter so the letters can rise in turn. */
 const WORD = "Build";
@@ -13,12 +12,12 @@ const WORD = "Build";
 const STACK = [
   { short: "TS", name: "TypeScript", tone: "bg-white text-ink" },
   { short: "Py", name: "Python", tone: "bg-sun text-ink" },
-  { short: "Nx", name: "Next.js", tone: "bg-ink text-white" },
+  { short: "Nx", name: "Next.js", tone: "bg-sky-deep text-white" },
   { short: "Ns", name: "NestJS", tone: "bg-sky-tint text-ink" },
   { short: "Fl", name: "Flutter", tone: "bg-leaf-tint text-ink" },
 ] as const;
 
-/** Every other skill listed on /about. */
+/** Every other skill listed in the About section. */
 const MORE = skillGroups.flatMap((group) => group.skills).length - STACK.length;
 
 const delay = (index: number) => ({ "--i": index }) as CSSProperties;
@@ -26,16 +25,22 @@ const delay = (index: number) => ({ "--i": index }) as CSSProperties;
 /**
  * The opening scene. A sky-blue panel with a rising sun, the giant word
  * BUILD and Sam's cut-out figure, which crosses into a white panel holding
- * what he is open to and what he is building now. On large screens the
- * scene pins while the page scrolls and the sky turns to night (pure CSS
- * scroll-driven animation, see .hero in globals.css); on phones the white
- * panel follows the sky as a normal block.
+ * the assistant: a chat that answers questions about Sam and hands over the
+ * CV or takes a message. On large screens the scene pins while the page
+ * scrolls while the copy and panel leave and the sun sets (CSS scroll-driven,
+ * see scenes.css);
+ * on phones the assistant follows the sky as a normal block.
  */
 export function HeroSection() {
+  // Messages go through /api/contact only when email delivery is set up and
+  // no human check (Turnstile) is required; otherwise the email app opens.
+  const canSend =
+    Boolean(process.env.RESEND_API_KEY) && !process.env.TURNSTILE_SECRET_KEY;
+
   return (
     <section id="hero" aria-labelledby="hero-title" className="hero">
       <div className="hero-stage">
-        <div className="hero-sky">
+        <div className="hero-sky" data-tone="hero">
           <div aria-hidden="true" className="hero-sun" data-parallax="0.9">
             <div className="hero-sun-disc" />
           </div>
@@ -52,8 +57,6 @@ export function HeroSection() {
             ))}
           </p>
 
-          <div aria-hidden="true" className="hero-night" />
-
           <div className="hero-figure" data-parallax="0.25">
             <Portrait
               variant="cutout"
@@ -68,7 +71,7 @@ export function HeroSection() {
           <div className="hero-copy container-site">
             <div className="hero-copy-inner">
               <h1 id="hero-title" className="hero-title" style={delay(0)}>
-                I build software from the database to the interface.
+                I build web and mobile apps, front to back.
               </h1>
               <div className="hero-actions" style={delay(1)}>
                 <Button
@@ -106,46 +109,16 @@ export function HeroSection() {
                   </li>
                 </ul>
                 <p className="max-w-[17rem] text-caption text-white/85">
-                  TypeScript, Python and Dart across web, mobile, APIs and data.
+                  Websites, mobile apps, and the servers and data behind them.
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="hero-panel">
+        <div className="hero-panel" data-tone="light">
           <div className="hero-panel-box">
-            <div className="hero-panel-item" style={delay(0)}>
-              <p className="flex items-center gap-1.5 text-small font-semibold text-sky">
-                Available for
-                <ArrowUpRightIcon className="size-3.5" />
-              </p>
-              <p className="mt-3 type-h3 text-ink">{availability.roles}</p>
-              <p className="mt-2 text-small text-ink-2">{availability.where}</p>
-            </div>
-
-            <p className="hero-panel-item text-ink-2" style={delay(1)}>
-              I’m Sam Mugabo, a software developer in Kigali. React, Next.js and
-              Flutter on the front; NestJS, Django and PostgreSQL behind them.
-            </p>
-
-            <div
-              className="hero-panel-item relative rounded-2xl border border-line bg-paper p-5"
-              style={delay(2)}
-            >
-              <p className="flex items-center gap-2 text-small font-semibold text-ink">
-                <span className="live-dot" aria-hidden="true" />
-                Now
-              </p>
-              <p className="mt-2 text-small text-ink-2">{now.text}</p>
-              <Link
-                href={now.href}
-                className="mt-3 inline-flex min-h-tap items-center gap-1.5 rounded-sm text-small font-semibold text-sky underline decoration-sky/35 underline-offset-4 hocus:decoration-sky"
-              >
-                Read the case study
-                <ArrowUpRightIcon className="size-3.5" />
-              </Link>
-            </div>
+            <Assistant canSend={canSend} />
           </div>
         </div>
       </div>

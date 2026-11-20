@@ -85,15 +85,19 @@ export function GitHubIcon(props: IconProps) {
   );
 }
 
-/** The site's mark: a terminal prompt, sky chevron and sun cursor on ink. */
+/**
+ * The site's mark: a prompt chevron and sun cursor on a rounded square. The
+ * square and chevron colours come from --logo-bg and --logo-fg, so the header
+ * can invert the mark on dark sections.
+ */
 export function LogoMark(props: IconProps) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden focusable={false} {...props}>
-      <rect width="32" height="32" rx="8" fill="var(--ink)" />
+      <rect width="32" height="32" rx="8" fill="var(--logo-bg, var(--ink))" />
       <path
         d="M9 11l5 5-5 5"
         fill="none"
-        stroke="var(--sky-bright)"
+        stroke="var(--logo-fg, var(--sky-bright))"
         strokeWidth="2.75"
         strokeLinecap="round"
         strokeLinejoin="round"

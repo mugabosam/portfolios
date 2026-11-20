@@ -36,9 +36,12 @@ function whenIntent(signal: { cancelled: boolean }) {
   });
 }
 
+/** Large screens with room for a pinned card: the only place pinning runs. */
+const DECK_QUERY = "(min-width: 64rem) and (min-height: 40rem)";
+
 /**
  * The home page's GSAP layer. Everything it animates is already readable
- * without it: the hero's intro and night-fall scene are CSS, and this only
+ * without it: the intro and the hero's scroll scene are CSS, and this only
  * adds what CSS cannot do well.
  *
  * - Section headlines rise line by line inside masks (SplitText).
@@ -48,8 +51,14 @@ function whenIntent(signal: { cancelled: boolean }) {
  * - Primary buttons lean towards the pointer; the hero's sun, word and
  *   figure drift at different depths as the pointer moves.
  *
- * GSAP loads after the first paint: on idle on desktop, on the first sign of
- * intent to scroll on phones. Under reduced motion nothing here runs.
+ * One-time reveals are started by an IntersectionObserver, not
+ * ScrollTrigger, so phones never load ScrollTrigger: its page measurement
+ * would cancel a smooth jump to a section that is already under way. Only
+ * the stacked deck uses ScrollTrigger, on large screens.
+ *
+ * GSAP loads after the first paint: on idle on desktop, at the first sign of
+ * intent on phones (so a phone that only reads the hero never loads it).
+ * Under reduced motion nothing here runs.
  */
 export function HomeMotion() {
   useEffect(() => {
@@ -60,37 +69,59 @@ export function HomeMotion() {
     const finePointer = window.matchMedia(
       "(hover: hover) and (pointer: fine)",
     ).matches;
+    const deck = window.matchMedia(DECK_QUERY).matches;
 
     (async () => {
       await (finePointer ? whenIdle(1500) : whenIntent(signal));
       if (signal.cancelled) return;
-      const [{ gsap }, { ScrollTrigger }, { SplitText }] = await Promise.all([
+      const [{ gsap }, { SplitText }, scrollTriggerModule] = await Promise.all([
         import("gsap"),
-        import("gsap/ScrollTrigger"),
         import("gsap/SplitText"),
+        deck ? import("gsap/ScrollTrigger") : Promise.resolve(null),
       ]);
       if (signal.cancelled) return;
-      gsap.registerPlugin(ScrollTrigger, SplitText);
-      // Re-arm only after a previous visit disabled it on teardown (below);
-      // enable() on an already-enabled ScrollTrigger starts a second loop.
-      if (scrollTriggerDisabled) {
-        ScrollTrigger.enable();
-        scrollTriggerDisabled = false;
+      gsap.registerPlugin(SplitText);
+      const ScrollTrigger = scrollTriggerModule?.ScrollTrigger ?? null;
+      let stopLenisSync = () => {};
+      if (ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        // Re-arm only after a previous visit disabled it on teardown;
+        // enable() on an already-enabled ScrollTrigger starts a second loop.
+        if (scrollTriggerDisabled) {
+          ScrollTrigger.enable();
+          scrollTriggerDisabled = false;
+        }
+        // Keep ScrollTrigger in step with Lenis, whenever Lenis arrives.
+        const syncLenis = (lenis: ReturnType<typeof getLenis>) =>
+          lenis?.on("scroll", ScrollTrigger.update);
+        syncLenis(getLenis());
+        const off = onLenis(syncLenis);
+        stopLenisSync = () => {
+          off();
+          getLenis()?.off("scroll", ScrollTrigger.update);
+        };
       }
-
-      // Keep ScrollTrigger in step with Lenis, whenever Lenis arrives.
-      const syncLenis = (lenis: ReturnType<typeof getLenis>) =>
-        lenis?.on("scroll", ScrollTrigger.update);
-      syncLenis(getLenis());
-      const stopLenisSync = onLenis(syncLenis);
 
       const qa = <T extends Element = HTMLElement>(selector: string) =>
         gsap.utils.toArray<T>(selector);
-      const once = (trigger: Element, start = "top 86%") => ({
-        trigger,
-        start,
-        once: true,
-      });
+
+      /** Plays each registered tween once its element comes into view. */
+      const plays = new Map<Element, () => void>();
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            observer.unobserve(entry.target);
+            plays.get(entry.target)?.();
+            plays.delete(entry.target);
+          }
+        },
+        { rootMargin: "0px 0px -10% 0px" },
+      );
+      const whenSeen = (el: Element, play: () => void) => {
+        plays.set(el, play);
+        observer.observe(el);
+      };
 
       const mm = gsap.matchMedia();
 
@@ -103,27 +134,31 @@ export function HomeMotion() {
             mask: "lines",
             linesClass: "split-line",
             autoSplit: true,
-            onSplit: (split) =>
-              gsap.from(split.lines, {
+            onSplit: (split) => {
+              const tween = gsap.from(split.lines, {
                 yPercent: 112,
                 rotate: 2.5,
                 transformOrigin: "0% 100%",
                 duration: 1.2,
                 stagger: 0.1,
                 ease: "expo.out",
-                scrollTrigger: once(heading),
-              }),
+                paused: true,
+              });
+              whenSeen(heading, () => tween.play());
+              return tween;
+            },
           });
         });
 
         qa("[data-fade]").forEach((el) => {
-          gsap.from(el, {
+          const tween = gsap.from(el, {
             autoAlpha: 0,
             y: 32,
             duration: 1.1,
             ease: "power3.out",
-            scrollTrigger: once(el, "top 92%"),
+            paused: true,
           });
+          whenSeen(el, () => tween.play());
         });
 
         // GitHub numbers count up from zero, then settle on the exact text.
@@ -132,90 +167,94 @@ export function HomeMotion() {
         qa("[data-count]").forEach((el) => {
           const target = Number(el.dataset.count);
           const final = el.textContent;
-          if (!Number.isFinite(target) || ScrollTrigger.isInViewport(el))
-            return;
+          if (!Number.isFinite(target)) return;
+          const box = el.getBoundingClientRect();
+          if (box.top < window.innerHeight && box.bottom > 0) return;
           el.textContent = "0";
           restores.push(() => {
             el.textContent = final;
           });
           const state = { value: 0 };
-          gsap.to(state, {
-            value: target,
-            duration: 1.8,
-            ease: "power3.out",
-            scrollTrigger: once(el, "top 92%"),
-            onUpdate: () => {
-              el.textContent = format.format(Math.round(state.value));
-            },
-            onComplete: () => {
-              el.textContent = final;
-            },
-          });
+          whenSeen(el, () =>
+            gsap.to(state, {
+              value: target,
+              duration: 1.8,
+              ease: "power3.out",
+              onUpdate: () => {
+                el.textContent = format.format(Math.round(state.value));
+              },
+              onComplete: () => {
+                el.textContent = final;
+              },
+            }),
+          );
         });
         return () => restores.forEach((restore) => restore());
       });
 
-      // ── Phones and tablets: work cards rise in as they arrive ──────────
+      // ── Smaller screens: work cards rise in as they arrive ─────────────
       mm.add("(max-width: 63.99rem)", () => {
         qa("[data-deck-item]").forEach((item) => {
-          gsap.from(item, {
+          const tween = gsap.from(item, {
             y: 64,
             autoAlpha: 0,
             duration: 1.1,
             ease: "power3.out",
-            scrollTrigger: once(item, "top 92%"),
+            paused: true,
           });
+          whenSeen(item, () => tween.play());
         });
       });
 
       // ── Large screens: the stacked deck ────────────────────────────────
-      mm.add("(min-width: 64rem) and (min-height: 40rem)", () => {
-        const items = qa("[data-deck-item]");
-        if (items.length < 2) return;
-        const rem = parseFloat(
-          getComputedStyle(document.documentElement).fontSize,
-        );
-        const header =
-          parseFloat(
-            getComputedStyle(document.documentElement).getPropertyValue(
-              "--header-h",
-            ),
-          ) * rem;
-        const topFor = (index: number) => header + 24 + index * 20;
-        const last = items[items.length - 1]!;
+      if (ScrollTrigger)
+        mm.add(DECK_QUERY, () => {
+          const items = qa("[data-deck-item]");
+          if (items.length < 2) return;
+          const rem = parseFloat(
+            getComputedStyle(document.documentElement).fontSize,
+          );
+          const header =
+            parseFloat(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                "--header-h",
+              ),
+            ) * rem;
+          const topFor = (index: number) => header + 24 + index * 20;
+          const last = items[items.length - 1]!;
 
-        items.forEach((item, index) => {
-          const next = items[index + 1];
-          if (!next) return;
-          ScrollTrigger.create({
-            trigger: item,
-            start: () => `top top+=${topFor(index)}`,
-            endTrigger: last,
-            end: () => `top top+=${topFor(items.length - 1)}`,
-            pin: true,
-            pinSpacing: false,
+          items.forEach((item, index) => {
+            const next = items[index + 1];
+            if (!next) return;
+            ScrollTrigger.create({
+              trigger: item,
+              start: () => `top top+=${topFor(index)}`,
+              endTrigger: last,
+              end: () => `top top+=${topFor(items.length - 1)}`,
+              pin: true,
+              pinSpacing: false,
+            });
+            const card = item.querySelector(".deck-card");
+            const shade = item.querySelector("[data-deck-shade]");
+            gsap
+              .timeline({
+                scrollTrigger: {
+                  trigger: next,
+                  start: "top bottom",
+                  end: () => `top top+=${topFor(index + 1)}`,
+                  scrub: true,
+                },
+              })
+              .to(
+                card,
+                { scale: 0.92, transformOrigin: "50% 0%", ease: "none" },
+                0,
+              )
+              .to(shade, { opacity: 1, ease: "none" }, 0);
           });
-          const card = item.querySelector(".deck-card");
-          const shade = item.querySelector("[data-deck-shade]");
-          gsap
-            .timeline({
-              scrollTrigger: {
-                trigger: next,
-                start: "top bottom",
-                end: () => `top top+=${topFor(index + 1)}`,
-                scrub: true,
-              },
-            })
-            .to(
-              card,
-              { scale: 0.92, transformOrigin: "50% 0%", ease: "none" },
-              0,
-            )
-            .to(shade, { opacity: 1, ease: "none" }, 0);
         });
-      });
 
-      // ── Fine pointers: magnetic buttons and hero depth ─────────────────
+      // ── Fine pointers: magnetic buttons, card light and hero depth ─────
       mm.add("(hover: hover) and (pointer: fine)", () => {
         const removers: (() => void)[] = [];
 
@@ -288,18 +327,22 @@ export function HomeMotion() {
       });
 
       // Pin positions depend on the final fonts.
-      document.fonts?.ready.then(() => {
-        if (!signal.cancelled) ScrollTrigger.refresh();
-      });
+      if (ScrollTrigger)
+        document.fonts?.ready.then(() => {
+          if (!signal.cancelled) ScrollTrigger.refresh();
+        });
 
       teardown = () => {
+        observer.disconnect();
+        plays.clear();
         mm.revert();
-        // Also stops ScrollTrigger's idle frame loop, which would otherwise
-        // keep ticking on every other page after a visit to the home page.
-        ScrollTrigger.disable(false, true);
-        scrollTriggerDisabled = true;
+        if (ScrollTrigger) {
+          // Also stops ScrollTrigger's idle frame loop, which would otherwise
+          // keep ticking on every other page after a visit to the home page.
+          ScrollTrigger.disable(false, true);
+          scrollTriggerDisabled = true;
+        }
         stopLenisSync();
-        getLenis()?.off("scroll", ScrollTrigger.update);
       };
     })();
 

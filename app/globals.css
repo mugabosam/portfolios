@@ -29,6 +29,10 @@
   --leaf-ink: #146c43;
   --leaf-tint: #e3f4ea;
 
+  /* The hero's blue, carried down the whole home page. */
+  --canvas: #00609a;
+  --sky-deep: #004a75;
+
   /* Code panels */
   --code: #0b1b2b;
   --code-panel: #11263c;
@@ -90,6 +94,8 @@
   --color-leaf: var(--leaf);
   --color-leaf-ink: var(--leaf-ink);
   --color-leaf-tint: var(--leaf-tint);
+  --color-canvas: var(--canvas);
+  --color-sky-deep: var(--sky-deep);
   --color-code: var(--code);
   --color-code-panel: var(--code-panel);
   --color-code-line: var(--code-line);

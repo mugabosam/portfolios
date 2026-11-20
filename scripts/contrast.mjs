@@ -144,6 +144,32 @@ const pairs = [
     "Hero stack caption",
     AA_TEXT,
   ],
+  // The home page's blue canvas below the hero
+  [
+    "#ffffff",
+    "#ffffff",
+    "--canvas",
+    "#00609a",
+    "Text on the blue page",
+    AA_TEXT,
+  ],
+  ["--code-fg", "#d6e2ee", "--canvas", "#00609a", "Work intro", AA_TEXT],
+  [
+    "rgb(255 255 255 / 0.85)",
+    "rgb(255 255 255 / 0.85)",
+    "--canvas",
+    "#00609a",
+    "Footer text and links",
+    AA_TEXT,
+  ],
+  [
+    "#ffffff",
+    "#ffffff",
+    "--sky-deep",
+    "#004a75",
+    "Chat bubbles, dark buttons",
+    AA_TEXT,
+  ],
   ["--code-fg", "#d6e2ee", "--code", "#0b1b2b", "Code, text on navy", AA_TEXT],
   [
     "--code-muted",

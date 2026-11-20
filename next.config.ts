@@ -37,6 +37,16 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  /** The site is one page now; earlier addresses land on their section. */
+  async redirects() {
+    return [
+      { source: "/work", destination: "/#work", permanent: true },
+      { source: "/work/:slug", destination: "/#work", permanent: true },
+      { source: "/about", destination: "/#about", permanent: true },
+      { source: "/contact", destination: "/#contact", permanent: true },
+      { source: "/contact/:path*", destination: "/#contact", permanent: true },
+    ];
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

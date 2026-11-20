@@ -11,10 +11,9 @@ export const availability = {
   where: "Frontend, backend or full-stack. Remote or in Kigali (UTC+2).",
 };
 
-/** What Sam is building right now, for the hero's "Now" card. */
+/** What Sam is building right now (the assistant's answer to "now"). */
 export const now = {
-  text: "Building an inventory and device management system at EUCL: the NestJS API and its Next.js frontend.",
-  href: "/work/eucl-internship",
+  text: "He's building an internal device management system at EUCL, Rwanda's electricity utility: the server side and screens in the web app.",
 };
 
 export const positioning =
@@ -39,8 +38,7 @@ export const experience: TimelineEntry[] = [
     title: "Software Development Intern",
     org: "EUCL (Energy Utility Corporation Limited), Kigali",
     detail:
-      "Set up the backend of an internal inventory and device management system (NestJS, Prisma, PostgreSQL) and build features across its API and Next.js frontend.",
-    href: "/work/eucl-internship",
+      "Set up the server side of an internal device management system from the first commit, and build features across it and its web app.",
   },
 ];
 

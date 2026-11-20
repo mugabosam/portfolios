@@ -13,8 +13,8 @@ import {
  * the Resend key never reaches the browser. In order: honeypot, rate limit,
  * validation, Turnstile (if configured), then email via Resend.
  *
- * Accepts JSON (the enhanced form) and form-encoded posts (no JavaScript),
- * answering the latter with a redirect to /contact/sent or /contact/error.
+ * Called with JSON by the hero's assistant when it sends a visitor's
+ * message.
  */
 
 const WINDOW_MS = 10 * 60 * 1000;

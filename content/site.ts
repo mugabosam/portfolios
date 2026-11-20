@@ -19,11 +19,12 @@ export const site = {
     "Software developer in Kigali, Rwanda. I build products end to end: React and Flutter interfaces, NestJS and Django APIs, and the data underneath.",
   location: "Kigali, Rwanda",
   email: "popesir112@gmail.com",
+  /** One-page navigation: each link is a section of the home page. */
   nav: [
-    { label: "Work", href: "/work" },
-    { label: "About", href: "/about" },
-    { label: "Resume", href: "/resume" },
-    { label: "Contact", href: "/contact" },
+    { label: "Work", href: "/#work" },
+    { label: "About", href: "/#about" },
+    { label: "Experience", href: "/#experience" },
+    { label: "Contact", href: "/#contact" },
   ] satisfies NavItem[],
   /** Sam has no LinkedIn yet; add it here if that changes. */
   socials: [

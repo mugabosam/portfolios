@@ -2,41 +2,67 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useId, useRef, useState } from "react";
 
-import { GitHubIcon, LogoMark } from "@/components/ui/icons";
+import { DownloadIcon, LogoMark } from "@/components/ui/icons";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
+import { getLenis } from "@/lib/motion/lenis";
 
-function isActive(pathname: string, href: string): boolean {
-  return pathname === href || pathname.startsWith(`${href}/`);
+/** "/#work" → "work" */
+const sectionOf = (href: string) => href.split("#")[1] ?? "";
+const SECTIONS = site.nav.map((item) => sectionOf(item.href));
+
+type Tone = "hero" | "blue" | "light";
+
+/** Scrolls to a home-page section, through Lenis when it is running. */
+function scrollToSection(id: string) {
+  const target = id ? document.getElementById(id) : null;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const lenis = getLenis();
+  if (!target) {
+    if (lenis) lenis.scrollTo(0);
+    else window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  } else if (lenis) {
+    lenis.scrollTo(target, { offset: 0 });
+  } else {
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  }
+  history.replaceState(null, "", id ? `#${id}` : "/");
 }
 
-function Wordmark({ onClick }: { onClick?: () => void }) {
+function Wordmark({
+  onClick,
+}: {
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+}) {
   return (
     <Link
       href="/"
       onClick={onClick}
       className="header-brand -ml-1 inline-flex min-h-tap items-center gap-2.5 rounded-md px-1 text-[1.0625rem] font-semibold tracking-[-0.01em] [font-stretch:108%]"
     >
-      <LogoMark className="size-7 shrink-0" />
+      <LogoMark className="logo-mark size-7 shrink-0" />
       {site.name}
       <span className="sr-only">, home</span>
     </Link>
   );
 }
 
-const github = site.socials.find((social) => social.label === "GitHub");
-
 /**
- * Fixed header. It starts transparent over the page and settles onto a
- * blurred paper background once the page scrolls (CSS scroll-driven, see
- * .site-header). On small screens the links move into a full-screen modal
+ * Fixed header for a one-page site. Each link scrolls to a section of the
+ * home page (from any other page it navigates there first), and the link of
+ * the section in view is marked as current while the page scrolls. Its
+ * colours follow what is underneath: clear over the hero's sky, navy glass
+ * over the blue sections (the logo turns white so it stays visible) and
+ * paper glass over light ones. On small screens the links move into a modal
  * dialog (focus contained, Esc closes, focus returns to the Menu button).
  */
 export function SiteHeader() {
   const pathname = usePathname();
+  const home = pathname === "/";
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("");
   const headerRef = useRef<HTMLElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const menuId = useId();
@@ -47,8 +73,7 @@ export function SiteHeader() {
   };
   const closeMenu = () => dialogRef.current?.close();
 
-  // If the viewport grows past the mobile breakpoint, the overlay no longer
-  // applies: close it.
+  // Close the menu if the viewport grows past the mobile breakpoint.
   useEffect(() => {
     if (!open) return;
     const query = window.matchMedia("(min-width: 48rem)");
@@ -59,52 +84,95 @@ export function SiteHeader() {
     return () => query.removeEventListener("change", onChange);
   }, [open]);
 
-  // Slide away while reading down the page, come back on the way up.
+  // Scroll spy and header tone, measured once per frame while scrolling.
   useEffect(() => {
     const header = headerRef.current;
     if (!header) return;
-    let last = window.scrollY;
     let frame = 0;
+
     const update = () => {
       frame = 0;
-      const y = window.scrollY;
-      const delta = y - last;
-      if (Math.abs(delta) < 6) return;
-      if (delta > 0 && y > 480) header.dataset.hidden = "";
-      else delete header.dataset.hidden;
-      last = y;
+      const line = header.offsetHeight + 24;
+
+      // Tone: the [data-tone] block under the header's left edge.
+      let tone: Tone | undefined;
+      for (const el of document.querySelectorAll<HTMLElement>("[data-tone]")) {
+        const box = el.getBoundingClientRect();
+        if (
+          box.top <= line &&
+          box.bottom > line &&
+          box.left <= 24 &&
+          box.right > 24
+        )
+          tone = el.dataset.tone as Tone;
+      }
+      if (tone) header.dataset.tone = tone;
+      else delete header.dataset.tone;
+
+      // Current section: the last one whose top has passed 40% of the screen.
+      if (!home) return;
+      const mark = window.innerHeight * 0.4;
+      let current = "";
+      for (const id of SECTIONS) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= mark) current = id;
+      }
+      setActive(current);
     };
+
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    // First measurement on the next frame, not inside hydration.
+    frame = requestAnimationFrame(update);
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(frame);
-      delete header.dataset.hidden;
+      delete header.dataset.tone;
     };
-  }, []);
+  }, [home]);
+
+  /** On the home page, scroll instead of navigating. */
+  const onNav = (id: string) => (event: MouseEvent) => {
+    if (!home) return;
+    event.preventDefault();
+    setActive(id);
+    scrollToSection(id);
+  };
+
+  /** From the menu: close it first, then scroll once the page is unlocked. */
+  const onMenuNav = (event: MouseEvent<HTMLAnchorElement>) => {
+    dialogRef.current?.close();
+    if (!home) return;
+    event.preventDefault();
+    const id = event.currentTarget.dataset.section ?? "";
+    requestAnimationFrame(() => scrollToSection(id));
+  };
 
   return (
     <>
       <header
         ref={headerRef}
-        data-home={pathname === "/" ? "" : undefined}
         style={{ viewTransitionName: "site-header" }}
         className="site-header fixed inset-x-0 top-0 z-50 text-ink"
       >
         <div className="container-site flex h-(--header-h) items-center justify-between gap-6">
-          <Wordmark />
+          <Wordmark onClick={onNav("")} />
 
           <nav aria-label="Primary" className="hidden md:block">
-            <ul className="flex items-center gap-1">
+            <ul className="header-nav flex items-center gap-1">
               {site.nav.map((item) => {
-                const active = isActive(pathname, item.href);
+                const id = sectionOf(item.href);
+                const current = home && active === id;
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      aria-current={active ? "page" : undefined}
+                      onClick={onNav(id)}
+                      aria-current={current ? "true" : undefined}
                       className="header-link relative inline-flex min-h-tap items-center rounded-md px-3 text-small font-medium transition-colors duration-(--dur-ui)"
                     >
                       {item.label}
@@ -112,25 +180,23 @@ export function SiteHeader() {
                         aria-hidden="true"
                         className={cn(
                           "header-underline absolute inset-x-3 bottom-2 h-0.5 origin-left rounded-full transition-transform duration-(--dur-move) ease-(--ease-out)",
-                          active ? "scale-x-100" : "scale-x-0",
+                          current ? "scale-x-100" : "scale-x-0",
                         )}
                       />
                     </Link>
                   </li>
                 );
               })}
-              {github && (
-                <li className="header-divider ml-2 border-l pl-3">
-                  <a
-                    href={github.href}
-                    rel="me noopener"
-                    className="header-link inline-flex min-h-tap min-w-tap items-center justify-center rounded-md transition-colors duration-(--dur-ui)"
-                  >
-                    <GitHubIcon className="size-5" />
-                    <span className="sr-only">GitHub</span>
-                  </a>
-                </li>
-              )}
+              <li className="ml-3">
+                <a
+                  href="/resume.pdf"
+                  download
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full bg-sun px-4 text-small font-semibold text-ink transition-[background-color,translate] duration-(--dur-ui) hocus:-translate-y-px hocus:bg-sun-deep"
+                >
+                  <DownloadIcon className="size-4" />
+                  Download CV
+                </a>
+              </li>
             </ul>
           </nav>
 
@@ -155,13 +221,13 @@ export function SiteHeader() {
           className="noscript-nav container-site hidden flex-wrap gap-x-5 pb-2"
         >
           {site.nav.map((item) => (
-            <Link
+            <a
               key={item.href}
               href={item.href}
-              className="inline-flex min-h-tap items-center text-small font-medium"
+              className="header-link inline-flex min-h-tap items-center text-small font-medium"
             >
               {item.label}
-            </Link>
+            </a>
           ))}
         </nav>
       </header>
@@ -176,7 +242,7 @@ export function SiteHeader() {
       >
         <div className="flex h-full flex-col">
           <div className="container-site flex h-(--header-h) shrink-0 items-center justify-between">
-            <Wordmark onClick={closeMenu} />
+            <Wordmark onClick={onMenuNav} />
             <button
               type="button"
               onClick={closeMenu}
@@ -189,17 +255,19 @@ export function SiteHeader() {
           <nav aria-label="Mobile" className="container-site flex-1 pt-10">
             <ul className="flex flex-col border-t border-line">
               {site.nav.map((item) => {
-                const active = isActive(pathname, item.href);
+                const id = sectionOf(item.href);
+                const current = home && active === id;
                 return (
                   <li key={item.href} className="border-b border-line">
                     <Link
                       href={item.href}
-                      onClick={closeMenu}
-                      aria-current={active ? "page" : undefined}
+                      data-section={id}
+                      onClick={onMenuNav}
+                      aria-current={current ? "true" : undefined}
                       className="flex min-h-16 items-center justify-between type-h3"
                     >
                       {item.label}
-                      {active && (
+                      {current && (
                         <span
                           aria-hidden="true"
                           className="size-2 rounded-full bg-sky"
@@ -212,11 +280,18 @@ export function SiteHeader() {
             </ul>
           </nav>
 
-          <div className="container-site flex shrink-0 flex-col gap-1 pb-10">
-            <p className="text-small text-ink-3">Email</p>
+          <div className="container-site flex shrink-0 flex-col gap-4 pb-10">
+            <a
+              href="/resume.pdf"
+              download
+              className="inline-flex min-h-tap items-center justify-center gap-2 rounded-full bg-sun px-6 text-small font-semibold text-ink"
+            >
+              <DownloadIcon className="size-4" />
+              Download CV
+            </a>
             <a
               href={`mailto:${site.email}`}
-              className="inline-flex min-h-tap items-center text-body font-medium text-sky underline decoration-sky/35 underline-offset-4"
+              className="inline-flex min-h-tap items-center justify-center text-body font-medium text-sky underline decoration-sky/35 underline-offset-4"
             >
               {site.email}
             </a>

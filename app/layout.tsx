@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Mona_Sans } from "next/font/google";
 
@@ -77,6 +78,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <SiteFooter />
+        {/* Visitor counts (Vercel Web Analytics: no cookies, no personal
+            data). Only on Vercel, where its endpoint exists; enable it under
+            the project's Analytics tab. */}
+        {process.env.VERCEL && <Analytics />}
       </body>
     </html>
   );

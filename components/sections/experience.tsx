@@ -1,85 +1,40 @@
 import { Button } from "@/components/ui/button";
-import { DisplayHeading } from "@/components/ui/display-heading";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { SectionCounter } from "@/components/ui/section-counter";
-import { Timeline, TimelineItem } from "@/components/ui/timeline";
-import {
-  education,
-  experience,
-  type TimelineEntry,
-  training,
-} from "@/content/profile";
+import { Timeline } from "@/components/ui/timeline";
+import { education, experience, training } from "@/content/profile";
 
-function Group({
-  label,
-  entries,
-}: {
-  label: string;
-  entries: TimelineEntry[];
-}) {
-  return (
-    <div>
-      <Eyebrow className="mb-8">{label}</Eyebrow>
-      <Timeline>
-        {entries.map((entry) => (
-          <TimelineItem
-            key={entry.title}
-            period={entry.period}
-            title={entry.title}
-            org={entry.org}
-          >
-            {entry.detail && <p>{entry.detail}</p>}
-            {entry.href && (
-              <Button
-                variant="link"
-                href={entry.href}
-                icon="arrow"
-                className="mt-2"
-              >
-                Read the case study
-              </Button>
-            )}
-          </TimelineItem>
-        ))}
-      </Timeline>
-    </div>
-  );
-}
-
-/** 006 / 008: experience timeline; dots fill as the visitor scrolls (brief §5.6). */
+/** Work, education and training as one commit-graph timeline. */
 export function ExperienceSection() {
   return (
     <section
       id="experience"
       aria-labelledby="experience-title"
-      data-section="experience"
-      className="relative"
+      className="container-site grid-site gap-y-12 py-24 md:py-32"
     >
-      <div className="container-site grid-site gap-y-16 py-32">
-        <Eyebrow className="col-span-12">Experience</Eyebrow>
-        <div className="col-span-12 md:col-span-6 md:col-start-7 md:text-right">
-          <DisplayHeading
-            reveal
-            id="experience-title"
-            roman="Let’s make it"
-            italic="your next build"
-          />
-          <Button href="/resume.pdf" download icon="download" className="mt-10">
-            Download CV
-          </Button>
-        </div>
-        <div
-          className="col-span-12 flex flex-col gap-16 md:col-span-7"
-          data-timeline
-        >
-          <Group label="Work" entries={experience} />
-          <Group label="Education" entries={education} />
-          <Group label="Training and certificates" entries={training} />
+      <div className="col-span-12 md:col-span-4">
+        <div className="md:sticky md:top-[calc(var(--header-h)+2.5rem)]">
+          <h2 id="experience-title" className="type-h2">
+            Experience
+          </h2>
+          <p className="mt-4 text-lead text-ink-2">
+            Where I work and what I studied, most recent first.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button href="/resume.pdf" download icon="download">
+              Download CV
+            </Button>
+            <Button variant="link" href="/resume">
+              Read the résumé
+            </Button>
+          </div>
         </div>
       </div>
-      <SectionCounter
-        index={6}
-        className="absolute right-(--gutter) bottom-8"
+      <Timeline
+        className="col-span-12 md:col-span-7 md:col-start-6"
+        groups={[
+          { label: "Work", entries: experience },
+          { label: "Education", entries: education },
+          { label: "Training and certificates", entries: training },
+        ]}
       />
     </section>
   );

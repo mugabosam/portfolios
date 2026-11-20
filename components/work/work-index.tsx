@@ -1,13 +1,11 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { type ReactNode, useSyncExternalStore } from "react";
 
-import { ProjectCard } from "@/components/ui/project-card";
 import {
   type Category,
   categories,
   categoryLabels,
-  type ProjectSummary,
 } from "@/lib/content/categories";
 import { cn } from "@/lib/cn";
 
@@ -49,12 +47,19 @@ function setFilter(filter: Filter) {
 
 const noopSubscribe = () => () => {};
 
+export type WorkIndexItem = {
+  slug: string;
+  category: readonly Category[];
+  /** The server-rendered card. */
+  card: ReactNode;
+};
+
 /**
  * Project list with category filters. Without JavaScript every project is
  * listed and the filter buttons stay invisible (but keep their space, so the
  * list never shifts), so nothing on screen is dead.
  */
-export function WorkIndex({ projects }: { projects: ProjectSummary[] }) {
+export function WorkIndex({ projects }: { projects: WorkIndexItem[] }) {
   const hydrated = useSyncExternalStore(
     noopSubscribe,
     () => true,
@@ -76,7 +81,7 @@ export function WorkIndex({ projects }: { projects: ProjectSummary[] }) {
         role="group"
         aria-label="Filter projects by category"
         aria-hidden={!hydrated}
-        className={cn("mb-12 flex flex-wrap gap-2", !hydrated && "invisible")}
+        className={cn("mb-10 flex flex-wrap gap-2", !hydrated && "invisible")}
       >
         {filters.map((filter) => {
           const count =
@@ -91,17 +96,17 @@ export function WorkIndex({ projects }: { projects: ProjectSummary[] }) {
               aria-pressed={pressed}
               onClick={() => setFilter(filter)}
               className={cn(
-                "inline-flex min-h-tap items-center gap-3 border px-4 type-label transition-colors duration-(--dur-ui) ease-out",
+                "inline-flex min-h-tap items-center gap-2 rounded-full border px-4 text-small font-semibold transition-colors duration-(--dur-ui) ease-out",
                 pressed
-                  ? "border-fg bg-fg text-bg"
-                  : "border-line-strong text-fg hocus:border-fg",
+                  ? "border-ink bg-ink text-white"
+                  : "border-line-strong bg-surface text-ink hocus:border-ink",
               )}
             >
               {filter === "all" ? "All" : categoryLabels[filter]}
               <span
                 className={cn(
-                  "tabular-nums",
-                  pressed ? "text-bg" : "text-fg-muted",
+                  "rounded-full px-1.5 text-caption tabular-nums",
+                  pressed ? "bg-white/15 text-white" : "bg-paper text-ink-2",
                 )}
               >
                 {count}
@@ -117,22 +122,13 @@ export function WorkIndex({ projects }: { projects: ProjectSummary[] }) {
           : ""}
       </p>
 
-      <ol className="border-b border-line">
+      <ul className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {visible.map((project) => (
-          <li key={project.slug}>
-            <ProjectCard
-              index={project.order}
-              title={project.title}
-              href={`/work/${project.slug}`}
-              summary={project.summary}
-              year={String(project.year)}
-              category={project.category.map((c) => categoryLabels[c])}
-              stack={project.stack}
-              headingLevel="h3"
-            />
+          <li key={project.slug} className="flex">
+            {project.card}
           </li>
         ))}
-      </ol>
+      </ul>
     </div>
   );
 }

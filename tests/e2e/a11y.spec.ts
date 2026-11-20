@@ -19,14 +19,16 @@ for (const route of routes) {
   test(`${route} has no axe violations`, async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(route);
-    // Let finite animations (preloader demo, reveals) settle so contrast is
-    // measured at rest. Infinite ones (scroll cue, orbit) never finish.
+    // Let finite, time-based animations (the hero card's entrance) settle so
+    // contrast is measured at rest. Infinite ones (the live status dot) and
+    // scroll-driven ones (header, timeline line) never finish.
     await page.evaluate(() =>
       Promise.allSettled(
         document
           .getAnimations()
           .filter(
             (animation) =>
+              animation.timeline instanceof DocumentTimeline &&
               animation.effect?.getTiming().iterations !== Infinity,
           )
           .map((animation) => animation.finished),

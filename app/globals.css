@@ -1,45 +1,69 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Design tokens: CSS custom properties are the source of truth (brief §4).
-   Tailwind utilities read them through @theme below, so a token changed here
-   changes everywhere. Contrast for every text pair is in docs/contrast.md.
+   Design tokens. CSS custom properties are the source of truth; Tailwind
+   reads them through @theme below. Palette "Kigali morning": cool paper,
+   navy ink, and the three colours of the Rwandan flag used with restraint
+   (sky for anything interactive, sun for the one primary action in view,
+   leaf for "live" and status). Code is always set on navy panels.
+   Contrast for every pair is checked by `pnpm contrast` (docs/contrast.md).
    ========================================================================== */
 
 :root {
-  /* Colour */
-  --bg: #000000;
-  --bg-elevated: #0b0b0b;
-  --surface-light: #f4f3f0; /* the one light "card" section */
-  --fg: #ffffff;
-  --fg-muted: #b5b5b5;
-  --fg-subtle: #8c8c8c; /* large text only (≥ 24px, or ≥ 18.66px bold) */
-  --fg-on-light: #0a0a0a;
-  --line: rgb(255 255 255 / 0.16); /* decorative dividers only */
-  --line-strong: rgb(255 255 255 / 0.6); /* control borders, ≥ 3:1 */
-  --focus: #ffffff;
+  /* Surfaces and text */
+  --paper: #f5f7fa;
+  --surface: #ffffff;
+  --ink: #0b1b2b;
+  --ink-2: #435468;
+  --ink-3: #5b6b80;
+  --line: #dce3eb;
+  --line-strong: #7c8da3;
+
+  /* Accents */
+  --sky: #0070a8;
+  --sky-bright: #00a1de;
+  --sky-tint: #e4f2fa;
+  --sun: #fad201;
+  --sun-deep: #e8c200;
+  --leaf: #1e8e5a;
+  --leaf-ink: #146c43;
+  --leaf-tint: #e3f4ea;
+
+  /* Code panels */
+  --code: #0b1b2b;
+  --code-panel: #11263c;
+  --code-line: #223a55;
+  --code-fg: #d6e2ee;
+  --code-muted: #8ea3ba;
+  --code-key: #6cc9f2;
+  --code-string: #f6dc5c;
+  --code-number: #7fdcae;
+
+  --focus: var(--sky);
 
   /* Layout */
-  --content-max: 1440px;
-  --gutter: clamp(1.25rem, 5vw, 4rem);
-  --measure: 65ch;
-  --header-h: 4.5rem;
+  --content-max: 1200px;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --measure: 66ch;
+  --header-h: 4rem;
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-ui: 240ms;
-  --dur-reveal: 800ms;
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-ui: 180ms;
+  --dur-move: 320ms;
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 /* Higher contrast when the visitor asks for it. */
 @media (prefers-contrast: more) {
   :root {
-    --fg-muted: #e6e6e6;
-    --fg-subtle: #cccccc;
-    --line: rgb(255 255 255 / 0.4);
-    --line-strong: #ffffff;
+    --ink-2: #26364a;
+    --ink-3: #33445a;
+    --line: #a9b6c6;
+    --line-strong: #4a5b70;
+    --sky: #005585;
   }
 }
 
@@ -51,47 +75,83 @@
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-bg-elevated: var(--bg-elevated);
-  --color-surface-light: var(--surface-light);
-  --color-fg: var(--fg);
-  --color-fg-muted: var(--fg-muted);
-  --color-fg-subtle: var(--fg-subtle);
-  --color-fg-on-light: var(--fg-on-light);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
+  --color-sky: var(--sky);
+  --color-sky-bright: var(--sky-bright);
+  --color-sky-tint: var(--sky-tint);
+  --color-sun: var(--sun);
+  --color-sun-deep: var(--sun-deep);
+  --color-leaf: var(--leaf);
+  --color-leaf-ink: var(--leaf-ink);
+  --color-leaf-tint: var(--leaf-tint);
+  --color-code: var(--code);
+  --color-code-panel: var(--code-panel);
+  --color-code-line: var(--code-line);
+  --color-code-fg: var(--code-fg);
+  --color-code-muted: var(--code-muted);
+  --color-code-key: var(--code-key);
+  --color-code-string: var(--code-string);
+  --color-code-number: var(--code-number);
   --color-focus: var(--focus);
+  --color-white: #ffffff;
 
-  --font-display: var(--font-instrument-serif), "Times New Roman", serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Aliases kept for the MDX components and older pages. */
+  --color-bg: var(--paper);
+  --color-bg-elevated: var(--surface);
+  --color-fg: var(--ink);
+  --color-fg-muted: var(--ink-2);
+  --color-fg-subtle: var(--ink-3);
+
+  --font-sans: var(--font-mona), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-mona), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
-@theme {
-  /* Fluid type scale (brief §4.2). Labels never go below 12px. */
-  --text-label: 0.75rem;
-  --text-label--line-height: 1.4;
+@theme static {
+  /* Type scale on a ~1.25 ratio from a 17px body. */
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.45;
   --text-small: 0.875rem;
-  --text-small--line-height: 1.5;
+  --text-small--line-height: 1.55;
   --text-body: 1.0625rem;
-  --text-body--line-height: 1.6;
-  --text-wordmark: 1.625rem;
+  --text-body--line-height: 1.65;
+  --text-lead: clamp(1.125rem, 1.3vw, 1.3125rem);
+  --text-lead--line-height: 1.55;
+  --text-h4: 1.25rem;
+  --text-h4--line-height: 1.3;
+  --text-h3: clamp(1.375rem, 1.9vw, 1.625rem);
+  --text-h3--line-height: 1.25;
+  --text-manifesto: clamp(1.375rem, 2.3vw, 1.875rem);
+  --text-manifesto--line-height: 1.4;
+  --text-h2: clamp(1.875rem, 3.4vw, 2.625rem);
+  --text-h2--line-height: 1.12;
+  --text-display: clamp(2.5rem, 5.6vw, 4.25rem);
+  --text-display--line-height: 1.03;
+  /* Old names, mapped onto the new scale. */
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.45;
+  --text-wordmark: 1.0625rem;
   --text-wordmark--line-height: 1;
-  --text-lead: clamp(1.125rem, 1.4vw, 1.375rem);
-  --text-lead--line-height: 1.5;
-  --text-h4: clamp(1.375rem, 1.8vw, 1.75rem);
-  --text-h4--line-height: 1.15;
-  --text-h3: clamp(1.75rem, 3.2vw, 3rem);
-  --text-h3--line-height: 1.05;
-  --text-manifesto: clamp(1.5rem, 2.6vw, 2.5rem);
-  --text-manifesto--line-height: 1.25;
-  --text-h2: clamp(2.5rem, 6vw, 5.5rem);
-  --text-h2--line-height: 0.95;
-  --text-display: clamp(4rem, 12vw, 11rem);
-  --text-display--line-height: 0.9;
 
-  --tracking-label: 0.2em;
-  --tracking-display: -0.015em;
+  --tracking-display: -0.032em;
+  --tracking-label: 0;
+
+  --text-h1: clamp(2.25rem, 4.4vw, 3.375rem);
+  --text-h1--line-height: 1.06;
+
+  /* Shape: small for chips, medium for buttons, large for panels and cards. */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --shadow-float:
+    0 1px 0 rgb(11 27 43 / 0.04), 0 22px 44px -22px rgb(11 27 43 / 0.4);
 
   /* 44px minimum touch target */
   --spacing-tap: 2.75rem;
@@ -102,8 +162,8 @@
 /* ==========================================================================
    State variants
    `hocus:` = hover (on devices that hover) or keyboard focus. Each variant
-   can also be forced with data-force="hover|active" so /styleguide can show
-   every state without interaction.
+   can also be forced with data-force="hover|focus|active" so /styleguide can
+   show every state without interaction.
    ========================================================================== */
 
 @custom-variant hocus {
@@ -163,49 +223,66 @@
 @utility grid-site {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: clamp(1rem, 2vw, 1.5rem);
+  column-gap: clamp(1rem, 2vw, 1.75rem);
 }
 
-/* Tiny, widely tracked uppercase UI text: eyebrows, nav, buttons, counters. */
-@utility type-label {
-  font-family: var(--font-sans);
-  font-size: var(--text-label);
-  line-height: var(--text-label--line-height);
-  font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-}
-
+/* Headlines: Mona Sans, semi-expanded and heavy, sentence case. */
 @utility type-display {
   font-family: var(--font-display);
   font-size: var(--text-display);
   line-height: var(--text-display--line-height);
-  font-weight: 400;
+  font-weight: 720;
+  font-stretch: 112%;
   letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+@utility type-h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  line-height: var(--text-h1--line-height);
+  font-weight: 700;
+  font-stretch: 110%;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
 }
 
 @utility type-h2 {
   font-family: var(--font-display);
   font-size: var(--text-h2);
   line-height: var(--text-h2--line-height);
-  font-weight: 400;
-  letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
+  font-weight: 680;
+  font-stretch: 108%;
+  letter-spacing: -0.024em;
+  text-wrap: balance;
 }
 
-/* The one light section. Re-points the colour tokens so every component
-   inside it stays legible without knowing it is on a light surface. */
-@utility surface-light {
-  --bg: var(--surface-light);
-  --fg: var(--fg-on-light);
-  --fg-muted: #474747;
-  --fg-subtle: #5c5c5c;
-  --line: rgb(10 10 10 / 0.16);
-  --line-strong: rgb(10 10 10 / 0.7);
-  --focus: var(--fg-on-light);
-  background-color: var(--bg);
-  color: var(--fg);
+@utility type-h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  line-height: var(--text-h3--line-height);
+  font-weight: 640;
+  font-stretch: 104%;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* Small UI text: navigation, buttons, captions. Sentence case. */
+@utility type-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  line-height: var(--text-caption--line-height);
+  font-weight: 560;
+  letter-spacing: 0.005em;
+}
+
+/* The navy panel every piece of code sits on. */
+@utility code-panel {
+  --focus: var(--code-key);
+  background-color: var(--code);
+  color: var(--code-fg);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
 }
 
 /* ==========================================================================
@@ -213,16 +290,33 @@
    ========================================================================== */
 
 @layer components {
+  /* Header: transparent over the hero, paper with a hairline once the page
+     scrolls. Scroll-driven where supported; solid everywhere else. */
+  .site-header {
+    background-color: color-mix(in srgb, var(--paper) 94%, transparent);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .site-header {
+      animation: header-settle linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 72px;
+    }
+  }
+
   /* Mobile menu: a native modal <dialog>, which makes the page behind it
-     inert (focus stays inside) and closes on Esc. Fades in and out. */
+     inert (focus stays inside) and closes on Esc. */
   .menu-dialog {
     opacity: 0;
     translate: 0 -0.5rem;
     transition:
-      opacity var(--dur-ui) var(--ease-out),
-      translate var(--dur-ui) var(--ease-out),
-      display var(--dur-ui) allow-discrete,
-      overlay var(--dur-ui) allow-discrete;
+      opacity var(--dur-move) var(--ease-out),
+      translate var(--dur-move) var(--ease-out),
+      display var(--dur-move) allow-discrete,
+      overlay var(--dur-move) allow-discrete;
   }
 
   .menu-dialog[open] {
@@ -238,75 +332,150 @@
   }
 
   .menu-dialog::backdrop {
-    background-color: var(--bg);
+    background-color: var(--paper);
   }
 
   html:has(.menu-dialog[open]) {
     overflow: hidden;
   }
 
-  /* The 3D Artifact layer fades in once its first frame is ready; each
-     section then sets --artifact-opacity. Still images hand over to it. */
-  .artifact-layer {
-    opacity: 0;
-    transition: opacity 800ms var(--ease-out);
+  /* Cards rise a little under the pointer or keyboard focus. */
+  .card-lift {
+    transition:
+      translate var(--dur-move) var(--ease-out),
+      box-shadow var(--dur-move) var(--ease-out),
+      border-color var(--dur-ui) var(--ease-out);
   }
 
-  [data-artifact="3d"] .artifact-layer {
-    opacity: 1;
-  }
-
-  [data-artifact-canvas] {
-    opacity: var(--artifact-opacity, 1);
-    transition: opacity 700ms var(--ease-out);
-  }
-
-  .artifact-still {
-    transition: opacity 600ms var(--ease-out);
-  }
-
-  @media (min-width: 48rem) {
-    [data-artifact="3d"] [data-orbit-stage] .artifact-still {
-      opacity: 0;
+  @media (hover: hover) {
+    .card-lift:hover {
+      translate: 0 -4px;
+      box-shadow: var(--shadow-float);
+      border-color: var(--line-strong);
     }
   }
 
-  /* "Scroll to explore": a thin line with a travelling segment. */
-  .scroll-cue {
-    position: relative;
-    display: block;
-    width: 1px;
-    height: 3rem;
-    overflow: hidden;
-    background-color: var(--line);
+  .card-lift:has(:focus-visible),
+  .card-lift[data-force~="hover"] {
+    translate: 0 -4px;
+    box-shadow: var(--shadow-float);
+    border-color: var(--line-strong);
   }
 
-  .scroll-cue::after {
+  /* Code peeks: a few lines, clipped with a soft fade, never a scrollbar. */
+  .code-peek {
+    /* Long lines must never widen the card or the grid around it. */
+    contain: inline-size;
+    overflow: hidden;
+    mask-image:
+      linear-gradient(to right, #000 calc(100% - 2.5rem), transparent),
+      linear-gradient(to bottom, #000 calc(100% - 2rem), transparent);
+    mask-composite: intersect;
+  }
+
+  .code-peek pre {
+    margin: 0;
+    overflow: hidden;
+    padding: 1rem 1.25rem 1.25rem;
+    background-color: transparent !important;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.75;
+    tab-size: 2;
+  }
+
+  .code-peek pre code {
+    font-family: inherit;
+  }
+
+  /* Without JavaScript the endpoint tabs cannot switch: show only the first. */
+  @media (scripting: none) {
+    .api-tabs [aria-selected="false"] {
+      display: none;
+    }
+  }
+
+  /* Status dot: a soft pulse that says "live". Static under reduced motion. */
+  .live-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: var(--leaf);
+  }
+
+  .live-dot::after {
     content: "";
     position: absolute;
     inset: 0;
-    background-color: var(--fg);
-    animation: scroll-cue 2.4s var(--ease-out) infinite;
+    border-radius: inherit;
+    background-color: var(--leaf);
+    animation: live-pulse 2.4s var(--ease-out) infinite;
   }
 
-  /* Orbit fallback: six stills placed on a circle, slowly turning. */
-  .orbit {
-    --orbit-radius: calc(min(64vh, 36rem) / 2);
+  /* Hero API card: the request goes out, the status arrives, then the body
+     lines appear in order. One sequence, once, on page load. */
+  .api-response .api-status {
+    animation: api-pop 360ms var(--ease-out) 420ms both;
   }
 
-  .orbit-facet {
-    transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg))
-      translateX(var(--orbit-radius)) rotate(calc(var(--i) * -60deg));
+  .api-response .api-line {
+    animation: api-line 420ms var(--ease-out) both;
+    animation-delay: calc(640ms + var(--line, 0) * 55ms);
   }
 
-  .orbit-ring {
-    animation: orbit-spin 60s linear infinite;
+  .api-response[data-swap] .api-status {
+    animation-delay: 80ms;
+  }
+
+  .api-response[data-swap] .api-line {
+    animation-delay: calc(140ms + var(--line, 0) * 35ms);
+  }
+
+  /* Experience: the branch line draws as the timeline scrolls through view. */
+  .commit-line {
+    transform-origin: top;
+  }
+
+  @supports (animation-timeline: view()) {
+    .commit-line {
+      animation: draw-line linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 70%;
+    }
+  }
+
+  /* Contribution graph: sweeps in left to right the first time it is seen. */
+  /* The wrapper is observed; only its child is clipped, because an
+     element clipped to nothing never reports itself as visible. */
+  .graph-sweep > * {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 1100ms var(--ease-in-out);
+  }
+
+  .graph-sweep[data-seen] > * {
+    clip-path: inset(0 0 0 0);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .scroll-cue::after,
-    .orbit-ring {
-      animation: none;
+    .live-dot::after,
+    .api-response .api-status,
+    .api-response .api-line,
+    .commit-line {
+      animation: none !important;
+    }
+
+    .graph-sweep > * {
+      clip-path: none;
+      transition: none;
+    }
+  }
+
+  /* Without JavaScript the sweep never gets its data-seen flag. */
+  @media (scripting: none) {
+    .graph-sweep > * {
+      clip-path: none;
     }
   }
 
@@ -331,16 +500,16 @@
   /* Résumé in print and in the generated PDF: black on white, no chrome. */
   @media print {
     :root {
-      --bg: #ffffff;
-      --bg-elevated: #ffffff;
-      --fg: #0a0a0a;
-      --fg-muted: #3d3d3d;
-      --fg-subtle: #5c5c5c;
-      --line: rgb(10 10 10 / 0.2);
-      --line-strong: rgb(10 10 10 / 0.7);
+      --paper: #ffffff;
+      --surface: #ffffff;
+      --ink: #0a0a0a;
+      --ink-2: #333333;
+      --ink-3: #555555;
+      --line: #cccccc;
+      --sky: #0a0a0a;
     }
 
-    header.fixed,
+    .site-header,
     footer,
     .noscript-nav {
       display: none !important;
@@ -362,120 +531,90 @@
     }
   }
 
-  /* Case studies: numbered section headings, quiet bullets, code blocks. */
-  .case-body {
-    counter-reset: case-section;
-  }
-
-  .case-heading {
-    counter-increment: case-section;
-  }
-
-  .case-heading::before {
-    content: counter(case-section, decimal-leading-zero) / "";
-    display: block;
-    margin-bottom: 1rem;
-    font-family: var(--font-sans);
-    font-size: var(--text-label);
-    font-weight: 500;
-    letter-spacing: var(--tracking-label);
-    color: var(--fg-muted);
-  }
-
+  /* Case studies: quiet bullets, inline code chips, code panels. */
   .case-bullet::before {
     content: "";
     position: absolute;
-    left: 0;
-    top: 0.8em;
-    width: 0.75rem;
-    height: 1px;
-    background-color: var(--fg-muted);
+    left: 0.25rem;
+    top: 0.68em;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 2px;
+    background-color: var(--sky-bright);
   }
 
   .case-body :not(pre) > code {
     font-family: var(--font-mono);
-    font-size: 0.875em;
-    padding: 0.1em 0.35em;
-    border: 1px solid var(--line);
-    background-color: var(--bg-elevated);
-    color: var(--fg);
+    font-size: 0.86em;
+    padding: 0.12em 0.4em;
+    border-radius: 5px;
+    background-color: var(--sky-tint);
+    color: var(--ink);
   }
 
   .case-body pre.shiki {
     overflow-x: auto;
-    padding: 1.5rem;
-    border: 1px solid var(--line);
+    margin: 2rem 0;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius-lg);
     font-family: var(--font-mono);
     font-size: var(--text-small);
     line-height: 1.7;
     tab-size: 2;
   }
 
+  .case-body .snippet pre.shiki {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .case-body pre.shiki:focus-visible {
+    outline-color: var(--code-key);
+  }
+
   .case-body pre.shiki code {
     font-family: inherit;
   }
+}
 
-  /* Preloader: pure CSS so it can never block content. The counter runs
-     0 to 100, then the overlay fades out; 1.5s in total, with or without
-     JavaScript. JS may dismiss it earlier (skip, or assets ready). */
-  .preloader {
-    animation: preloader-out 400ms var(--ease-out) 1100ms forwards;
-  }
-
-  .preloader[data-done] {
-    display: none;
-  }
-
-  .preloader-count {
-    counter-reset: preload var(--preload);
-    animation: preloader-count 1000ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
-  }
-
-  .preloader-count::after {
-    content: counter(preload);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .preloader {
-      display: none;
-    }
+@keyframes header-settle {
+  from {
+    background-color: transparent;
+    border-bottom-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 
-@property --preload {
-  syntax: "<integer>";
-  inherits: false;
-  initial-value: 0;
-}
-
-@keyframes preloader-count {
-  to {
-    --preload: 100;
-  }
-}
-
-@keyframes scroll-cue {
+@keyframes live-pulse {
   0% {
-    translate: 0 -100%;
+    opacity: 0.55;
+    scale: 1;
   }
-  60% {
-    translate: 0 0;
-  }
+  70%,
   100% {
-    translate: 0 100%;
-  }
-}
-
-@keyframes orbit-spin {
-  to {
-    rotate: 360deg;
-  }
-}
-
-@keyframes preloader-out {
-  to {
     opacity: 0;
-    visibility: hidden;
+    scale: 2.6;
+  }
+}
+
+@keyframes api-pop {
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+}
+
+@keyframes api-line {
+  from {
+    opacity: 0;
+    translate: -0.375rem 0;
+  }
+}
+
+@keyframes draw-line {
+  from {
+    scale: 1 0;
   }
 }
 
@@ -485,11 +624,11 @@
 
 @layer base {
   html {
-    background-color: var(--bg);
-    color: var(--fg);
+    background-color: var(--paper);
+    color: var(--ink);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    scroll-padding-top: var(--header-h);
+    scroll-padding-top: calc(var(--header-h) + 1rem);
     /* Keep the scrollbar's space reserved so locking scroll (mobile menu)
        never shifts the layout sideways. */
     scrollbar-gutter: stable;
@@ -497,11 +636,12 @@
 
   body {
     min-height: 100svh;
-    background-color: var(--bg);
-    color: var(--fg);
+    background-color: var(--paper);
+    color: var(--ink);
     font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: var(--text-body--line-height);
+    font-feature-settings: "ss01", "ss02";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
@@ -511,7 +651,7 @@
   h2,
   h3,
   h4 {
-    font-weight: 400;
+    font-weight: 650;
     text-wrap: balance;
   }
 
@@ -519,9 +659,16 @@
     text-wrap: pretty;
   }
 
+  /* Code shows exactly what was typed: no "!=" turning into a single glyph. */
+  code,
+  pre,
+  .font-mono {
+    font-variant-ligatures: none;
+  }
+
   ::selection {
-    background-color: var(--fg);
-    color: var(--bg);
+    background-color: var(--sun);
+    color: var(--ink);
   }
 
   :focus-visible,

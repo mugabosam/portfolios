@@ -1,48 +1,87 @@
-import type { ReactNode } from "react";
+import Link from "next/link";
 
+import type { TimelineEntry } from "@/content/profile";
 import { cn } from "@/lib/cn";
 
-/** Vertical timeline: a thin line with one dot per entry. */
+export type TimelineGroup = { label: string; entries: TimelineEntry[] };
+
+/**
+ * Experience drawn like a commit graph: one branch line, a ref label for
+ * each group (work, education, training) and a commit dot per entry. The
+ * current role gets a live dot and a "Now" label. Where the browser supports
+ * scroll-driven animation, the line draws itself as the list scrolls by.
+ */
 export function Timeline({
-  children,
+  groups,
   className,
 }: {
-  children: ReactNode;
+  groups: TimelineGroup[];
   className?: string;
 }) {
   return (
-    <ol className={cn("relative border-l border-line", className)}>
-      {children}
-    </ol>
+    <div className={cn("relative", className)}>
+      <span
+        aria-hidden="true"
+        className="commit-line absolute top-2 bottom-2 left-[0.6875rem] w-0.5 rounded-full bg-line-strong/50"
+      />
+      {groups.map((group, groupIndex) => (
+        <div key={group.label} className={cn(groupIndex > 0 && "mt-12")}>
+          <h3 className="relative flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="flex size-6 items-center justify-center rounded-full border-2 border-sky bg-paper"
+            >
+              <span className="size-2 rounded-full bg-sky" />
+            </span>
+            <span className="rounded-sm border border-sky/30 bg-sky-tint px-2 py-0.5 text-small font-semibold text-sky">
+              {group.label}
+            </span>
+          </h3>
+          <ol className="mt-6 flex flex-col gap-8">
+            {group.entries.map((entry) => (
+              <TimelineItem key={entry.title} entry={entry} />
+            ))}
+          </ol>
+        </div>
+      ))}
+    </div>
   );
 }
 
-/** One entry. `filled` marks the dot as reached (filled on scroll in Phase 5). */
-export function TimelineItem({
-  period,
-  title,
-  org,
-  children,
-  filled = false,
-}: {
-  period?: string;
-  title: string;
-  org: string;
-  children?: ReactNode;
-  filled?: boolean;
-}) {
+function TimelineItem({ entry }: { entry: TimelineEntry }) {
+  const current = entry.period?.includes("Present") ?? false;
   return (
-    <li className="relative pb-12 pl-8 last:pb-0 md:pl-12">
+    <li className="relative pl-12">
       <span
         aria-hidden="true"
-        data-filled={filled}
-        className="absolute top-1.5 left-0 size-3 -translate-x-1/2 rounded-full border border-fg bg-bg transition-colors duration-(--dur-ui) data-[filled=true]:bg-fg"
-      />
-      {period && <p className="mb-2 type-label text-fg-muted">{period}</p>}
-      <h3 className="font-display text-h4">{title}</h3>
-      <p className="mt-1 text-fg-muted">{org}</p>
-      {children && (
-        <div className="mt-4 max-w-(--measure) text-fg-muted">{children}</div>
+        className="absolute top-1.5 left-[0.375rem] flex size-3 items-center justify-center rounded-full border-2 border-line-strong bg-paper"
+      >
+        {current && <span className="live-dot size-1.5!" />}
+      </span>
+      <p className="flex flex-wrap items-center gap-2 text-small text-ink-3 tabular-nums">
+        {current && (
+          <span className="rounded-sm bg-leaf-tint px-1.5 font-semibold text-leaf-ink">
+            Now
+          </span>
+        )}
+        {entry.period}
+      </p>
+      <h4 className="mt-1 text-h4 font-semibold [font-stretch:104%]">
+        {entry.title}
+      </h4>
+      <p className="mt-0.5 text-ink-2">{entry.org}</p>
+      {entry.detail && (
+        <p className="mt-3 max-w-(--measure) text-small text-ink-2">
+          {entry.detail}
+        </p>
+      )}
+      {entry.href && (
+        <Link
+          href={entry.href}
+          className="mt-2 inline-flex min-h-tap items-center rounded-sm text-small font-semibold text-sky underline decoration-sky/35 underline-offset-4 hocus:decoration-sky"
+        >
+          Read the case study
+        </Link>
       )}
     </li>
   );

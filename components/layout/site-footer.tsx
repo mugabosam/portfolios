@@ -1,3 +1,6 @@
+import Link from "next/link";
+
+import { LogoMark } from "@/components/ui/icons";
 import { site } from "@/content/site";
 
 /** BUILD_DATE is stamped by next.config.ts at build time. */
@@ -11,47 +14,68 @@ const updated = new Intl.DateTimeFormat("en-US", {
 const year = builtAt.getUTCFullYear();
 
 const linkClass =
-  "inline-flex min-h-tap items-center underline decoration-line-strong underline-offset-4 transition-colors duration-(--dur-ui) hover:decoration-fg";
+  "inline-flex min-h-tap items-center rounded-sm text-small md:min-h-9 text-ink-2 transition-colors duration-(--dur-ui) hocus:text-sky";
 
 export function SiteFooter() {
   return (
-    <footer className="relative z-10 border-t border-line bg-bg">
-      <div className="container-site grid-site gap-y-12 py-16">
-        <div className="col-span-12 md:col-span-6">
-          <p className="font-display text-wordmark italic">{site.name}</p>
-          <p className="mt-2 text-small text-fg-muted">{site.location}</p>
+    <footer className="relative z-10 border-t border-line bg-paper">
+      <div className="container-site grid-site gap-y-10 pt-14 pb-10">
+        <div className="col-span-12 md:col-span-5">
+          <p className="flex items-center gap-2.5 font-semibold [font-stretch:108%]">
+            <LogoMark className="size-7" />
+            {site.name}
+          </p>
+          <p className="mt-3 max-w-xs text-small text-ink-2">
+            Backend developer in {site.location}. Python, TypeScript and the
+            interfaces on top of them.
+          </p>
         </div>
 
-        <div className="col-span-12 sm:col-span-6 md:col-span-3">
-          <h2 className="type-label text-fg-muted">Contact</h2>
+        <nav aria-label="Footer" className="col-span-6 md:col-span-2">
+          <h2 className="text-small font-semibold">Pages</h2>
+          <ul className="mt-2">
+            {site.nav.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className={linkClass}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="col-span-6 md:col-span-2">
+          <h2 className="text-small font-semibold">Elsewhere</h2>
+          <ul className="mt-2">
+            {site.socials.map((social) => (
+              <li key={social.href}>
+                <a href={social.href} rel="me noopener" className={linkClass}>
+                  {social.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a href="/api/sam" className={linkClass}>
+                /api/sam
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div className="col-span-12 md:col-span-3">
+          <h2 className="text-small font-semibold">Email</h2>
           <a
             href={`mailto:${site.email}`}
-            className={`${linkClass} mt-1 text-small break-all`}
+            className={`${linkClass} mt-2 break-all`}
           >
             {site.email}
           </a>
         </div>
 
-        <div className="col-span-12 sm:col-span-6 md:col-span-3">
-          <h2 className="type-label text-fg-muted">Elsewhere</h2>
-          <ul className="mt-1">
-            {site.socials.map((social) => (
-              <li key={social.href}>
-                <a
-                  href={social.href}
-                  rel="me noopener"
-                  className={`${linkClass} text-small`}
-                >
-                  {social.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="col-span-12 flex flex-col gap-2 border-t border-line pt-6 text-small text-fg-muted sm:flex-row sm:justify-between">
+        <div className="col-span-12 flex flex-col gap-1 border-t border-line pt-6 text-caption text-ink-3 sm:flex-row sm:justify-between">
           <p>
-            &copy; {year} {site.name}. Built by {site.name}.
+            &copy; {year} {site.name}. Designed and built by {site.name} with
+            Next.js.
           </p>
           <p>
             Last updated <time dateTime={builtAt.toISOString()}>{updated}</time>

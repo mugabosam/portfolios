@@ -1,6 +1,6 @@
 import { cacheLife } from "next/cache";
 
-import { ArrowUpRightIcon } from "@/components/ui/icons";
+import { ExternalIcon } from "@/components/ui/icons";
 
 /** The public repositories behind the case studies, in display order. */
 const REPOS = [
@@ -89,43 +89,69 @@ const monthYear = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 
+/** Language dot colours, drawn from the site palette. */
+const languageColor: Record<string, string> = {
+  Python: "var(--sky)",
+  Dart: "var(--sky-bright)",
+  Solidity: "var(--ink)",
+  TypeScript: "var(--sky)",
+  JavaScript: "var(--sun-deep)",
+  PHP: "var(--ink-3)",
+  HTML: "var(--sun-deep)",
+};
+
 export async function GitHubStrip() {
   const { repos, live } = await getRepoStats();
   return (
-    <div className="mt-24">
-      <div className="flex flex-wrap items-baseline justify-between gap-4">
-        <h3 className="font-display text-h4">On GitHub</h3>
-        <p className="type-label text-fg-muted">
+    <div className="mt-16">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <h3 className="type-h3">Public repositories</h3>
+        <p className="text-small text-ink-3">
           {live
             ? "Refreshed daily from the GitHub API"
-            : "Live stats unavailable"}
+            : "Live stats unavailable right now"}
         </p>
       </div>
-      <ul className="mt-8 grid border-t border-l border-line sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {repos.map((repo) => (
-          <li key={repo.name} className="border-r border-b border-line">
+          <li key={repo.name} className="flex">
             <a
               href={repo.url}
-              className="group flex h-full flex-col gap-3 p-6 transition-colors duration-(--dur-ui) hocus:bg-bg-elevated"
+              className="card-lift group flex w-full flex-col gap-2 rounded-lg border border-line bg-surface p-5"
             >
-              <span className="flex items-center justify-between gap-4">
-                <span className="font-mono text-small">
-                  mugabosam/{repo.name}
+              <span className="flex items-start justify-between gap-4">
+                <span className="font-mono text-small break-all">
+                  <span className="text-ink-3">mugabosam/</span>
+                  <span className="font-semibold text-ink">{repo.name}</span>
                 </span>
-                <ArrowUpRightIcon className="size-3 shrink-0 transition-transform duration-(--dur-ui) group-hocus:translate-x-1 group-hocus:-translate-y-1" />
+                <ExternalIcon className="mt-0.5 size-4 shrink-0 text-ink-3 transition-[translate,color] duration-(--dur-ui) group-hocus:translate-x-0.5 group-hocus:-translate-y-0.5 group-hocus:text-sky" />
               </span>
-              <span className="text-fg-muted">{repo.label}</span>
+              <span className="text-small text-ink-2">{repo.label}</span>
               {live && (
-                <span className="mt-auto flex flex-wrap gap-x-4 gap-y-1 type-label text-fg-muted">
-                  {repo.language && <span>{repo.language}</span>}
+                <span className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2 text-caption text-ink-3">
+                  {repo.language && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 rounded-full"
+                        style={{
+                          backgroundColor:
+                            languageColor[repo.language] ?? "var(--ink-3)",
+                        }}
+                      />
+                      {repo.language}
+                    </span>
+                  )}
                   {repo.pushedAt && (
                     <span>
                       Updated {monthYear.format(new Date(repo.pushedAt))}
                     </span>
                   )}
-                  <span>
-                    {repo.stars} {repo.stars === 1 ? "star" : "stars"}
-                  </span>
+                  {repo.stars > 0 && (
+                    <span>
+                      {repo.stars} {repo.stars === 1 ? "star" : "stars"}
+                    </span>
+                  )}
                 </span>
               )}
             </a>

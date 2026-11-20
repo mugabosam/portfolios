@@ -4,13 +4,13 @@ import { site } from "@/content/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${site.name} · Portfolio`,
+    name: `${site.name}, backend developer`,
     short_name: site.name,
     description: site.description,
     start_url: "/",
     display: "browser",
-    background_color: "#000000",
-    theme_color: "#000000",
+    background_color: "#f5f7fa",
+    theme_color: "#f5f7fa",
     icons: [
       { src: "/icon.svg", type: "image/svg+xml", sizes: "any" },
       { src: "/icon-192.png", type: "image/png", sizes: "192x192" },

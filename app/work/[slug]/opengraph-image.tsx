@@ -25,10 +25,13 @@ export function generateImageMetadata({
   ];
 }
 
-/**
- * One card per case study. The italic line is the project's first category,
- * so the card reads "MALARIACHECK / ai / ml" in the site's own voice.
- */
+/** Cuts at a word boundary so long summaries fit the card. */
+function clip(text: string, max: number) {
+  if (text.length <= max) return text;
+  return `${text.slice(0, text.lastIndexOf(" ", max)).replace(/[,.;:]$/, "")}…`;
+}
+
+/** One card per case study: title, summary, and the project as a response. */
 export default async function Image({
   params,
 }: {
@@ -36,14 +39,24 @@ export default async function Image({
 }) {
   const { slug } = await params;
   const project = getProject(slug);
-  const title = project?.title ?? "Case study";
-  const category = project
-    ? categoryLabels[project.category[0]!].toLowerCase()
-    : "work";
+  if (!project)
+    return ogImage({
+      title: "Case study",
+      subtitle: "Work by Sam Mugabo",
+      request: "/work",
+      lines: [],
+    });
   return ogImage({
-    eyebrow: "Case study",
-    roman: title,
-    italic: category,
-    footer: `${project?.year ?? ""} · ${project?.stack.slice(0, 3).join(" · ") ?? ""}`,
+    title: project.title,
+    subtitle: clip(project.summary, 120),
+    request: `/work/${project.slug}`,
+    lines: [
+      { key: "year", value: String(project.year) },
+      {
+        key: "type",
+        value: project.category.map((c) => categoryLabels[c]).join(", "),
+      },
+      { key: "stack", value: project.stack.slice(0, 2).join(", ") },
+    ],
   });
 }

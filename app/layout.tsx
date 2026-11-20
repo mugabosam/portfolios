@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Mona_Sans } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -10,24 +10,17 @@ import { getSiteUrl } from "@/lib/site-url";
 
 import "./globals.css";
 
-const display = Instrument_Serif({
+const sans = Mona_Sans({
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+  axes: ["wdth"],
   display: "swap",
-  variable: "--font-instrument-serif",
-});
-
-const sans = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
+  variable: "--font-mona",
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
-  preload: false, // only used in case-study code blocks
+  preload: false, // code panels only; Mona Sans carries all other text
   variable: "--font-jetbrains-mono",
 });
 
@@ -54,16 +47,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
-  colorScheme: "dark",
+  themeColor: "#f5f7fa",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${display.variable} ${sans.variable} ${mono.variable}`}
-    >
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
         <SkipLink />
         <SmoothScroll />

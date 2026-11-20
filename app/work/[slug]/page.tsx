@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { ArrowRightIcon } from "@/components/ui/icons";
+import { ArrowLeftIcon, ArrowRightIcon } from "@/components/ui/icons";
 import { Tag } from "@/components/ui/tag";
 import { site } from "@/content/site";
 import { MdxContent } from "@/lib/content/mdx";
@@ -15,7 +15,6 @@ import {
   getProjects,
 } from "@/lib/content/projects";
 import { categoryLabels } from "@/lib/content/categories";
-import { pad3 } from "@/lib/format";
 import { JsonLd } from "@/lib/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -48,7 +47,6 @@ export default async function CaseStudyPage({
   const project = getProject(slug);
   if (!project) notFound();
 
-  const total = getProjects().length;
   const { previous, next } = getAdjacentProjects(slug);
   const url = new URL(`/work/${slug}`, getSiteUrl()).toString();
 
@@ -86,31 +84,25 @@ export default async function CaseStudyPage({
     <article>
       <JsonLd data={structuredData} />
 
-      <header className="container-site pt-[calc(var(--header-h)+6rem)]">
-        <Eyebrow>
-          Case study · {pad3(project.order)} / {pad3(total)} ·{" "}
-          {project.category.map((c) => categoryLabels[c]).join(" / ")}
-        </Eyebrow>
-        <h1 className="mt-6 font-display text-h2 tracking-display">
-          {project.title}
-        </h1>
-        <p className="mt-8 max-w-(--measure) text-lead text-fg-muted">
-          {project.summary}
-        </p>
-
-        <dl className="mt-16 grid gap-8 border-t border-line pt-8 sm:grid-cols-2 lg:grid-cols-4">
+      <PageHeader
+        crumbs={[{ label: "Work", href: "/work" }]}
+        title={project.title}
+        intro={project.summary}
+        tight
+      >
+        <dl className="mt-10 grid gap-x-8 gap-y-6 rounded-xl border border-line bg-surface p-6 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.6fr_1.6fr_1fr]">
           <div>
-            <dt className="type-label text-fg-muted">Role</dt>
-            <dd className="mt-2">{project.role}</dd>
+            <dt className="text-small text-ink-3">Role</dt>
+            <dd className="mt-1 font-medium">{project.role}</dd>
           </div>
           <div>
-            <dt className="type-label text-fg-muted">Year</dt>
-            <dd className="mt-2">{project.year}</dd>
+            <dt className="text-small text-ink-3">Year</dt>
+            <dd className="mt-1 font-medium tabular-nums">{project.year}</dd>
           </div>
           <div>
-            <dt className="type-label text-fg-muted">Stack</dt>
+            <dt className="text-small text-ink-3">Stack</dt>
             <dd className="mt-2">
-              <ul className="flex flex-wrap gap-2">
+              <ul className="flex flex-wrap gap-1.5">
                 {project.stack.map((item) => (
                   <li key={item}>
                     <Tag>{item}</Tag>
@@ -120,8 +112,10 @@ export default async function CaseStudyPage({
             </dd>
           </div>
           <div>
-            <dt className="type-label text-fg-muted">Links</dt>
-            <dd className="mt-1 flex flex-col items-start">
+            <dt className="text-small text-ink-3">
+              {project.category.map((c) => categoryLabels[c]).join(", ")}
+            </dt>
+            <dd className="mt-0.5 flex flex-col items-start">
               {project.repo && (
                 <Button variant="link" icon="external" href={project.repo}>
                   Code on GitHub
@@ -133,7 +127,7 @@ export default async function CaseStudyPage({
                 </Button>
               )}
               {!project.repo && !project.live && (
-                <span className="mt-1 text-fg-muted">
+                <span className="mt-1 text-ink-2">
                   {project.confidential
                     ? "Internal software, not public"
                     : "No public links"}
@@ -142,18 +136,18 @@ export default async function CaseStudyPage({
             </dd>
           </div>
         </dl>
-      </header>
+      </PageHeader>
 
-      <div className="container-site mt-16">
+      <div className="container-site mt-8">
         <Image
           src={project.cover}
           alt=""
           width={1600}
-          height={1000}
+          height={460}
           loading="eager"
           fetchPriority="high"
           unoptimized
-          className="h-auto w-full border border-line"
+          className="h-auto w-full rounded-xl"
         />
       </div>
 
@@ -163,31 +157,30 @@ export default async function CaseStudyPage({
         </div>
       </div>
 
-      <nav aria-label="More case studies" className="border-t border-line">
-        <div className="container-site grid md:grid-cols-2">
+      <nav
+        aria-label="More case studies"
+        className="border-t border-line bg-surface"
+      >
+        <div className="container-site grid gap-4 py-10 md:grid-cols-2">
           {[
-            { label: "Previous", project: previous, align: "start" },
-            { label: "Next", project: next, align: "end" },
+            { label: "Previous case study", project: previous, align: "start" },
+            { label: "Next case study", project: next, align: "end" },
           ].map(({ label, project: target, align }) => (
             <Link
               key={label}
               href={`/work/${target.slug}`}
-              className={`group flex flex-col gap-3 py-16 ${align === "end" ? "md:items-end md:border-l md:border-line md:pl-12 md:text-right" : "md:pr-12"}`}
+              className={`card-lift group flex items-center gap-4 rounded-xl border border-line bg-paper p-6 ${align === "end" ? "justify-end text-right" : ""}`}
             >
-              <span className="type-label text-fg-muted">
-                {label} case study
+              {align === "start" && (
+                <ArrowLeftIcon className="size-5 shrink-0 text-sky transition-transform duration-(--dur-ui) group-hocus:-translate-x-1" />
+              )}
+              <span className="flex flex-col gap-1">
+                <span className="text-small text-ink-3">{label}</span>
+                <span className="type-h3">{target.title}</span>
               </span>
-              <span
-                className={`inline-flex items-center gap-4 font-display text-h2 tracking-display transition-transform duration-(--dur-ui) ease-out ${align === "end" ? "group-hocus:translate-x-2" : "group-hocus:-translate-x-2"}`}
-              >
-                {align === "start" && (
-                  <ArrowRightIcon className="size-6 shrink-0 rotate-180" />
-                )}
-                {target.title}
-                {align === "end" && (
-                  <ArrowRightIcon className="size-6 shrink-0" />
-                )}
-              </span>
+              {align === "end" && (
+                <ArrowRightIcon className="size-5 shrink-0 text-sky transition-transform duration-(--dur-ui) group-hocus:translate-x-1" />
+              )}
             </Link>
           ))}
         </div>

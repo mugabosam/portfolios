@@ -1,82 +1,70 @@
 import Link from "next/link";
 
+import { peeks } from "@/content/showcase";
+import { categoryLabels, type ProjectSummary } from "@/lib/content/categories";
 import { cn } from "@/lib/cn";
-import { pad3 } from "@/lib/format";
 
 import type { ForcedState } from "./button";
-import { ArrowRightIcon } from "./icons";
+import { CodePeek } from "./code-peek";
 import { Tag } from "./tag";
 
-export type ProjectCardProps = {
-  index: number;
-  title: string;
-  href: string;
-  summary: string;
-  year: string;
-  category: readonly string[];
-  stack: readonly string[];
-  headingLevel?: "h2" | "h3";
-  className?: string;
-  forceState?: ForcedState;
-};
-
 /**
- * One row of the project index: counter, large serif title, summary, year,
- * category and stack. The whole row is clickable through a stretched link,
- * and the focus ring outlines the full row.
+ * One project: a peek at its code, then the title, summary and stack. The
+ * whole card is clickable through a stretched link, and the focus ring
+ * outlines the full card.
  */
 export function ProjectCard({
-  index,
-  title,
-  href,
-  summary,
-  year,
-  category,
-  stack,
+  project,
   headingLevel: Heading = "h3",
   className,
   forceState,
-}: ProjectCardProps) {
+}: {
+  project: ProjectSummary;
+  headingLevel?: "h2" | "h3";
+  className?: string;
+  forceState?: ForcedState;
+}) {
+  const peek = peeks[project.slug];
   const forcedFocus = forceState === "focus";
   return (
     <article
       data-force={forceState === "hover" ? "hover" : undefined}
       className={cn(
-        "group relative grid-site gap-y-4 border-t border-line py-8",
+        "card-lift relative flex min-w-0 flex-col rounded-xl border border-line bg-surface",
         className,
       )}
     >
-      <p
-        className="col-span-2 type-label text-fg-muted tabular-nums md:col-span-1"
-        aria-hidden="true"
-      >
-        {pad3(index)}
-      </p>
-
-      <div className="col-span-10 md:col-span-7">
-        <Heading className="font-display text-h3">
-          <Link
-            href={href}
-            className={cn(
-              "inline-block transition-transform duration-(--dur-ui) ease-out outline-none group-hocus:translate-x-2",
-              "after:absolute after:inset-0 focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-focus",
-              forcedFocus &&
-                "after:outline-2 after:outline-offset-4 after:outline-focus",
-            )}
-          >
-            {title}
-            <ArrowRightIcon className="ml-4 inline-block size-5 -translate-x-2 align-middle opacity-0 transition-[translate,opacity] duration-(--dur-ui) ease-out group-hocus:translate-x-0 group-hocus:opacity-100" />
-          </Link>
-        </Heading>
-        <p className="mt-3 max-w-(--measure) text-fg-muted">{summary}</p>
-      </div>
-
-      <div className="col-span-12 flex flex-col gap-4 md:col-span-4 md:items-end">
-        <p className="type-label text-fg-muted">
-          {year} · {category.join(" / ")}
+      {peek && (
+        <CodePeek
+          peek={peek}
+          className="m-2 mb-0"
+          bodyClassName="h-44 overflow-hidden"
+        />
+      )}
+      <div className="flex flex-1 flex-col p-6 pt-5">
+        <div className="flex items-baseline justify-between gap-4">
+          <Heading className="type-h3">
+            <Link
+              href={`/work/${project.slug}`}
+              className={cn(
+                "outline-none after:absolute after:inset-0 after:rounded-xl focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-focus",
+                forcedFocus &&
+                  "after:outline-2 after:outline-offset-2 after:outline-focus",
+              )}
+            >
+              {project.title}
+            </Link>
+          </Heading>
+          <span className="text-small text-ink-3 tabular-nums">
+            {project.year}
+          </span>
+        </div>
+        <p className="mt-1 text-small font-medium text-sky">
+          {project.category.map((c) => categoryLabels[c]).join(", ")}
         </p>
-        <ul className="flex flex-wrap gap-2 md:justify-end" aria-label="Stack">
-          {stack.map((item) => (
+        <p className="mt-3 text-ink-2">{project.summary}</p>
+        <ul className="mt-auto flex flex-wrap gap-1.5 pt-5" aria-label="Stack">
+          {project.stack.slice(0, 5).map((item) => (
             <li key={item}>
               <Tag>{item}</Tag>
             </li>

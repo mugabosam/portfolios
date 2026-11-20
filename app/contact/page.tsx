@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/contact-form";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
+import { CopyEmail } from "@/components/ui/copy-email";
 import { availability } from "@/content/profile";
 import { site } from "@/content/site";
 
@@ -20,66 +21,64 @@ export default function ContactPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Contact"
-        roman="Start a"
-        italic="conversation"
+        title="Let’s talk"
         intro="Have a backend to build, a model to ship, or a team with room for a junior developer who takes testing seriously? Write to me."
       />
 
       <section
         aria-labelledby="contact-ways"
-        className="container-site grid-site gap-y-16 pb-32"
+        className="container-site grid-site gap-y-10 pb-24 md:pb-32"
       >
         <h2 id="contact-ways" className="sr-only">
           Ways to get in touch
         </h2>
 
         <div className="col-span-12 md:col-span-7">
-          {formEnabled ? (
-            <ContactForm turnstileSiteKey={turnstileSiteKey} />
-          ) : (
-            <div className="border border-line p-8">
-              <p className="type-label text-fg-muted">Email</p>
-              <a
-                href={`mailto:${site.email}`}
-                className="mt-4 inline-flex min-h-tap items-center font-display text-h3 break-all underline decoration-line-strong underline-offset-8 transition-colors duration-(--dur-ui) hocus:decoration-fg"
-              >
-                {site.email}
-              </a>
-              <p className="mt-6 max-w-(--measure) text-fg-muted">
-                A short note about what you are building is enough. I reply
-                within a few days.
-              </p>
-            </div>
-          )}
+          <div className="rounded-xl border border-line bg-surface p-6 sm:p-8">
+            {formEnabled ? (
+              <ContactForm turnstileSiteKey={turnstileSiteKey} />
+            ) : (
+              <>
+                <h3 className="type-h3">Email me directly</h3>
+                <p className="mt-3 max-w-(--measure) text-ink-2">
+                  A short note about what you are building is enough. I reply
+                  within a few days.
+                </p>
+                <CopyEmail email={site.email} className="mt-6" />
+              </>
+            )}
+          </div>
         </div>
 
-        <aside className="col-span-12 flex flex-col gap-10 md:col-span-4 md:col-start-9">
+        <aside className="col-span-12 flex flex-col gap-8 md:col-span-4 md:col-start-9">
           <div>
-            <h3 className="type-label text-fg-muted">Direct</h3>
-            <ul className="mt-4 flex flex-col items-start">
-              <li>
-                <Button variant="link" href={`mailto:${site.email}`}>
-                  {site.email}
-                </Button>
-              </li>
-              {github && (
-                <li>
-                  <Button variant="link" href={github.href} icon="external">
-                    GitHub
-                  </Button>
-                </li>
-              )}
-            </ul>
+            <h3 className="text-small font-semibold">Availability</h3>
+            <p className="mt-2 inline-flex items-center gap-2.5 text-ink-2">
+              <span className="live-dot shrink-0" aria-hidden="true" />
+              {availability.status}
+            </p>
+            <p className="mt-1 text-ink-2">{availability.where}</p>
           </div>
-          <div>
-            <h3 className="type-label text-fg-muted">Availability</h3>
-            <p className="mt-4 text-fg-muted">{availability}</p>
-          </div>
-          <div>
-            <h3 className="type-label text-fg-muted">Based in</h3>
-            <p className="mt-4 text-fg-muted">{site.location}</p>
-          </div>
+          {formEnabled && (
+            <div>
+              <h3 className="text-small font-semibold">Email</h3>
+              <Button
+                variant="link"
+                href={`mailto:${site.email}`}
+                className="mt-1"
+              >
+                {site.email}
+              </Button>
+            </div>
+          )}
+          {github && (
+            <div>
+              <h3 className="text-small font-semibold">Code</h3>
+              <Button href={github.href} icon="github" className="mt-3">
+                github.com/mugabosam
+              </Button>
+            </div>
+          )}
         </aside>
       </section>
     </>

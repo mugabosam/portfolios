@@ -1,22 +1,23 @@
 import type { ThemeRegistration } from "shiki";
 
 /**
- * Monochrome syntax theme so code blocks stay within the site's black and
- * white palette. Every colour passes 4.5:1 on the #0b0b0b block background
- * (the dimmest, comments at #8c8c8c, is 5.85:1).
+ * Syntax theme for the navy code panels. It reuses the site palette: sky for
+ * keywords, sun for strings, leaf for numbers. Every colour passes 4.5:1 on
+ * the #0b1b2b panel (the dimmest, comments at #8ea3ba, is 6.6:1); see
+ * docs/contrast.md.
  */
-export const monoTheme: ThemeRegistration = {
-  name: "portfolio-mono",
+export const codeTheme: ThemeRegistration = {
+  name: "portfolio-navy",
   type: "dark",
   colors: {
-    "editor.background": "#0b0b0b",
-    "editor.foreground": "#d9d9d9",
+    "editor.background": "#0b1b2b",
+    "editor.foreground": "#d6e2ee",
   },
   settings: [
-    { settings: { foreground: "#d9d9d9", background: "#0b0b0b" } },
+    { settings: { foreground: "#d6e2ee", background: "#0b1b2b" } },
     {
       scope: ["comment", "punctuation.definition.comment", "string.comment"],
-      settings: { foreground: "#8c8c8c", fontStyle: "italic" },
+      settings: { foreground: "#8ea3ba", fontStyle: "italic" },
     },
     {
       scope: [
@@ -26,12 +27,13 @@ export const monoTheme: ThemeRegistration = {
         "storage.modifier",
         "keyword.control",
         "keyword.operator.new",
+        "keyword.operator.logical",
       ],
-      settings: { foreground: "#ffffff" },
+      settings: { foreground: "#6cc9f2" },
     },
     {
       scope: ["string", "string.quoted", "string.template"],
-      settings: { foreground: "#b5b5b5" },
+      settings: { foreground: "#f6dc5c" },
     },
     {
       scope: [
@@ -48,23 +50,24 @@ export const monoTheme: ThemeRegistration = {
         "support.class",
         "support.type",
       ],
-      settings: { foreground: "#f2f2f2", fontStyle: "italic" },
+      settings: { foreground: "#a9dcf5" },
     },
     {
       scope: ["constant.numeric", "constant.language", "constant.other"],
-      settings: { foreground: "#e6e6e6" },
+      settings: { foreground: "#7fdcae" },
     },
     {
       scope: ["variable.parameter"],
-      settings: { foreground: "#cfcfcf", fontStyle: "italic" },
+      settings: { foreground: "#e3ebf3", fontStyle: "italic" },
     },
     {
       scope: [
         "entity.name.tag",
         "meta.decorator",
         "entity.name.function.decorator",
+        "punctuation.decorator",
       ],
-      settings: { foreground: "#e6e6e6" },
+      settings: { foreground: "#7fdcae" },
     },
   ],
 };

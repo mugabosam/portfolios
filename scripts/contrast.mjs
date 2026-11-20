@@ -46,118 +46,139 @@ function ratio(fg, bg) {
 }
 
 const AA_TEXT = 4.5;
-const AA_LARGE = 3;
 const NON_TEXT = 3;
 
 /** [foreground token, value, background token, value, use, required ratio] */
 const pairs = [
-  // Dark surfaces (default)
-  ["--fg", "#ffffff", "--bg", "#000000", "Body text, headings", AA_TEXT],
+  // Page and cards
+  ["--ink", "#0b1b2b", "--paper", "#f5f7fa", "Headings, body text", AA_TEXT],
+  ["--ink-2", "#435468", "--paper", "#f5f7fa", "Secondary text", AA_TEXT],
+  ["--ink-3", "#5b6b80", "--paper", "#f5f7fa", "Meta text, captions", AA_TEXT],
+  ["--ink-2", "#435468", "--surface", "#ffffff", "Text on cards", AA_TEXT],
+  ["--ink-3", "#5b6b80", "--surface", "#ffffff", "Meta text on cards", AA_TEXT],
   [
-    "--fg-muted",
-    "#b5b5b5",
-    "--bg",
-    "#000000",
-    "Labels, secondary text",
+    "--ink-3",
+    "#5b6b80",
+    "--sky-tint",
+    "#e4f2fa",
+    "Text on the sky wash",
     AA_TEXT,
   ],
-  ["--fg-subtle", "#8c8c8c", "--bg", "#000000", "Large text only", AA_LARGE],
+  ["--sky", "#0070a8", "--paper", "#f5f7fa", "Links", AA_TEXT],
+  ["--sky", "#0070a8", "--surface", "#ffffff", "Links on cards", AA_TEXT],
   [
-    "--fg",
-    "#ffffff",
-    "--bg-elevated",
-    "#0b0b0b",
-    "Text on raised panels",
+    "--sky",
+    "#0070a8",
+    "--sky-tint",
+    "#e4f2fa",
+    "Group labels, linked tags",
+    AA_TEXT,
+  ],
+  ["--ink", "#0b1b2b", "--sun", "#fad201", "Primary button", AA_TEXT],
+  [
+    "--ink",
+    "#0b1b2b",
+    "--sun-deep",
+    "#e8c200",
+    "Primary button, hover",
     AA_TEXT,
   ],
   [
-    "--fg-muted",
-    "#b5b5b5",
-    "--bg-elevated",
-    "#0b0b0b",
-    "Labels on raised panels",
+    "--leaf-ink",
+    "#146c43",
+    "--leaf-tint",
+    "#e3f4ea",
+    '"Now" and status labels',
     AA_TEXT,
   ],
+  ["#b42318", "#b42318", "--paper", "#f5f7fa", "Form errors", AA_TEXT],
   [
-    "--fg-subtle",
-    "#8c8c8c",
-    "--bg-elevated",
-    "#0b0b0b",
-    "Large text on raised panels",
-    AA_LARGE,
+    "--line-strong",
+    "#7c8da3",
+    "--paper",
+    "#f5f7fa",
+    "Input and button borders",
+    NON_TEXT,
   ],
   [
     "--line-strong",
-    "rgb(255 255 255 / 0.6)",
-    "--bg",
-    "#000000",
-    "Ghost button and input borders",
-    NON_TEXT,
-  ],
-  ["--focus", "#ffffff", "--bg", "#000000", "Focus outline", NON_TEXT],
-  // Light surface (the featured-project section re-points the tokens)
-  [
-    "--fg (light)",
-    "#0a0a0a",
-    "--surface-light",
-    "#f4f3f0",
-    "Body text, headings",
-    AA_TEXT,
-  ],
-  [
-    "--fg-muted (light)",
-    "#474747",
-    "--surface-light",
-    "#f4f3f0",
-    "Labels, secondary text",
-    AA_TEXT,
-  ],
-  [
-    "--fg-subtle (light)",
-    "#5c5c5c",
-    "--surface-light",
-    "#f4f3f0",
-    "Large text only",
-    AA_LARGE,
-  ],
-  [
-    "--line-strong (light)",
-    "rgb(10 10 10 / 0.7)",
-    "--surface-light",
-    "#f4f3f0",
-    "Control borders",
+    "#7c8da3",
+    "--surface",
+    "#ffffff",
+    "Borders on cards",
     NON_TEXT,
   ],
   [
-    "--focus (light)",
-    "#0a0a0a",
-    "--surface-light",
-    "#f4f3f0",
+    "--focus (--sky)",
+    "#0070a8",
+    "--paper",
+    "#f5f7fa",
     "Focus outline",
+    NON_TEXT,
+  ],
+  ["--leaf", "#1e8e5a", "--surface", "#ffffff", "Live dot", NON_TEXT],
+  // Navy code panels and the contact band
+  ["#ffffff", "#ffffff", "--code", "#0b1b2b", "Headings on navy", AA_TEXT],
+  ["--code-fg", "#d6e2ee", "--code", "#0b1b2b", "Code, text on navy", AA_TEXT],
+  [
+    "--code-muted",
+    "#8ea3ba",
+    "--code",
+    "#0b1b2b",
+    "Comments, punctuation",
+    AA_TEXT,
+  ],
+  [
+    "--code-key",
+    "#6cc9f2",
+    "--code",
+    "#0b1b2b",
+    "Keys, keywords, links on navy",
+    AA_TEXT,
+  ],
+  ["--code-string", "#f6dc5c", "--code", "#0b1b2b", "Strings", AA_TEXT],
+  ["--code-number", "#7fdcae", "--code", "#0b1b2b", "Numbers, 200 OK", AA_TEXT],
+  ["#a9dcf5", "#a9dcf5", "--code", "#0b1b2b", "Types", AA_TEXT],
+  ["--ink", "#0b1b2b", "--sun", "#fad201", "Primary button on navy", AA_TEXT],
+  [
+    "--code-muted",
+    "#8ea3ba",
+    "--code",
+    "#0b1b2b",
+    "Inverse button border",
+    NON_TEXT,
+  ],
+  [
+    "--focus (--code-key)",
+    "#6cc9f2",
+    "--code",
+    "#0b1b2b",
+    "Focus outline on navy",
     NON_TEXT,
   ],
   // prefers-contrast: more
   [
-    "--fg-muted (more)",
-    "#e6e6e6",
-    "--bg",
-    "#000000",
-    "Labels, high-contrast mode",
+    "--ink-3",
+    "#33445a",
+    "--paper",
+    "#f5f7fa",
+    "Meta text, high-contrast mode",
     AA_TEXT,
   ],
   [
-    "--fg-subtle (more)",
-    "#cccccc",
-    "--bg",
-    "#000000",
-    "Large text, high-contrast mode",
-    AA_LARGE,
+    "--line-strong",
+    "#4a5b70",
+    "--paper",
+    "#f5f7fa",
+    "Borders, high-contrast mode",
+    NON_TEXT,
   ],
 ];
 
 const decorative = [
-  ["--line", "rgb(255 255 255 / 0.16)", "--bg", "#000000"],
-  ["--line (light)", "rgb(10 10 10 / 0.16)", "--surface-light", "#f4f3f0"],
+  ["--line", "#dce3eb", "--paper", "#f5f7fa"],
+  ["--line", "#dce3eb", "--surface", "#ffffff"],
+  ["--code-line", "#223a55", "--code", "#0b1b2b"],
 ];
 
 let failures = 0;
@@ -198,11 +219,11 @@ ${decoRows.join("\n")}
 
 ## Notes
 
-- The header uses \`mix-blend-mode: difference\` with white text. Over \`--bg\` it renders
-  white (21:1); over \`--surface-light\` it renders near-black (about 18:1).
-- \`--fg-subtle\` passes 4.5:1 on black, but the brief reserves it for large text, and
-  components follow that rule.
-- Under \`prefers-contrast: more\`, muted text, subtle text and lines get brighter.
+- Sky \`#00a1de\` and sun \`#fad201\` are used for graphics only (diagram arrows, the
+  contribution graph, the logo, the selection highlight), never for text on paper.
+- The contribution graph also reports its numbers as text, so its colour steps are not the
+  only way to read it.
+- Under \`prefers-contrast: more\`, secondary text, links and borders get darker.
 
 Result: ${failures === 0 ? "every pair passes." : `${failures} pair(s) fail.`}
 `;

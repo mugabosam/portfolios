@@ -1,58 +1,51 @@
 import Link from "next/link";
-import { Fragment } from "react";
 
-import { DisplayHeading } from "@/components/ui/display-heading";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { SectionCounter } from "@/components/ui/section-counter";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { skillGroups } from "@/content/profile";
 
 import { ContributionGraph } from "./contribution-graph";
 import { GitHubStrip } from "./github-strip";
 
 /**
- * 007 / 008: grouped skills, each linked to the projects that use it, plus
- * live GitHub stats (brief §5.7). No percentage bars.
+ * Grouped skills, each linked to the projects that use it, then live
+ * GitHub activity and repositories. No percentage bars.
  */
 export function ToolkitSection({ titles }: { titles: Record<string, string> }) {
   return (
     <section
       id="toolkit"
       aria-labelledby="toolkit-title"
-      data-section="toolkit"
-      className="relative"
+      className="border-t border-line bg-surface"
     >
-      <div className="container-site py-32">
-        <Eyebrow>Toolkit &amp; proof</Eyebrow>
-        <DisplayHeading
-          reveal
+      <div className="container-site py-24 md:py-32">
+        <SectionHeading
           id="toolkit-title"
-          roman="The toolkit"
-          italic="and where it was used"
-          className="mt-6"
+          title="Stack, and where it’s used"
+          intro="Every tool links to the projects where I used it. My GitHub activity is below, straight from GitHub."
         />
-        <div className="mt-16 grid border-t border-l border-line md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {skillGroups.map((group) => (
-            <div key={group.name} className="border-r border-b border-line p-8">
-              <h3 className="type-label text-fg">{group.name}</h3>
-              <ul className="mt-6">
+            <div key={group.name}>
+              <h3 className="border-b border-line pb-3 text-small font-semibold">
+                {group.name}
+              </h3>
+              <ul>
                 {group.skills.map((skill) => (
                   <li
                     key={skill.name}
-                    className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-line py-3"
+                    className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-line/70 py-2.5"
                   >
-                    <span>{skill.name}</span>
+                    <span className="font-medium">{skill.name}</span>
                     {skill.usedIn && (
-                      <span className="text-small text-fg-muted">
-                        {skill.usedIn.map((slug, index) => (
-                          <Fragment key={slug}>
-                            {index > 0 && ", "}
-                            <Link
-                              href={`/work/${slug}`}
-                              className="underline decoration-line-strong underline-offset-4 transition-colors duration-(--dur-ui) hocus:text-fg hocus:decoration-fg"
-                            >
-                              {titles[slug] ?? slug}
-                            </Link>
-                          </Fragment>
+                      <span className="flex flex-wrap gap-x-3 text-small">
+                        {skill.usedIn.map((slug) => (
+                          <Link
+                            key={slug}
+                            href={`/work/${slug}`}
+                            className="inline-flex min-h-6 items-center rounded-sm text-sky underline decoration-sky/30 underline-offset-4 transition-colors duration-(--dur-ui) hocus:decoration-sky"
+                          >
+                            {titles[slug] ?? slug}
+                          </Link>
                         ))}
                       </span>
                     )}
@@ -65,10 +58,6 @@ export function ToolkitSection({ titles }: { titles: Record<string, string> }) {
         <ContributionGraph />
         <GitHubStrip />
       </div>
-      <SectionCounter
-        index={7}
-        className="absolute right-(--gutter) bottom-8"
-      />
     </section>
   );
 }

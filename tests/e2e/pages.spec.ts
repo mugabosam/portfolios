@@ -12,9 +12,9 @@ test.describe("navigation", () => {
     await page.goto("/");
     for (const [label, path, heading] of [
       ["Work", "/work", "Selected work"],
-      ["About", "/about", "Patient by design"],
+      ["About", "/about", "About me"],
       ["Resume", "/resume", "Sam Mugabo"],
-      ["Contact", "/contact", "Start a conversation"],
+      ["Contact", "/contact", "Let’s talk"],
     ] as const) {
       await page
         .getByRole("navigation", { name: "Primary" })
@@ -75,10 +75,61 @@ test.describe("navigation", () => {
   });
 });
 
+test.describe("hero API card", () => {
+  test("tabs switch endpoints with the keyboard", async ({ page }) => {
+    await page.goto("/");
+    const whoami = page.getByRole("tab", { name: "whoami" });
+    await expect(whoami).toHaveAttribute("aria-selected", "true");
+    await whoami.focus();
+    await page.keyboard.press("ArrowRight");
+    const stack = page.getByRole("tab", { name: "stack" });
+    await expect(stack).toBeFocused();
+    await expect(stack).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tabpanel")).toContainText("/api/sam/stack");
+    await expect(page.getByRole("tabpanel")).toContainText('"backend"');
+    await page.keyboard.press("End");
+    await expect(page.getByRole("tabpanel")).toContainText("/api/sam/now");
+  });
+
+  test("the endpoints it shows are real", async ({ request }) => {
+    for (const [path, key] of [
+      ["/api/sam", "name"],
+      ["/api/sam/stack", "backend"],
+      ["/api/sam/now", "role"],
+    ] as const) {
+      const response = await request.get(path);
+      expect(response.status()).toBe(200);
+      expect(response.headers()["content-type"]).toContain("application/json");
+      expect(Object.keys(await response.json())).toContain(key);
+    }
+  });
+
+  test("the email can be copied", async ({ browser, browserName }) => {
+    test.skip(
+      browserName !== "chromium",
+      "Clipboard permissions are Chromium-only.",
+    );
+    const context = await browser.newContext({
+      permissions: ["clipboard-read", "clipboard-write"],
+    });
+    const page = await context.newPage();
+    await page.goto("/");
+    const contact = page.locator("#contact");
+    await contact.getByRole("button", { name: "Copy" }).click();
+    await expect(contact.getByRole("status")).toHaveText(
+      "Email address copied",
+    );
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      "popesir112@gmail.com",
+    );
+    await context.close();
+  });
+});
+
 test.describe("work", () => {
   test("filters narrow the list and live in the URL", async ({ page }) => {
     await page.goto("/work");
-    const rows = page.locator("#case-studies-title + div ol > li");
+    const rows = page.locator("#case-studies-title + div ul.grid > li");
     await expect(rows).toHaveCount(6);
 
     await page.getByRole("button", { name: /^Mobile/ }).click();
@@ -122,9 +173,9 @@ test.describe("work", () => {
     const response = await page.goto("/work/does-not-exist");
     expect(response?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "This page was never cut",
+      "This page doesn’t exist",
     );
-    await page.getByRole("link", { name: "Back to the start" }).click();
+    await page.getByRole("link", { name: "Go to the home page" }).click();
     await expect(page).toHaveURL("/");
   });
 });
@@ -189,7 +240,7 @@ test.describe("contact", () => {
 });
 
 test.describe("motion and fallbacks", () => {
-  test("reduced motion disables pinning, smooth scroll and 3D", async ({
+  test("reduced motion disables smooth scroll and keeps every section", async ({
     browser,
   }) => {
     const context = await browser.newContext({
@@ -198,8 +249,7 @@ test.describe("motion and fallbacks", () => {
     });
     const page = await context.newPage();
     await page.goto("/");
-    await page.waitForTimeout(2500);
-    expect(await page.locator(".pin-spacer").count()).toBe(0);
+    await page.waitForTimeout(1500);
     expect(await page.locator("canvas").count()).toBe(0);
     expect(
       await page.evaluate(() =>
@@ -209,10 +259,8 @@ test.describe("motion and fallbacks", () => {
     // Every section is still there and readable.
     for (const id of [
       "hero",
-      "craft",
-      "featured",
-      "philosophy",
       "work",
+      "principles",
       "experience",
       "toolkit",
       "contact",
@@ -230,11 +278,13 @@ test.describe("motion and fallbacks", () => {
     const page = await context.newPage();
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      "Built to last",
+      "I build the APIs",
     );
-    await expect(page.locator("#work-index ol > li")).toHaveCount(6);
+    // The hero's API response is server-rendered.
+    await expect(page.getByRole("tabpanel")).toContainText('"Sam Mugabo"');
+    await expect(page.locator("#work article")).toHaveCount(5);
     await expect(
-      page.getByRole("heading", { name: "On GitHub", exact: true }),
+      page.getByRole("heading", { name: "Public repositories" }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "A year on GitHub" }),

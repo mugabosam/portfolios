@@ -5,7 +5,8 @@ import { cn } from "@/lib/cn";
 
 import type { ForcedState } from "./button";
 
-const base = "inline-flex items-center border px-3 py-1 font-mono text-label";
+const base =
+  "inline-flex items-center rounded-sm border px-2 py-0.5 text-caption font-medium";
 
 /**
  * Technology chip. Static by default; with `href` it becomes a link whose
@@ -24,7 +25,9 @@ export function Tag({
 }) {
   if (!href) {
     return (
-      <span className={cn(base, "border-line text-fg-muted", className)}>
+      <span
+        className={cn(base, "border-line bg-surface text-ink-2", className)}
+      >
         {children}
       </span>
     );
@@ -35,7 +38,7 @@ export function Tag({
       data-force={forceState}
       className={cn(
         base,
-        "relative border-line-strong text-fg transition-colors duration-(--dur-ui) ease-out after:absolute after:inset-x-0 after:-inset-y-3 hocus:bg-fg hocus:text-bg",
+        "relative border-line bg-surface text-sky transition-colors duration-(--dur-ui) ease-out after:absolute after:inset-x-0 after:-inset-y-3 hocus:border-sky hocus:bg-sky-tint",
         className,
       )}
     >

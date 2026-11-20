@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
+import { GitHubIcon, LogoMark } from "@/components/ui/icons";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
 
@@ -11,29 +12,27 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/**
- * The full name at every width. The brief allows an "SM." monogram on
- * mobile, but its accessible name could not contain the visible text
- * (WCAG 2.5.3), so the monogram is kept for the favicon only.
- */
 function Wordmark({ onClick }: { onClick?: () => void }) {
   return (
     <Link
       href="/"
       onClick={onClick}
-      className="inline-flex min-h-tap items-center font-display text-wordmark italic"
+      className="-ml-1 inline-flex min-h-tap items-center gap-2.5 rounded-md px-1 text-[1.0625rem] font-semibold tracking-[-0.01em] [font-stretch:108%]"
     >
+      <LogoMark className="size-7 shrink-0" />
       {site.name}
       <span className="sr-only">, home</span>
     </Link>
   );
 }
 
+const github = site.socials.find((social) => social.label === "GitHub");
+
 /**
- * Fixed, transparent header. `mix-blend-difference` keeps the white text
- * legible over the light section. On small screens the links move into a
- * full-screen modal dialog (focus contained, Esc closes, focus returns to the
- * Menu button).
+ * Fixed header. It starts transparent over the page and settles onto a
+ * blurred paper background once the page scrolls (CSS scroll-driven, see
+ * .site-header). On small screens the links move into a full-screen modal
+ * dialog (focus contained, Esc closes, focus returns to the Menu button).
  */
 export function SiteHeader() {
   const pathname = usePathname();
@@ -61,12 +60,12 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 text-fg mix-blend-difference">
-        <div className="container-site flex h-(--header-h) items-center justify-between">
+      <header className="site-header fixed inset-x-0 top-0 z-50 text-ink">
+        <div className="container-site flex h-(--header-h) items-center justify-between gap-6">
           <Wordmark />
 
           <nav aria-label="Primary" className="hidden md:block">
-            <ul className="-mr-2 flex items-center gap-4">
+            <ul className="flex items-center gap-1">
               {site.nav.map((item) => {
                 const active = isActive(pathname, item.href);
                 return (
@@ -74,22 +73,35 @@ export function SiteHeader() {
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className="group relative inline-flex min-h-tap items-center px-2 type-label"
+                      className={cn(
+                        "relative inline-flex min-h-tap items-center rounded-md px-3 text-small font-medium transition-colors duration-(--dur-ui)",
+                        active ? "text-ink" : "text-ink-2 hocus:text-ink",
+                      )}
                     >
                       {item.label}
                       <span
                         aria-hidden="true"
                         className={cn(
-                          "absolute inset-x-2 bottom-3 h-px origin-left bg-current transition-transform duration-(--dur-ui) ease-out",
-                          active
-                            ? "scale-x-100"
-                            : "scale-x-0 group-hocus:scale-x-100",
+                          "absolute inset-x-3 bottom-2 h-0.5 origin-left rounded-full bg-sky transition-transform duration-(--dur-move) ease-(--ease-out)",
+                          active ? "scale-x-100" : "scale-x-0",
                         )}
                       />
                     </Link>
                   </li>
                 );
               })}
+              {github && (
+                <li className="ml-2 border-l border-line pl-3">
+                  <a
+                    href={github.href}
+                    rel="me noopener"
+                    className="inline-flex min-h-tap min-w-tap items-center justify-center rounded-md text-ink-2 transition-colors duration-(--dur-ui) hocus:text-ink"
+                  >
+                    <GitHubIcon className="size-5" />
+                    <span className="sr-only">GitHub</span>
+                  </a>
+                </li>
+              )}
             </ul>
           </nav>
 
@@ -98,7 +110,7 @@ export function SiteHeader() {
             onClick={openMenu}
             aria-expanded={open}
             aria-controls={menuId}
-            className="menu-toggle inline-flex min-h-tap min-w-tap items-center justify-end type-label md:hidden"
+            className="menu-toggle -mr-2 inline-flex min-h-tap items-center rounded-md px-2 text-small font-semibold md:hidden"
           >
             Menu
           </button>
@@ -111,13 +123,13 @@ export function SiteHeader() {
         </noscript>
         <nav
           aria-label="Primary (no script)"
-          className="noscript-nav container-site hidden flex-wrap gap-x-6 pb-2"
+          className="noscript-nav container-site hidden flex-wrap gap-x-5 pb-2"
         >
           {site.nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="inline-flex min-h-tap items-center type-label"
+              className="inline-flex min-h-tap items-center text-small font-medium"
             >
               {item.label}
             </Link>
@@ -131,7 +143,7 @@ export function SiteHeader() {
         aria-label="Site menu"
         data-lenis-prevent
         onClose={() => setOpen(false)}
-        className="menu-dialog fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none border-0 bg-bg p-0 text-fg md:hidden"
+        className="menu-dialog fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none border-0 bg-paper p-0 text-ink md:hidden"
       >
         <div className="flex h-full flex-col">
           <div className="container-site flex h-(--header-h) shrink-0 items-center justify-between">
@@ -139,36 +151,31 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={closeMenu}
-              className="inline-flex min-h-tap min-w-tap items-center justify-end type-label"
+              className="-mr-2 inline-flex min-h-tap items-center rounded-md px-2 text-small font-semibold"
             >
               Close
             </button>
           </div>
 
-          <nav
-            aria-label="Mobile"
-            className="container-site flex flex-1 flex-col justify-center"
-          >
-            <ul className="flex flex-col gap-2">
-              {site.nav.map((item, index) => {
+          <nav aria-label="Mobile" className="container-site flex-1 pt-10">
+            <ul className="flex flex-col border-t border-line">
+              {site.nav.map((item) => {
                 const active = isActive(pathname, item.href);
                 return (
-                  <li key={item.href}>
+                  <li key={item.href} className="border-b border-line">
                     <Link
                       href={item.href}
                       onClick={closeMenu}
                       aria-current={active ? "page" : undefined}
-                      className="inline-flex min-h-tap items-baseline gap-4 py-1 type-h2"
+                      className="flex min-h-16 items-center justify-between type-h3"
                     >
-                      <span
-                        aria-hidden="true"
-                        className="type-label text-fg-muted tabular-nums"
-                      >
-                        {String(index + 1).padStart(3, "0")}
-                      </span>
-                      <span className={cn(active && "italic")}>
-                        {item.label}
-                      </span>
+                      {item.label}
+                      {active && (
+                        <span
+                          aria-hidden="true"
+                          className="size-2 rounded-full bg-sky"
+                        />
+                      )}
                     </Link>
                   </li>
                 );
@@ -176,11 +183,11 @@ export function SiteHeader() {
             </ul>
           </nav>
 
-          <div className="container-site flex shrink-0 flex-col gap-2 pb-8">
-            <span className="type-label text-fg-muted">Get in touch</span>
+          <div className="container-site flex shrink-0 flex-col gap-1 pb-10">
+            <p className="text-small text-ink-3">Email</p>
             <a
               href={`mailto:${site.email}`}
-              className="inline-flex min-h-tap items-center text-body underline decoration-line-strong underline-offset-4"
+              className="inline-flex min-h-tap items-center text-body font-medium text-sky underline decoration-sky/35 underline-offset-4"
             >
               {site.email}
             </a>

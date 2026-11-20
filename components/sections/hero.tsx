@@ -1,71 +1,84 @@
 import { Button } from "@/components/ui/button";
-import { DisplayHeading } from "@/components/ui/display-heading";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Portrait } from "@/components/ui/portrait";
-import { SectionCounter } from "@/components/ui/section-counter";
+import { endpoints } from "@/content/api";
+import { availability } from "@/content/profile";
+import { site } from "@/content/site";
 
-/** 001 / 008: name, role, thesis and Sam's portrait (brief §5.1, portrait by Sam's request). */
+import { ApiCard } from "./api-card";
+
+/**
+ * Who Sam is, in words and as a response from his own endpoint. The portrait
+ * sits on the right with the API card overlapping it; on phones the card
+ * tucks under the portrait.
+ */
 export function HeroSection() {
+  const github = site.socials.find((social) => social.label === "GitHub");
   return (
     <section
       id="hero"
       aria-labelledby="hero-title"
-      data-section="hero"
-      className="relative min-h-svh overflow-hidden"
+      className="relative isolate overflow-x-clip"
     >
-      <div className="container-site grid-site min-h-svh content-center gap-y-10 pt-(--header-h) pb-32">
-        <div
-          className="col-span-12 flex justify-center md:col-span-5 md:col-start-8 md:row-start-1 md:justify-end"
-          data-hero-portrait
-        >
-          <Portrait
-            preload
-            loading="eager"
-            fetchPriority="high"
-            sizes="(min-width: 768px) 34vw, 60vw"
-            className="w-[60vw] max-w-xs md:w-full md:max-w-[min(100%,calc((100svh-var(--header-h)-9rem)*0.749))]"
-          />
-        </div>
-        <div
-          className="relative col-span-12 md:col-span-7 md:col-start-1 md:row-start-1"
-          data-hero-copy
-        >
-          <Eyebrow>Portfolio · Vol. 01</Eyebrow>
-          <DisplayHeading
-            as="h1"
-            id="hero-title"
-            size="display"
-            roman="Built"
-            italic="to last"
-            className="mt-6"
-          />
-          <p className="mt-8 max-w-xl text-lead text-fg-muted">
-            Sam Mugabo: backend developer in Python and TypeScript, building
-            APIs, interfaces and machine-learning models that keep working long
-            after launch.
+      {/* A quiet sky wash behind the portrait column. */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 right-0 bottom-10 -z-10 hidden w-[38%] rounded-bl-[3rem] bg-sky-tint md:block"
+      />
+
+      <div className="container-site grid-site items-center gap-y-14 pt-[calc(var(--header-h)+3rem)] pb-16 md:pt-[calc(var(--header-h)+4.5rem)] md:pb-28">
+        <div className="col-span-12 md:col-span-7 lg:col-span-6">
+          <p className="inline-flex items-center gap-2.5 rounded-full border border-line bg-surface py-1 pr-3.5 pl-3 text-caption font-medium text-ink-2">
+            <span className="live-dot" aria-hidden="true" />
+            {availability.status}
           </p>
-          <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <Button href="#work" icon="arrow">
-              View selected work
+
+          <h1 id="hero-title" className="mt-7 type-display">
+            I build the APIs and data behind useful software.
+          </h1>
+
+          <p className="mt-7 max-w-xl text-lead text-ink-2">
+            I’m Sam Mugabo, a backend developer in Kigali working in Python and
+            TypeScript. I design APIs and data models, build the interfaces on
+            top of them, and I’m currently a software development intern at
+            EUCL.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Button variant="primary" href="#work">
+              See selected work
             </Button>
-            <Button variant="link" href="/contact">
-              Get in touch
+            <Button href="/resume.pdf" download icon="download">
+              Download CV
             </Button>
+            {github && (
+              <Button
+                variant="link"
+                href={github.href}
+                icon="github"
+                className="ml-2 no-underline"
+              >
+                github.com/mugabosam
+              </Button>
+            )}
           </div>
         </div>
-      </div>
 
-      <div
-        className="absolute bottom-8 left-(--gutter) hidden items-center gap-4 sm:flex"
-        aria-hidden="true"
-      >
-        <span className="scroll-cue" />
-        <span className="type-label text-fg-muted">Scroll to explore</span>
+        <div className="relative col-span-12 mx-auto w-full max-w-sm sm:max-w-md md:col-span-5 md:col-start-8 md:max-w-none lg:col-span-5 lg:col-start-8">
+          <div className="overflow-hidden rounded-xl border border-line bg-surface md:ml-auto md:w-[86%]">
+            <Portrait
+              preload
+              loading="eager"
+              fetchPriority="high"
+              sizes="(min-width: 1024px) 420px, (min-width: 768px) 38vw, 90vw"
+              className="w-full"
+            />
+          </div>
+          <ApiCard
+            endpoints={endpoints}
+            className="relative -mt-20 w-full sm:ml-auto sm:w-[88%] md:absolute md:-bottom-12 md:-left-[8%] md:mt-0 md:ml-0 md:w-[min(24rem,100%)] lg:-left-[14%]"
+          />
+        </div>
       </div>
-      <SectionCounter
-        index={1}
-        className="absolute right-(--gutter) bottom-8"
-      />
     </section>
   );
 }

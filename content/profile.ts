@@ -4,8 +4,10 @@
  * Every fact is sourced from Sam's CV, GitHub or his own answers.
  */
 
-export const availability =
-  "Open to internships and junior backend roles · Kigali, Rwanda (UTC+2) · Remote";
+export const availability = {
+  status: "Open to internships and junior backend roles",
+  where: "Based in Kigali, Rwanda (UTC+2). Happy to work remotely.",
+};
 
 export const positioning =
   "Backend systems and machine-learning tools, engineered with patience and finished with care.";
@@ -43,7 +45,7 @@ export const education: TimelineEntry[] = [
   {
     period: "2019 – 2022",
     title: "Advanced Level (A2) Certificate",
-    org: "Kiziguro Secondary School · Mathematics, Physics and Computer Science",
+    org: "Kiziguro Secondary School (Mathematics, Physics and Computer Science)",
   },
 ];
 

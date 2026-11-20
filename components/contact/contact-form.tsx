@@ -18,7 +18,7 @@ type Status =
   | { kind: "error"; message: string };
 
 const inputClass =
-  "w-full border-0 border-b border-line-strong bg-transparent px-0 py-3 text-body text-fg placeholder:text-fg-subtle focus:border-fg focus:outline-none aria-[invalid=true]:border-fg";
+  "w-full rounded-md border border-line-strong bg-paper px-3.5 py-2.5 text-body text-ink transition-[border-color,box-shadow] duration-(--dur-ui) placeholder:text-ink-3 focus:border-sky focus:shadow-[0_0_0_3px_rgb(0_112_168/0.18)] focus:outline-none aria-[invalid=true]:border-[#b42318]";
 
 /**
  * Works three ways: with JavaScript it posts JSON and shows inline errors;
@@ -87,16 +87,14 @@ export function ContactForm({
 
   if (status.kind === "sent") {
     return (
-      <div role="status" aria-live="polite" className="border border-line p-8">
-        <p className="type-label text-fg-muted">Message sent</p>
-        <p className="mt-4 font-display text-h4">
+      <div role="status" aria-live="polite">
+        <p className="inline-flex items-center gap-2 rounded-sm bg-leaf-tint px-2 py-0.5 text-small font-semibold text-leaf-ink">
+          Message sent
+        </p>
+        <p className="mt-4 type-h3">
           Thank you. I read every message and reply within a few days.
         </p>
-        <Button
-          variant="link"
-          className="mt-8"
-          onClick={() => setStatus({ kind: "idle" })}
-        >
+        <Button className="mt-8" onClick={() => setStatus({ kind: "idle" })}>
           Send another
         </Button>
       </div>
@@ -116,7 +114,7 @@ export function ContactForm({
       method="post"
       noValidate
       onSubmit={onSubmit}
-      className="flex flex-col gap-8"
+      className="flex flex-col gap-6"
     >
       {turnstileSiteKey && (
         <Script
@@ -126,7 +124,7 @@ export function ContactForm({
       )}
 
       <div>
-        <label htmlFor={`${id}-name`} className="type-label text-fg-muted">
+        <label htmlFor={`${id}-name`} className="text-small font-semibold">
           Name
         </label>
         <input
@@ -137,14 +135,17 @@ export function ContactForm({
           className={cn(inputClass, "mt-2")}
         />
         {fields.name && (
-          <p id={`${id}-name-error`} className="mt-2 text-small text-fg">
+          <p
+            id={`${id}-name-error`}
+            className="mt-2 text-small font-medium text-[#b42318]"
+          >
             {fields.name}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor={`${id}-email`} className="type-label text-fg-muted">
+        <label htmlFor={`${id}-email`} className="text-small font-semibold">
           Email
         </label>
         <input
@@ -155,14 +156,17 @@ export function ContactForm({
           className={cn(inputClass, "mt-2")}
         />
         {fields.email && (
-          <p id={`${id}-email-error`} className="mt-2 text-small text-fg">
+          <p
+            id={`${id}-email-error`}
+            className="mt-2 text-small font-medium text-[#b42318]"
+          >
             {fields.email}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor={`${id}-message`} className="type-label text-fg-muted">
+        <label htmlFor={`${id}-message`} className="text-small font-semibold">
           Message
         </label>
         <textarea
@@ -174,7 +178,10 @@ export function ContactForm({
           placeholder="What are you building, and where could I help?"
         />
         {fields.message && (
-          <p id={`${id}-message-error`} className="mt-2 text-small text-fg">
+          <p
+            id={`${id}-message-error`}
+            className="mt-2 text-small font-medium text-[#b42318]"
+          >
             {fields.message}
           </p>
         )}
@@ -199,15 +206,19 @@ export function ContactForm({
         <div
           className="cf-turnstile"
           data-sitekey={turnstileSiteKey}
-          data-theme="dark"
+          data-theme="light"
         />
       )}
 
       <div className="flex flex-wrap items-center gap-6">
-        <Button type="submit" icon="arrow" disabled={status.kind === "sending"}>
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={status.kind === "sending"}
+        >
           {status.kind === "sending" ? "Sending" : "Send message"}
         </Button>
-        <p aria-live="polite" className="text-small text-fg-muted">
+        <p aria-live="polite" className="text-small text-ink-2">
           {status.kind === "error" ? status.message : ""}
         </p>
       </div>

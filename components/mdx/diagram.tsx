@@ -42,7 +42,7 @@ function exit(node: DiagramNode, dx: number, dy: number, gap: number) {
 }
 
 /**
- * Architecture diagram as inline SVG: monochrome boxes and arrows, real text
+ * Architecture diagram as inline SVG: rounded boxes and sky arrows, real text
  * so it stays sharp and searchable. On narrow screens it scrolls sideways in
  * its own focusable region rather than shrinking the text.
  */
@@ -60,7 +60,7 @@ export function Diagram({
   return (
     <figure className="my-16">
       <div
-        className="overflow-x-auto border border-line bg-bg-elevated"
+        className="overflow-x-auto rounded-xl border border-line bg-surface p-2"
         tabIndex={0}
         role="region"
         aria-label={`${title} (scrolls sideways on small screens)`}
@@ -84,7 +84,7 @@ export function Diagram({
               markerHeight="8"
               orient="auto-start-reverse"
             >
-              <path d="M0 0L10 5L0 10z" fill="var(--fg-muted)" />
+              <path d="M0 0L10 5L0 10z" fill="var(--sky)" />
             </marker>
           </defs>
 
@@ -107,8 +107,8 @@ export function Diagram({
                   y1={start.y}
                   x2={end.x}
                   y2={end.y}
-                  stroke="var(--fg-muted)"
-                  strokeWidth={1.25}
+                  stroke="var(--sky)"
+                  strokeWidth={1.5}
                   strokeDasharray={edge.dashed ? "5 5" : undefined}
                   markerEnd={`url(#${id}-arrow)`}
                 />
@@ -118,7 +118,7 @@ export function Diagram({
                     y={mid.y - 8}
                     textAnchor="middle"
                     fontSize={12}
-                    fill="var(--fg-muted)"
+                    fill="var(--ink-2)"
                     fontFamily="var(--font-mono)"
                   >
                     {edge.label}
@@ -137,7 +137,8 @@ export function Diagram({
                   y={node.y - NODE_H / 2}
                   width={w}
                   height={NODE_H}
-                  fill="var(--bg)"
+                  rx={10}
+                  fill="var(--paper)"
                   stroke="var(--line-strong)"
                 />
                 <text
@@ -145,7 +146,8 @@ export function Diagram({
                   y={node.sub ? node.y - 4 : node.y + 5}
                   textAnchor="middle"
                   fontSize={15}
-                  fill="var(--fg)"
+                  fontWeight={600}
+                  fill="var(--ink)"
                   fontFamily="var(--font-sans)"
                 >
                   {node.label}
@@ -156,8 +158,8 @@ export function Diagram({
                     y={node.y + 16}
                     textAnchor="middle"
                     fontSize={12}
-                    fill="var(--fg-muted)"
-                    fontFamily="var(--font-mono)"
+                    fill="var(--ink-2)"
+                    fontFamily="var(--font-sans)"
                   >
                     {node.sub}
                   </text>
@@ -167,8 +169,8 @@ export function Diagram({
           })}
         </svg>
       </div>
-      <figcaption className="mt-4 max-w-(--measure) text-small text-fg-muted">
-        <span className="type-label text-fg">Figure</span> · {description}
+      <figcaption className="mt-3 max-w-(--measure) text-small text-ink-2">
+        <span className="font-semibold text-ink">{title}.</span> {description}
       </figcaption>
     </figure>
   );

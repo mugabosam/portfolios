@@ -29,7 +29,9 @@ function Block({
       aria-label={title}
       className="resume-block grid gap-4 border-t border-line py-8 md:grid-cols-12"
     >
-      <h2 className="type-label text-fg md:col-span-3">{title}</h2>
+      <h2 className="text-small font-semibold text-sky md:col-span-3">
+        {title}
+      </h2>
       <div className="md:col-span-9">{children}</div>
     </section>
   );
@@ -48,12 +50,12 @@ function Entry({
 }) {
   return (
     <article className="resume-entry grid gap-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6">
-      <p className="text-small text-fg-muted">{period}</p>
+      <p className="text-small text-ink-3 tabular-nums">{period}</p>
       <div>
-        <h3 className="font-display text-h4">{title}</h3>
-        <p className="text-fg-muted">{org}</p>
+        <h3 className="text-h4 font-semibold [font-stretch:104%]">{title}</h3>
+        <p className="text-ink-2">{org}</p>
         {children && (
-          <div className="mt-2 text-small text-fg-muted">{children}</div>
+          <div className="mt-2 text-small text-ink-2">{children}</div>
         )}
       </div>
     </article>
@@ -69,31 +71,30 @@ export default function ResumePage() {
   const projects = getProjects().filter((project) => !project.confidential);
 
   return (
-    <article className="resume container-site pt-[calc(var(--header-h)+6rem)] pb-32">
+    <article className="resume container-site pt-[calc(var(--header-h)+3.5rem)] pb-24 md:pt-[calc(var(--header-h)+5rem)]">
       <header className="flex flex-wrap items-end justify-between gap-8 pb-12">
         <div>
-          <p className="type-label text-fg-muted">Résumé</p>
-          <h1 className="mt-4 font-display text-h2 tracking-display">
-            {site.name}
-          </h1>
-          <p className="mt-3 text-lead text-fg-muted">{site.role}</p>
-          <p className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-small text-fg-muted">
+          <p className="text-small font-semibold text-sky">Résumé</p>
+          <h1 className="mt-3 type-h1">{site.name}</h1>
+          <p className="mt-3 text-lead text-ink-2">{site.role}</p>
+          <p className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-small text-ink-2">
             <span>{site.location}</span>
             <a
               href={`mailto:${site.email}`}
-              className="underline decoration-line-strong underline-offset-4"
+              className="text-sky underline decoration-sky/35 underline-offset-4"
             >
               {site.email}
             </a>
             <a
               href="https://github.com/mugabosam"
-              className="underline decoration-line-strong underline-offset-4"
+              className="text-sky underline decoration-sky/35 underline-offset-4"
             >
               github.com/mugabosam
             </a>
           </p>
         </div>
         <Button
+          variant="primary"
           href="/resume.pdf"
           download
           icon="download"
@@ -104,7 +105,7 @@ export default function ResumePage() {
       </header>
 
       <Block title="Profile">
-        <p className="max-w-(--measure) text-fg-muted">
+        <p className="max-w-(--measure) text-ink-2">
           Backend developer and Information Technology student at the University
           of Rwanda, interning at EUCL, where I set up and maintain the backend
           of an internal inventory and device management system. I build
@@ -164,16 +165,16 @@ export default function ResumePage() {
               <p className="mt-1">
                 <a
                   href={`/work/${project.slug}`}
-                  className="underline decoration-line-strong underline-offset-4"
+                  className="text-sky underline decoration-sky/35 underline-offset-4"
                 >
                   Case study
                 </a>
                 {project.repo && (
                   <>
-                    {" · "}
+                    {", "}
                     <a
                       href={project.repo}
-                      className="underline decoration-line-strong underline-offset-4"
+                      className="text-sky underline decoration-sky/35 underline-offset-4"
                     >
                       {project.repo.replace("https://", "")}
                     </a>
@@ -189,8 +190,8 @@ export default function ResumePage() {
         <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-[10rem_1fr]">
           {skillGroups.map((group) => (
             <div key={group.name} className="contents">
-              <dt className="text-small text-fg">{group.name}</dt>
-              <dd className="text-small text-fg-muted">
+              <dt className="text-small font-semibold">{group.name}</dt>
+              <dd className="text-small text-ink-2">
                 {group.skills.map((skill) => skill.name).join(", ")}
               </dd>
             </div>
@@ -221,7 +222,7 @@ export default function ResumePage() {
       </Block>
 
       <Block title="Languages">
-        <p className="text-fg-muted">{languages.join(" · ")}</p>
+        <p className="text-ink-2">{languages.join(", ")}</p>
       </Block>
     </article>
   );

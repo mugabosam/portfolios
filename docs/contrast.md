@@ -10,21 +10,35 @@ UI component boundaries and focus indicators 3:1 (SC 1.4.11).
 
 | Foreground | Background | Used for | Ratio | Required | Result |
 | --- | --- | --- | --- | --- | --- |
-| `--fg` `#ffffff` | `--bg` `#000000` | Body text, headings | 21.00:1 | 4.5:1 | Pass |
-| `--fg-muted` `#b5b5b5` | `--bg` `#000000` | Labels, secondary text | 10.24:1 | 4.5:1 | Pass |
-| `--fg-subtle` `#8c8c8c` | `--bg` `#000000` | Large text only | 6.25:1 | 3:1 | Pass |
-| `--fg` `#ffffff` | `--bg-elevated` `#0b0b0b` | Text on raised panels | 19.68:1 | 4.5:1 | Pass |
-| `--fg-muted` `#b5b5b5` | `--bg-elevated` `#0b0b0b` | Labels on raised panels | 9.60:1 | 4.5:1 | Pass |
-| `--fg-subtle` `#8c8c8c` | `--bg-elevated` `#0b0b0b` | Large text on raised panels | 5.85:1 | 3:1 | Pass |
-| `--line-strong` `rgb(255 255 255 / 0.6)` | `--bg` `#000000` | Ghost button and input borders | 7.37:1 | 3:1 | Pass |
-| `--focus` `#ffffff` | `--bg` `#000000` | Focus outline | 21.00:1 | 3:1 | Pass |
-| `--fg (light)` `#0a0a0a` | `--surface-light` `#f4f3f0` | Body text, headings | 17.84:1 | 4.5:1 | Pass |
-| `--fg-muted (light)` `#474747` | `--surface-light` `#f4f3f0` | Labels, secondary text | 8.37:1 | 4.5:1 | Pass |
-| `--fg-subtle (light)` `#5c5c5c` | `--surface-light` `#f4f3f0` | Large text only | 6.03:1 | 3:1 | Pass |
-| `--line-strong (light)` `rgb(10 10 10 / 0.7)` | `--surface-light` `#f4f3f0` | Control borders | 7.28:1 | 3:1 | Pass |
-| `--focus (light)` `#0a0a0a` | `--surface-light` `#f4f3f0` | Focus outline | 17.84:1 | 3:1 | Pass |
-| `--fg-muted (more)` `#e6e6e6` | `--bg` `#000000` | Labels, high-contrast mode | 16.83:1 | 4.5:1 | Pass |
-| `--fg-subtle (more)` `#cccccc` | `--bg` `#000000` | Large text, high-contrast mode | 13.08:1 | 3:1 | Pass |
+| `--ink` `#0b1b2b` | `--paper` `#f5f7fa` | Headings, body text | 16.23:1 | 4.5:1 | Pass |
+| `--ink-2` `#435468` | `--paper` `#f5f7fa` | Secondary text | 7.23:1 | 4.5:1 | Pass |
+| `--ink-3` `#5b6b80` | `--paper` `#f5f7fa` | Meta text, captions | 5.07:1 | 4.5:1 | Pass |
+| `--ink-2` `#435468` | `--surface` `#ffffff` | Text on cards | 7.76:1 | 4.5:1 | Pass |
+| `--ink-3` `#5b6b80` | `--surface` `#ffffff` | Meta text on cards | 5.44:1 | 4.5:1 | Pass |
+| `--ink-3` `#5b6b80` | `--sky-tint` `#e4f2fa` | Text on the sky wash | 4.76:1 | 4.5:1 | Pass |
+| `--sky` `#0070a8` | `--paper` `#f5f7fa` | Links | 5.04:1 | 4.5:1 | Pass |
+| `--sky` `#0070a8` | `--surface` `#ffffff` | Links on cards | 5.41:1 | 4.5:1 | Pass |
+| `--sky` `#0070a8` | `--sky-tint` `#e4f2fa` | Group labels, linked tags | 4.73:1 | 4.5:1 | Pass |
+| `--ink` `#0b1b2b` | `--sun` `#fad201` | Primary button | 11.85:1 | 4.5:1 | Pass |
+| `--ink` `#0b1b2b` | `--sun-deep` `#e8c200` | Primary button, hover | 10.07:1 | 4.5:1 | Pass |
+| `--leaf-ink` `#146c43` | `--leaf-tint` `#e3f4ea` | "Now" and status labels | 5.65:1 | 4.5:1 | Pass |
+| `#b42318` `#b42318` | `--paper` `#f5f7fa` | Form errors | 6.13:1 | 4.5:1 | Pass |
+| `--line-strong` `#7c8da3` | `--paper` `#f5f7fa` | Input and button borders | 3.16:1 | 3:1 | Pass |
+| `--line-strong` `#7c8da3` | `--surface` `#ffffff` | Borders on cards | 3.39:1 | 3:1 | Pass |
+| `--focus (--sky)` `#0070a8` | `--paper` `#f5f7fa` | Focus outline | 5.04:1 | 3:1 | Pass |
+| `--leaf` `#1e8e5a` | `--surface` `#ffffff` | Live dot | 4.14:1 | 3:1 | Pass |
+| `#ffffff` `#ffffff` | `--code` `#0b1b2b` | Headings on navy | 17.41:1 | 4.5:1 | Pass |
+| `--code-fg` `#d6e2ee` | `--code` `#0b1b2b` | Code, text on navy | 13.25:1 | 4.5:1 | Pass |
+| `--code-muted` `#8ea3ba` | `--code` `#0b1b2b` | Comments, punctuation | 6.72:1 | 4.5:1 | Pass |
+| `--code-key` `#6cc9f2` | `--code` `#0b1b2b` | Keys, keywords, links on navy | 9.35:1 | 4.5:1 | Pass |
+| `--code-string` `#f6dc5c` | `--code` `#0b1b2b` | Strings | 12.70:1 | 4.5:1 | Pass |
+| `--code-number` `#7fdcae` | `--code` `#0b1b2b` | Numbers, 200 OK | 10.57:1 | 4.5:1 | Pass |
+| `#a9dcf5` `#a9dcf5` | `--code` `#0b1b2b` | Types | 11.81:1 | 4.5:1 | Pass |
+| `--ink` `#0b1b2b` | `--sun` `#fad201` | Primary button on navy | 11.85:1 | 4.5:1 | Pass |
+| `--code-muted` `#8ea3ba` | `--code` `#0b1b2b` | Inverse button border | 6.72:1 | 3:1 | Pass |
+| `--focus (--code-key)` `#6cc9f2` | `--code` `#0b1b2b` | Focus outline on navy | 9.35:1 | 3:1 | Pass |
+| `--ink-3` `#33445a` | `--paper` `#f5f7fa` | Meta text, high-contrast mode | 9.25:1 | 4.5:1 | Pass |
+| `--line-strong` `#4a5b70` | `--paper` `#f5f7fa` | Borders, high-contrast mode | 6.48:1 | 3:1 | Pass |
 
 ## Decorative only
 
@@ -33,15 +47,16 @@ not apply. Any control that uses a border uses `--line-strong` instead.
 
 | Colour | Background | Ratio |
 | --- | --- | --- |
-| `--line` `rgb(255 255 255 / 0.16)` | `--bg` `#000000` | 1.44:1 |
-| `--line (light)` `rgb(10 10 10 / 0.16)` | `--surface-light` `#f4f3f0` | 1.42:1 |
+| `--line` `#dce3eb` | `--paper` `#f5f7fa` | 1.21:1 |
+| `--line` `#dce3eb` | `--surface` `#ffffff` | 1.29:1 |
+| `--code-line` `#223a55` | `--code` `#0b1b2b` | 1.50:1 |
 
 ## Notes
 
-- The header uses `mix-blend-mode: difference` with white text. Over `--bg` it renders
-  white (21:1); over `--surface-light` it renders near-black (about 18:1).
-- `--fg-subtle` passes 4.5:1 on black, but the brief reserves it for large text, and
-  components follow that rule.
-- Under `prefers-contrast: more`, muted text, subtle text and lines get brighter.
+- Sky `#00a1de` and sun `#fad201` are used for graphics only (diagram arrows, the
+  contribution graph, the logo, the selection highlight), never for text on paper.
+- The contribution graph also reports its numbers as text, so its colour steps are not the
+  only way to read it.
+- Under `prefers-contrast: more`, secondary text, links and borders get darker.
 
 Result: every pair passes.

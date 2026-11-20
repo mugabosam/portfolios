@@ -18,8 +18,6 @@ module.exports = {
       numberOfRuns: 2,
       settings: {
         preset: "mobile",
-        // Software rendering in CI: skip the WebGL scene the way a low-end device would.
-        extraHeaders: JSON.stringify({ "Save-Data": "on" }),
       },
     },
     assert: {
@@ -42,7 +40,7 @@ module.exports = {
           },
         },
         {
-          // Home page: long, image-led and hydrated as one tree; see docs/performance.md
+          // Home page: long and hydrated as one tree; see docs/performance.md
           // for the measured numbers and why 0.75 is the guard against regression.
           matchingUrlPattern: "http://[^/]+/$",
           assertions: {

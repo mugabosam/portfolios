@@ -7,15 +7,20 @@ import type {
 
 import { cn } from "@/lib/cn";
 
-import { ArrowDownIcon, ArrowRightIcon, ArrowUpRightIcon } from "./icons";
+import { DownloadIcon, ExternalIcon, GitHubIcon } from "./icons";
 
-export type ButtonVariant = "ghost" | "solid" | "link";
-export type ButtonIcon = "arrow" | "external" | "download";
+/**
+ * primary: sun fill, the one main action in view.
+ * secondary: outlined, for everything else.
+ * inverse: outlined in light ink, for the navy contact band.
+ * link: sky text, underlined.
+ */
+export type ButtonVariant = "primary" | "secondary" | "inverse" | "link";
+export type ButtonIcon = "external" | "download" | "github";
 /** Styleguide only: renders a state without interaction. */
 export type ForcedState = "hover" | "focus" | "active";
 
 type BaseProps = {
-  /** ghost: thin outline (default). solid: white fill, once per page at most. link: underlined text. */
   variant?: ButtonVariant;
   children: ReactNode;
   className?: string;
@@ -38,66 +43,28 @@ type NativeButtonProps = BaseProps &
 export type ButtonProps = LinkButtonProps | NativeButtonProps;
 
 const base =
-  "group relative isolate inline-flex min-h-tap items-center justify-center gap-3 whitespace-nowrap type-label transition-[color,translate] duration-(--dur-ui) ease-out is-active:translate-y-px disabled:pointer-events-none disabled:opacity-40";
+  "group inline-flex min-h-tap items-center justify-center gap-2.5 whitespace-nowrap rounded-md text-small font-semibold transition-[background-color,border-color,color,translate,box-shadow] duration-(--dur-ui) ease-out is-active:translate-y-px disabled:pointer-events-none disabled:opacity-50";
 
 const variants: Record<ButtonVariant, string> = {
-  ghost: "border border-line-strong px-6 text-fg hocus:text-bg",
-  solid: "bg-fg px-6 text-bg",
+  primary:
+    "bg-sun px-5 text-ink shadow-[inset_0_-2px_0_rgb(11_27_43/0.12)] hocus:-translate-y-px hocus:bg-sun-deep",
+  secondary:
+    "border border-line-strong bg-surface px-5 text-ink hocus:-translate-y-px hocus:border-ink",
+  inverse:
+    "border border-code-muted px-5 text-white hocus:-translate-y-px hocus:border-white hocus:bg-white/5",
   // Small inline padding gives the focus ring room; negative margin keeps alignment.
-  link: "-mx-1 px-1 text-fg",
+  link: "-mx-1 rounded-sm px-1 text-sky underline decoration-sky/35 decoration-1 underline-offset-[5px] hocus:decoration-sky",
 };
 
-/** Hover layers. Only transform and opacity animate (brief §6.2). */
-function Decoration({ variant }: { variant: ButtonVariant }) {
-  if (variant === "ghost") {
-    return (
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-fg transition-transform duration-(--dur-ui) ease-out group-hocus:scale-y-100"
-      />
-    );
-  }
-  if (variant === "solid") {
-    return (
-      <span
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-bg opacity-0 transition-opacity duration-(--dur-ui) ease-out group-hocus:opacity-15"
-      />
-    );
-  }
-  return (
-    <>
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-1 bottom-3 h-px bg-line-strong"
-      />
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-1 bottom-3 h-px origin-left scale-x-0 bg-fg transition-transform duration-(--dur-ui) ease-out group-hocus:scale-x-100"
-      />
-    </>
-  );
-}
-
 function Icon({ icon }: { icon: ButtonIcon }) {
-  const motion =
-    "size-3 shrink-0 transition-transform duration-(--dur-ui) ease-out";
-  if (icon === "external") {
+  if (icon === "github") return <GitHubIcon className="size-4 shrink-0" />;
+  if (icon === "download")
     return (
-      <ArrowUpRightIcon
-        className={cn(
-          motion,
-          "group-hocus:translate-x-1 group-hocus:-translate-y-1",
-        )}
-      />
+      <DownloadIcon className="size-4 shrink-0 transition-transform duration-(--dur-ui) ease-out group-hocus:translate-y-0.5" />
     );
-  }
-  if (icon === "download") {
-    return (
-      <ArrowDownIcon className={cn(motion, "group-hocus:translate-y-1")} />
-    );
-  }
-  return <ArrowRightIcon className={cn(motion, "group-hocus:translate-x-1")} />;
+  return (
+    <ExternalIcon className="size-4 shrink-0 transition-transform duration-(--dur-ui) ease-out group-hocus:translate-x-0.5 group-hocus:-translate-y-0.5" />
+  );
 }
 
 function isLink(props: ButtonProps): props is LinkButtonProps {
@@ -112,7 +79,7 @@ function isLink(props: ButtonProps): props is LinkButtonProps {
 export function Button(props: ButtonProps) {
   if (isLink(props)) {
     const {
-      variant = "ghost",
+      variant = "secondary",
       children,
       className,
       icon,
@@ -123,11 +90,12 @@ export function Button(props: ButtonProps) {
       ...rest
     } = props;
     const classes = cn(base, variants[variant], className);
+    const leading = icon === "github";
     const content = (
       <>
-        <Decoration variant={variant} />
+        {icon && leading && <Icon icon={icon} />}
         <span>{children}</span>
-        {icon && <Icon icon={icon} />}
+        {icon && !leading && <Icon icon={icon} />}
         {newTab && <span className="sr-only"> (opens in a new tab)</span>}
       </>
     );
@@ -156,7 +124,7 @@ export function Button(props: ButtonProps) {
   }
 
   const {
-    variant = "ghost",
+    variant = "secondary",
     children,
     className,
     icon,
@@ -171,9 +139,9 @@ export function Button(props: ButtonProps) {
       data-force={forceState}
       {...rest}
     >
-      <Decoration variant={variant} />
+      {icon && icon === "github" && <Icon icon={icon} />}
       <span>{children}</span>
-      {icon && <Icon icon={icon} />}
+      {icon && icon !== "github" && <Icon icon={icon} />}
     </button>
   );
 }

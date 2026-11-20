@@ -1,139 +1,102 @@
-import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 
-import { ArtifactStill } from "@/components/three/artifact-still";
 import { Button } from "@/components/ui/button";
-import { DisplayHeading } from "@/components/ui/display-heading";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { SectionCounter } from "@/components/ui/section-counter";
+import { CodePeek } from "@/components/ui/code-peek";
+import { ProjectCard } from "@/components/ui/project-card";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { Tag } from "@/components/ui/tag";
+import { metrics, peeks } from "@/content/showcase";
 import { categoryLabels, type ProjectSummary } from "@/lib/content/categories";
-import { pad3 } from "@/lib/format";
 
-import { ProjectIndex } from "./project-index";
+function FeaturedProject({ project }: { project: ProjectSummary }) {
+  const peek = peeks[project.slug];
+  const numbers = metrics[project.slug] ?? [];
+  return (
+    <article className="card-lift relative grid grid-cols-1 overflow-hidden rounded-xl border border-line bg-surface lg:grid-cols-12">
+      <div className="flex flex-col p-6 sm:p-8 lg:col-span-5 lg:p-10">
+        <p className="flex flex-wrap items-center gap-2 text-small">
+          <span className="rounded-sm bg-sun px-2 py-0.5 font-semibold text-ink">
+            Featured
+          </span>
+          <span className="font-medium text-sky">
+            {project.category.map((c) => categoryLabels[c]).join(", ")}
+          </span>
+          <span className="text-ink-3 tabular-nums">{project.year}</span>
+        </p>
+        <h3 className="mt-5 type-h2">
+          <Link
+            href={`/work/${project.slug}`}
+            className="outline-none after:absolute after:inset-0 after:rounded-xl focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-focus"
+          >
+            {project.title}
+          </Link>
+        </h3>
+        <p className="mt-4 text-lead text-ink-2">{project.summary}</p>
+
+        {numbers.length > 0 && (
+          <dl className="mt-8 grid grid-cols-3 gap-4 border-t border-line pt-6">
+            {numbers.map((item) => (
+              <div key={item.label} className="flex flex-col gap-1">
+                <dt className="text-caption text-ink-3">{item.label}</dt>
+                <dd className="order-first text-h3 font-bold [font-stretch:108%] tabular-nums">
+                  {item.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <ul className="mt-auto flex flex-wrap gap-1.5 pt-8" aria-label="Stack">
+          {project.stack.map((item) => (
+            <li key={item}>
+              <Tag>{item}</Tag>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {peek && (
+        <div className="min-w-0 p-2 lg:col-span-7 lg:py-2 lg:pr-2 lg:pl-0">
+          <CodePeek
+            peek={peek}
+            className="h-full"
+            bodyClassName="max-h-[26rem] overflow-hidden"
+          />
+        </div>
+      )}
+    </article>
+  );
+}
 
 /**
- * 005 / 008: six facets orbit the Artifact, then collapse into it and give way
- * to the project index (brief §5.5). On small screens the orbit becomes a
- * swipeable carousel with snap points (brief §6.4).
+ * The featured case study, then four more as cards with a peek at their
+ * code. The full list, with filters, lives on /work.
  */
 export function WorkSection({ projects }: { projects: ProjectSummary[] }) {
+  const featured = projects.find((project) => project.featured);
+  const rest = projects.filter((project) => !project.featured).slice(0, 4);
   return (
     <section
       id="work"
       aria-labelledby="work-title"
-      data-section="work"
-      className="relative"
+      className="container-site scroll-mt-(--header-h) pt-16 pb-24 md:pt-20 md:pb-32"
     >
-      {/* Orbit stage (desktop). The 3D canvas draws the orbit when it runs;
-          otherwise these images orbit with CSS. */}
-      <div data-orbit-stage className="relative hidden min-h-svh md:block">
-        <p className="absolute top-32 left-(--gutter) type-label text-fg-muted">
-          Shaped by patient hands
-        </p>
-        <p className="absolute right-(--gutter) bottom-24 type-label text-fg-muted">
-          One developer, six problems
-        </p>
-        <div
-          className="absolute inset-0 flex items-center justify-center"
-          aria-hidden="true"
-        >
-          <div className="orbit relative size-[min(64vh,36rem)]">
-            <div className="absolute inset-[28%]">
-              <ArtifactStill sizes="16rem" />
-            </div>
-            <div className="orbit-ring absolute inset-0" data-orbit-ring>
-              {projects.slice(0, 6).map((project, index) => (
-                <span
-                  key={project.slug}
-                  className="orbit-facet absolute top-1/2 left-1/2 block size-16"
-                  style={{ "--i": index } as CSSProperties}
-                >
-                  <ArtifactStill
-                    sizes="4rem"
-                    className="artifact-still-satellite"
-                  />
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <SectionHeading
+        id="work-title"
+        title="Selected work"
+        intro="Real projects with real code. Each case study covers the problem, my part in it, the trade-offs and only the results that were measured."
+        action={<Button href="/work">All {projects.length} projects</Button>}
+      />
 
-      <div id="work-index" className="container-site pt-16 pb-32 md:pt-32">
-        <Eyebrow className="md:hidden">Shaped by patient hands</Eyebrow>
-        <div className="mt-6 flex flex-wrap items-end justify-between gap-8 md:mt-0">
-          <DisplayHeading
-            reveal
-            id="work-title"
-            roman="Selected"
-            italic="work"
-          />
-          <Button
-            variant="link"
-            href="/work"
-            icon="arrow"
-            className="hidden md:inline-flex"
-          >
-            All work
-          </Button>
-        </div>
-
-        {/* Desktop: index rows with a cursor-following preview. */}
-        <div className="mt-16 hidden md:block">
-          <ProjectIndex projects={projects} />
-        </div>
-
-        {/* Mobile: a swipeable carousel with inline thumbnails. */}
-        <ul
-          aria-label="Selected projects"
-          className="carousel -mx-(--gutter) mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-(--gutter) pb-6 md:hidden"
-        >
-          {projects.map((project) => (
-            <li
-              key={project.slug}
-              className="w-[78vw] max-w-sm shrink-0 snap-start"
-            >
-              <Link
-                href={`/work/${project.slug}`}
-                className="group block h-full border border-line"
-              >
-                <Image
-                  src={project.cover}
-                  alt=""
-                  width={1600}
-                  height={1000}
-                  unoptimized
-                  className="h-auto w-full border-b border-line"
-                />
-                <div className="flex flex-col gap-2 p-5">
-                  <span className="type-label text-fg-muted tabular-nums">
-                    {pad3(project.order)} ·{" "}
-                    {project.category.map((c) => categoryLabels[c]).join(" / ")}
-                  </span>
-                  <span className="font-display text-h4">{project.title}</span>
-                  <span className="text-small text-fg-muted">
-                    {project.summary}
-                  </span>
-                </div>
-              </Link>
+      <div className="mt-12 flex flex-col gap-5 md:mt-16">
+        {featured && <FeaturedProject project={featured} />}
+        <ul className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {rest.map((project) => (
+            <li key={project.slug} className="flex">
+              <ProjectCard project={project} className="w-full" />
             </li>
           ))}
         </ul>
-
-        <Button
-          variant="link"
-          href="/work"
-          icon="arrow"
-          className="mt-8 md:hidden"
-        >
-          All work
-        </Button>
       </div>
-      <SectionCounter
-        index={5}
-        className="absolute right-(--gutter) bottom-8"
-      />
     </section>
   );
 }

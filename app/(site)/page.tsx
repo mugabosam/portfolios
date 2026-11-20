@@ -1,30 +1,22 @@
-import { HomeMotion } from "@/components/motion/home-motion";
 import { ContactSection } from "@/components/sections/contact";
-import { CraftSection } from "@/components/sections/craft";
 import { ExperienceSection } from "@/components/sections/experience";
-import { FeaturedSection } from "@/components/sections/featured";
 import { HeroSection } from "@/components/sections/hero";
-import { PhilosophySection } from "@/components/sections/philosophy";
+import { PrinciplesSection } from "@/components/sections/principles";
 import { ToolkitSection } from "@/components/sections/toolkit";
 import { WorkSection } from "@/components/sections/work";
-import { ArtifactLayer } from "@/components/three/artifact-layer";
 import { site } from "@/content/site";
-import {
-  getFeaturedProject,
-  getProjects,
-  toSummary,
-} from "@/lib/content/projects";
+import { getProjects, toSummary } from "@/lib/content/projects";
 import { JsonLd } from "@/lib/json-ld";
 import { getSiteUrl } from "@/lib/site-url";
 
 /**
- * The home page: eight sections (brief §5.1–5.8). Every section is static,
- * server-rendered HTML; motion (HomeMotion) and the 3D Artifact
- * (ArtifactLayer) are progressive enhancements loaded after first paint.
+ * The home page: who Sam is, the work, how he works, experience, stack and
+ * GitHub activity, then how to reach him. Everything is static,
+ * server-rendered HTML; the few client pieces (API card tabs, copy button,
+ * graph sweep) only add to it.
  */
 export default function HomePage() {
   const projects = getProjects();
-  const featured = getFeaturedProject();
   const titles = Object.fromEntries(
     projects.map((project) => [project.slug, project.title]),
   );
@@ -56,18 +48,12 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={person} />
-      <ArtifactLayer />
-      <HomeMotion />
-      <div className="relative z-10">
-        <HeroSection />
-        <CraftSection />
-        <FeaturedSection slug={featured.slug} />
-        <PhilosophySection />
-        <WorkSection projects={projects.map(toSummary)} />
-        <ExperienceSection />
-        <ToolkitSection titles={titles} />
-        <ContactSection />
-      </div>
+      <HeroSection />
+      <WorkSection projects={projects.map(toSummary)} />
+      <PrinciplesSection />
+      <ExperienceSection />
+      <ToolkitSection titles={titles} />
+      <ContactSection />
     </>
   );
 }

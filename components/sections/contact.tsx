@@ -1,70 +1,45 @@
 import { Button } from "@/components/ui/button";
-import { DisplayHeading } from "@/components/ui/display-heading";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { Portrait } from "@/components/ui/portrait";
-import { SectionCounter } from "@/components/ui/section-counter";
+import { CopyEmail } from "@/components/ui/copy-email";
 import { availability } from "@/content/profile";
 import { site } from "@/content/site";
 
-/** 008 / 008: mirrors the hero, portrait and all, perfectly still (brief §5.8). */
+/** The page's closing band: the one dark section, and the way to reach Sam. */
 export function ContactSection() {
   const github = site.socials.find((social) => social.label === "GitHub");
   return (
     <section
       id="contact"
-      aria-labelledby="contact-eyebrow contact-title"
-      data-section="contact"
-      className="relative min-h-svh overflow-hidden"
+      aria-labelledby="contact-title"
+      className="bg-ink text-white [--focus:var(--code-key)]"
     >
-      <div className="container-site grid-site min-h-svh content-center gap-y-10 py-32">
-        <div
-          className="col-span-12 flex justify-center md:col-span-5 md:col-start-8 md:row-start-1 md:justify-end"
-          data-contact-portrait
-        >
-          <Portrait
-            decorative
-            sizes="(min-width: 768px) 34vw, 60vw"
-            className="w-[60vw] max-w-xs md:w-full md:max-w-[min(100%,calc((100svh-16rem)*0.749))]"
-          />
-        </div>
-        <div className="relative col-span-12 md:col-span-7 md:col-start-1 md:row-start-1">
-          <Eyebrow id="contact-eyebrow">A circle, returned</Eyebrow>
-          <DisplayHeading
-            reveal
-            id="contact-title"
-            size="display"
-            roman="Built"
-            italic="to last"
-            className="mt-6"
-          />
-          <p className="mt-8 max-w-xl text-lead text-fg-muted">
-            Have a backend to build or a model to ship? Let’s talk.
+      <div className="container-site grid-site gap-y-10 py-24 md:py-28">
+        <div className="col-span-12 lg:col-span-7">
+          <p className="inline-flex items-center gap-2.5 text-small font-medium text-code-fg">
+            <span className="live-dot" aria-hidden="true" />
+            {availability.status}
           </p>
-          <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <Button href="/contact" icon="arrow">
-              Start a conversation
+          <h2 id="contact-title" className="mt-5 type-h1 text-white">
+            Have a backend to build? Let’s talk.
+          </h2>
+          <p className="mt-5 max-w-xl text-lead text-code-fg">
+            A short note about what you’re building is enough. I reply within a
+            few days. {availability.where}
+          </p>
+        </div>
+        <div className="col-span-12 flex flex-col items-start gap-4 lg:col-span-5 lg:items-end lg:justify-end">
+          <CopyEmail email={site.email} tone="dark" />
+          <div className="flex flex-wrap gap-3">
+            <Button variant="primary" href="/contact">
+              Write to me
             </Button>
             {github && (
-              <Button variant="link" href={github.href} icon="external">
+              <Button variant="inverse" href={github.href} icon="github">
                 GitHub
               </Button>
             )}
           </div>
-          <p className="mt-8">
-            <a
-              href={`mailto:${site.email}`}
-              className="inline-flex min-h-tap items-center text-lead underline decoration-line-strong underline-offset-8 transition-colors duration-(--dur-ui) hocus:decoration-fg"
-            >
-              {site.email}
-            </a>
-          </p>
-          <p className="mt-10 type-label text-fg-muted">{availability}</p>
         </div>
       </div>
-      <SectionCounter
-        index={8}
-        className="absolute right-(--gutter) bottom-8"
-      />
     </section>
   );
 }

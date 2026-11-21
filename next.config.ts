@@ -49,6 +49,7 @@ const nextConfig: NextConfig = {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
   cacheComponents: true,
+  partialPrefetching: true,
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],

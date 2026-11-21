@@ -445,3 +445,42 @@ measurement cancelled a smooth jump that was already under way; only the pinned 
 screens uses it.
 
 **Footer.** Only the copyright line remains.
+
+## Revision 4: a contact form with no backend, and the orange palette (2026-11-20, Sam's requests)
+
+Sam asked for a real contact form whose messages go straight to his email "instead of having a
+backend", for a second background colour because a single colour looked flat, and then, with a
+reference image (warm white, black type, one vivid orange), for that palette instead.
+
+**Messages without a backend.** The contact section has a form (name, email, message) and the
+assistant's "contact" flow uses the same code (`lib/contact/message.ts`). Both post to
+FormSubmit (formsubmit.co), a free form-to-email service, from the browser, as form data so no
+preflight request is needed. Nothing is stored here. Spam: FormSubmit's honeypot field. Without
+JavaScript the form is a plain POST to FormSubmit (with its reCAPTCHA step) that returns to a
+new `/thanks` page. If sending fails, the visitor gets a mailto link with the message filled
+in. `/api/contact`, the Resend and Turnstile code, the contact schema and `zod` were removed. The
+CSP now allows `https://formsubmit.co` for `connect-src` and `form-action` and no longer allows
+Cloudflare. FormSubmit needs a one-time activation from Sam's inbox; after that it offers a
+random string to replace the address in `content/site.ts` (`formInbox`).
+
+**Palette "Ember".** Warm white `#F7F5F2`, white cards, near-black ink `#141414`, and one orange
+used at three strengths: bright `#FF5B1F` for glows, large type and graphics; `#C93800` for
+small text and white-on-orange buttons (5.2:1 with white); `#9C2A00` for the deep end of
+gradients and hover. The hero is an orange panel, deep at the edges where text sits and bright
+behind Sam, with a peach disc in place of the sun; the contact section ends on the same orange
+with the form on a white card. Everything in between is light. Green stays for the live dot.
+The blue/yellow tokens (`--sky`, `--sun`, `--canvas`, `--sky-deep`, `--sunlight`) and the
+code-panel tokens and styles are gone. The header's tones are now hero, accent (orange band)
+and light; the logo inverts to a white square on orange. Icons, the Open Graph image, the
+GitHub graph ramp and the contrast report were updated; every pair passes.
+
+**Setup guide.** `docs/launch-guide.md` walks through pushing, importing into Vercel, turning on
+Analytics, activating FormSubmit, claiming the free `.me` domain from the GitHub Student
+Developer Pack (Namecheap offer, confirmed on education.github.com/pack on 2026-11-20) and
+connecting it to Vercel with the DNS records Vercel shows for the project.
+
+**Change of form service (2026-11-21).** FormSubmit kept answering "This form needs Activation"
+after Sam clicked its activation email, so messages were not being delivered. The form and the
+assistant now use Web3Forms (`access_key` in `content/site.ts`, documented as public). The CSP
+allows `https://api.web3forms.com` instead of FormSubmit, and the honeypot is its `botcheck`
+field. This replaces the FormSubmit details in the section above.

@@ -2,7 +2,7 @@
 
 Personal portfolio of Sam Mugabo, software developer (frontend and backend) in Kigali, Rwanda.
 
-A one-page developer portfolio in the blue of the Rwandan flag, written for recruiters: no
+A one-page developer portfolio in warm white, near-black and orange, written for recruiters: no
 code on show, every project summarised in plain words. The page opens on a hero where Sam's
 cut-out figure stands in front of a rising sun and the giant word BUILD, next to an assistant
 visitors can type into ("cv" downloads the CV, "contact" walks through a message). Below it:
@@ -87,20 +87,25 @@ site does not convert them. A new cut-out needs a photo against a plain light wa
 
 See `.env.example`. Everything is optional:
 
-| Variable               | Purpose                                                        |
-| ---------------------- | -------------------------------------------------------------- |
-| `RESEND_API_KEY`       | Lets the assistant send messages; otherwise it opens email     |
-| `CONTACT_TO_EMAIL`     | Recipient (defaults to the address in `content/site.ts`)       |
-| `CONTACT_FROM_EMAIL`   | Sender; Resend's shared sender works without a domain          |
-| `TURNSTILE_SECRET_KEY` | Spam check on the endpoint; when set, the assistant uses email |
-| `GITHUB_TOKEN`         | Higher rate limit for the build-time repository stats          |
-| `NEXT_PUBLIC_SITE_URL` | Canonical URL; Vercel supplies its own when unset              |
+| Variable                   | Purpose                                                 |
+| -------------------------- | ------------------------------------------------------- |
+| `GITHUB_TOKEN`             | GitHub's official data for the contribution graph       |
+| `GOOGLE_SITE_VERIFICATION` | Google Search Console HTML-tag verification code        |
+| `NEXT_PUBLIC_SITE_URL`     | Canonical URL (your `.me` address); Vercel's when unset |
+
+Messages and visitor counts need no keys: see below.
 
 ## Deployment
 
 The site deploys to Vercel from GitHub: pull requests get preview URLs, and `main` is production.
-There is no separate backend. The message endpoint (`app/api/contact/route.ts`) runs as a
-serverless function. Set the environment variables above in the Vercel project settings.
+There is no backend at all. Step-by-step instructions for going live, receiving messages and
+connecting a `.me` address are in [docs/launch-guide.md](docs/launch-guide.md).
+
+**Messages.** The contact form and the assistant post to
+[Web3Forms](https://docs.web3forms.com), which emails each message to Sam. Its access key is in
+`content/site.ts` (`formAccessKey`); Web3Forms documents the key as public. Without JavaScript
+the form still posts and returns to `/thanks`. If sending fails, visitors are offered their own
+email app with the message filled in.
 
 **Visitor counts.** Vercel Web Analytics is wired in (`app/layout.tsx`) and only loads on Vercel.
 After importing the project, open its **Analytics** tab and press **Enable**; the dashboard then
@@ -112,7 +117,7 @@ in `next.config.ts`.
 ## Where things live
 
 ```
-app/            (site)/page.tsx is the one page; resume, api/contact, OG image;
+app/            (site)/page.tsx is the one page; resume, thanks, OG image;
                 template.tsx (page transitions); scenes.css (the home page's CSS motion)
 components/     ui primitives, sections, assistant, motion (intro, GSAP layer, Lenis), layout
 content/        site.ts, profile.ts, projects.ts, assistant.ts

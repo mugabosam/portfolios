@@ -24,6 +24,10 @@ unknown, it is left out rather than guessed. Tick items off as you go.
       Add the optional environment variables from `.env.example` in the project settings.
 - [ ] **Turn on visitor counts.** In the Vercel project, open **Analytics** and press
       **Enable**. The site already includes the tracker; it counts visitors from then on.
+- [x] **Contact form.** Web3Forms is set up, and a test message reached popesir112@gmail.com
+      on 2026-11-21. Send one more test from the live site after launch.
+- [ ] **A `.me` address (optional).** Free for a year with the GitHub Student Developer Pack
+      (Namecheap). See docs/launch-guide.md, steps 5 and 6.
 
 - [ ] **EUCL approval.** The "EUCL device system" card describes what you built in plain
       words only (no code, data, screenshots or internal URLs). Please check that EUCL is
@@ -59,8 +63,6 @@ unknown, it is left out rather than guessed. Tick items off as you go.
 - [ ] **Real screenshots.** Project banners are abstract network artwork, not screenshots. If
       you capture real screenshots (for example of MalariaCheck running), put them in
       `public/work/<slug>/` and change `cover` for that project in `content/projects.ts`.
-- [ ] **Resend account** (free) so the assistant can send messages itself. Until a
-      `RESEND_API_KEY` is set, it opens the visitor's email app with the message ready.
 - [ ] **ML libraries.** The site lists scikit-learn, pandas and Streamlit (what your repos
       show). Add any others you have used in a real project.
 - [ ] **Check the hero panel.** It says what you are open to and what you are building now

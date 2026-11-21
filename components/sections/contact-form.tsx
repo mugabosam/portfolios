@@ -27,29 +27,10 @@ const FIELDS: {
   label: string;
   type: "text" | "email" | "textarea";
   autoComplete: string;
-  placeholder: string;
 }[] = [
-  {
-    name: "name",
-    label: "Your name",
-    type: "text",
-    autoComplete: "name",
-    placeholder: "Jane Doe",
-  },
-  {
-    name: "email",
-    label: "Your email",
-    type: "email",
-    autoComplete: "email",
-    placeholder: "jane@company.com",
-  },
-  {
-    name: "message",
-    label: "Message",
-    type: "textarea",
-    autoComplete: "off",
-    placeholder: "A few sentences about the role or the project.",
-  },
+  { name: "name", label: "Your name", type: "text", autoComplete: "name" },
+  { name: "email", label: "Your email", type: "email", autoComplete: "email" },
+  { name: "message", label: "Message", type: "textarea", autoComplete: "off" },
 ];
 
 const empty: Message = { name: "", email: "", message: "" };
@@ -161,14 +142,13 @@ export function ContactForm({ thanksUrl }: { thanksUrl: string }) {
           id: inputId,
           name: field.name,
           autoComplete: field.autoComplete,
-          placeholder: field.placeholder,
           required: true,
           value: values[field.name],
           "aria-invalid": error ? true : undefined,
           "aria-describedby": error ? errorId : undefined,
           disabled: status === "sending",
           className: cn(
-            "w-full rounded-xl border bg-paper px-4 py-3 text-body text-ink transition-colors duration-(--dur-ui) placeholder:text-ink-3 focus:border-accent-ink disabled:opacity-60",
+            "w-full rounded-xl border bg-paper px-4 py-3 text-body text-ink transition-colors duration-(--dur-ui) focus:border-accent-ink disabled:opacity-60",
             error ? "border-[#b42318]" : "border-line-strong/70",
           ),
         };

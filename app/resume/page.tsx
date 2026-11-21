@@ -84,6 +84,12 @@ export default function ResumePage() {
               {site.email}
             </a>
             <a
+              href="https://mugabosam.me"
+              className="text-accent-ink underline decoration-accent-ink/35 underline-offset-4"
+            >
+              mugabosam.me
+            </a>
+            <a
               href="https://github.com/mugabosam"
               className="text-accent-ink underline decoration-accent-ink/35 underline-offset-4"
             >

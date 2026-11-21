@@ -9,11 +9,11 @@ export type NavItem = { label: string; href: string };
 export type SocialLink = { label: string; href: string };
 
 export const site = {
-  name: "Sam Mugabo",
+  name: "Sam MUGABO",
   monogram: "SM.",
   role: "Software developer (frontend and backend)",
   /** Used for the default <title> and search snippets. */
-  title: "Sam Mugabo: Software Developer",
+  title: "Sam MUGABO",
   /** ≤ 155 characters. */
   description:
     "Software developer in Kigali, Rwanda. I build products end to end: React and Flutter interfaces, NestJS and Django APIs, and the data underneath.",

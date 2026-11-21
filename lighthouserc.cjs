@@ -10,9 +10,6 @@ module.exports = {
       startServerReadyPattern: "Ready",
       url: ["http://localhost:3100/", "http://localhost:3100/resume"],
       numberOfRuns: 2,
-      settings: {
-        preset: "mobile",
-      },
     },
     assert: {
       assertMatrix: [

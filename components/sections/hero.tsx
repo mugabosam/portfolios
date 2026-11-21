@@ -11,9 +11,9 @@ const WORD = "Build";
 /** A few of the tools behind the work, shown as overlapping badges. */
 const STACK = [
   { short: "TS", name: "TypeScript", tone: "bg-white text-ink" },
-  { short: "Py", name: "Python", tone: "bg-sun text-ink" },
-  { short: "Nx", name: "Next.js", tone: "bg-sky-deep text-white" },
-  { short: "Ns", name: "NestJS", tone: "bg-sky-tint text-ink" },
+  { short: "Py", name: "Python", tone: "bg-[#ffc4a3] text-ink" },
+  { short: "Nx", name: "Next.js", tone: "bg-ink text-white" },
+  { short: "Ns", name: "NestJS", tone: "bg-accent-tint text-ink" },
   { short: "Fl", name: "Flutter", tone: "bg-leaf-tint text-ink" },
 ] as const;
 
@@ -23,20 +23,15 @@ const MORE = skillGroups.flatMap((group) => group.skills).length - STACK.length;
 const delay = (index: number) => ({ "--i": index }) as CSSProperties;
 
 /**
- * The opening scene. A sky-blue panel with a rising sun, the giant word
+ * The opening scene. An orange panel with a warm disc rising behind Sam, the giant word
  * BUILD and Sam's cut-out figure, which crosses into a white panel holding
  * the assistant: a chat that answers questions about Sam and hands over the
  * CV or takes a message. On large screens the scene pins while the page
  * scrolls while the copy and panel leave and the sun sets (CSS scroll-driven,
  * see scenes.css);
- * on phones the assistant follows the sky as a normal block.
+ * on phones the assistant follows the panel as a normal block.
  */
 export function HeroSection() {
-  // Messages go through /api/contact only when email delivery is set up and
-  // no human check (Turnstile) is required; otherwise the email app opens.
-  const canSend =
-    Boolean(process.env.RESEND_API_KEY) && !process.env.TURNSTILE_SECRET_KEY;
-
   return (
     <section id="hero" aria-labelledby="hero-title" className="hero">
       <div className="hero-stage">
@@ -74,12 +69,7 @@ export function HeroSection() {
                 I build web and mobile apps, front to back.
               </h1>
               <div className="hero-actions" style={delay(1)}>
-                <Button
-                  variant="primary"
-                  href="#work"
-                  icon="arrow"
-                  data-magnetic
-                >
+                <Button variant="light" href="#work" icon="arrow" data-magnetic>
                   View work
                 </Button>
                 <Button
@@ -96,14 +86,14 @@ export function HeroSection() {
                   {STACK.map((item) => (
                     <li
                       key={item.short}
-                      className={`-ml-2.5 flex size-11 items-center justify-center rounded-full text-caption font-bold ring-[3px] ring-[#0068a0] first:ml-0 ${item.tone}`}
+                      className={`-ml-2.5 flex size-11 items-center justify-center rounded-full text-caption font-bold ring-[3px] ring-[#b83400] first:ml-0 ${item.tone}`}
                     >
                       <abbr title={item.name} className="no-underline">
                         {item.short}
                       </abbr>
                     </li>
                   ))}
-                  <li className="-ml-2.5 flex size-11 items-center justify-center rounded-full bg-white/15 text-caption font-semibold text-white ring-[3px] ring-[#0068a0] backdrop-blur">
+                  <li className="-ml-2.5 flex size-11 items-center justify-center rounded-full bg-white/15 text-caption font-semibold text-white ring-[3px] ring-[#b83400] backdrop-blur">
                     <span aria-hidden="true">+{MORE}</span>
                     <span className="sr-only">and {MORE} more</span>
                   </li>
@@ -118,7 +108,7 @@ export function HeroSection() {
 
         <div className="hero-panel" data-tone="light">
           <div className="hero-panel-box">
-            <Assistant canSend={canSend} />
+            <Assistant />
           </div>
         </div>
       </div>

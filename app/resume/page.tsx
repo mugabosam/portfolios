@@ -29,7 +29,7 @@ function Block({
       aria-label={title}
       className="resume-block grid gap-4 border-t border-line py-8 md:grid-cols-12"
     >
-      <h2 className="text-small font-semibold text-sky md:col-span-3">
+      <h2 className="text-small font-semibold text-accent-ink md:col-span-3">
         {title}
       </h2>
       <div className="md:col-span-9">{children}</div>
@@ -72,20 +72,20 @@ export default function ResumePage() {
     <article className="resume container-site pt-[calc(var(--header-h)+3.5rem)] pb-24 md:pt-[calc(var(--header-h)+5rem)]">
       <header className="flex flex-wrap items-end justify-between gap-8 pb-12">
         <div>
-          <p className="text-small font-semibold text-sky">Résumé</p>
+          <p className="text-small font-semibold text-accent-ink">Résumé</p>
           <h1 className="mt-3 type-h1">{site.name}</h1>
           <p className="mt-3 text-lead text-ink-2">{site.role}</p>
           <p className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-small text-ink-2">
             <span>{site.location}</span>
             <a
               href={`mailto:${site.email}`}
-              className="text-sky underline decoration-sky/35 underline-offset-4"
+              className="text-accent-ink underline decoration-accent-ink/35 underline-offset-4"
             >
               {site.email}
             </a>
             <a
               href="https://github.com/mugabosam"
-              className="text-sky underline decoration-sky/35 underline-offset-4"
+              className="text-accent-ink underline decoration-accent-ink/35 underline-offset-4"
             >
               github.com/mugabosam
             </a>
@@ -164,7 +164,7 @@ export default function ResumePage() {
                 <p className="mt-1">
                   <a
                     href={project.repo}
-                    className="text-sky underline decoration-sky/35 underline-offset-4"
+                    className="text-accent-ink underline decoration-accent-ink/35 underline-offset-4"
                   >
                     {project.repo.replace("https://", "")}
                   </a>

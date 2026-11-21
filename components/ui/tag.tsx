@@ -38,7 +38,7 @@ export function Tag({
       data-force={forceState}
       className={cn(
         base,
-        "relative border-line bg-surface text-sky transition-colors duration-(--dur-ui) ease-out after:absolute after:inset-x-0 after:-inset-y-3 hocus:border-sky hocus:bg-sky-tint",
+        "relative border-line bg-surface text-accent-ink transition-colors duration-(--dur-ui) ease-out after:absolute after:inset-x-0 after:-inset-y-3 hocus:border-accent-ink hocus:bg-accent-tint",
         className,
       )}
     >

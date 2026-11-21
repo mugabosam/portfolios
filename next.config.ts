@@ -7,15 +7,14 @@ import type { NextConfig } from "next";
  */
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+  "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self' https://challenges.cloudflare.com",
-  "frame-src https://challenges.cloudflare.com",
+  "connect-src 'self' https://api.web3forms.com",
   "worker-src 'self' blob:",
   "base-uri 'self'",
-  "form-action 'self'",
+  "form-action 'self' https://api.web3forms.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "upgrade-insecure-requests",
@@ -44,7 +43,6 @@ const nextConfig: NextConfig = {
       { source: "/work/:slug", destination: "/#work", permanent: true },
       { source: "/about", destination: "/#about", permanent: true },
       { source: "/contact", destination: "/#contact", permanent: true },
-      { source: "/contact/:path*", destination: "/#contact", permanent: true },
     ];
   },
   async headers() {

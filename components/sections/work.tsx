@@ -22,7 +22,7 @@ function DeckCard({
     >
       <div className="relative z-10 flex flex-col p-6 sm:p-8 lg:col-span-6 lg:p-10">
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small">
-          <span className="font-semibold text-sky">{project.kind}</span>
+          <span className="font-semibold text-accent-ink">{project.kind}</span>
           <span className="text-ink-3 tabular-nums">{project.year}</span>
           <span className="ml-auto text-ink-3 tabular-nums" aria-hidden="true">
             {index + 1}/{total}
@@ -47,12 +47,12 @@ function DeckCard({
             type="button"
             data-open-project={project.slug}
             aria-label={`See the details: ${project.title}`}
-            className="project-open inline-flex min-h-12 items-center gap-3 rounded-full bg-sky-deep py-1.5 pr-1.5 pl-5 text-small font-semibold text-white outline-none after:absolute after:inset-0 after:z-20 after:rounded-[1.75rem] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-focus"
+            className="project-open inline-flex min-h-12 items-center gap-3 rounded-full bg-ink py-1.5 pr-1.5 pl-5 text-small font-semibold text-white outline-none after:absolute after:inset-0 after:z-20 after:rounded-[1.75rem] focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-focus"
           >
             See the details
             <span
               aria-hidden="true"
-              className="group-hocus/card:rotate-45 inline-flex size-9 items-center justify-center rounded-full bg-sun text-ink transition-transform duration-(--dur-move) ease-(--ease-out)"
+              className="group-hocus/card:rotate-45 inline-flex size-9 items-center justify-center rounded-full bg-accent-ink text-white transition-transform duration-(--dur-move) ease-(--ease-out)"
             >
               <ArrowUpRightIcon className="size-4" />
             </span>
@@ -62,7 +62,7 @@ function DeckCard({
 
       {/* The one result to remember, over the project's artwork. */}
       <div className="relative z-10 min-w-0 p-2 pt-0 lg:col-span-6 lg:py-2 lg:pr-2 lg:pl-0">
-        <div className="relative flex h-full min-h-56 flex-col justify-end overflow-hidden rounded-[1.25rem] bg-linear-to-br from-sky to-sky-deep p-6 text-white sm:p-8">
+        <div className="relative flex h-full min-h-56 flex-col justify-end overflow-hidden rounded-[1.25rem] bg-linear-to-br from-accent-ink to-accent-deep p-6 text-white sm:p-8">
           <Image
             src={project.cover}
             alt=""
@@ -72,13 +72,13 @@ function DeckCard({
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-linear-to-t from-sky-deep via-sky-deep/50 to-transparent"
+            className="absolute inset-0 bg-linear-to-t from-accent-deep via-accent-deep/50 to-transparent"
           />
           <p className="relative flex flex-col gap-2">
             <span className="text-[clamp(2.75rem,6vw,5rem)] leading-[0.9] font-[820] tracking-[-0.035em] whitespace-nowrap text-white [font-stretch:80%]">
               {project.highlight.value}
             </span>
-            <span className="max-w-xs text-small text-code-fg">
+            <span className="max-w-xs text-small text-white">
               {project.highlight.label}
             </span>
           </p>
@@ -90,7 +90,7 @@ function DeckCard({
 }
 
 /**
- * Selected work on the hero's blue. Each card is a
+ * Selected work on warm white. Each card is a
  * short, plain summary with one result to remember; "See the details" opens
  * a sheet with the problem, what was built and the result. On large
  * screens the cards pin one over another as the page scrolls (GSAP, see
@@ -102,8 +102,8 @@ export function WorkSection() {
     <section
       id="work"
       aria-labelledby="work-title"
-      data-tone="blue"
-      className="relative bg-canvas pt-24 pb-24 text-white [--focus:var(--sun)] md:pt-32 md:pb-32"
+      data-tone="light"
+      className="relative bg-paper pt-24 pb-24 text-ink md:pt-32 md:pb-32"
     >
       <div className="container-site">
         <div className="max-w-3xl">
@@ -114,7 +114,7 @@ export function WorkSection() {
           >
             Selected work
           </h2>
-          <p className="mt-6 max-w-xl text-lead text-code-fg" data-fade>
+          <p className="mt-6 max-w-xl text-lead text-ink-2" data-fade>
             Six projects, from health tools to mobile money, each in a few plain
             words. Open any card for the story behind it.
           </p>

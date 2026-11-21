@@ -10,10 +10,10 @@ export const ogSize = { width: 1200, height: 630 };
 export const ogContentType = "image/png";
 
 const color = {
-  ink: "#0b1b2b",
-  ink2: "#435468",
-  sky: "#0070a8",
-  sun: "#fad201",
+  ink: "#141414",
+  ink2: "#4a4a4a",
+  accent: "#c93800",
+  bright: "#ff5b1f",
   white: "#ffffff",
 };
 
@@ -46,7 +46,7 @@ async function assets() {
 }
 
 /**
- * Shared Open Graph card, drawn like the home page hero: a sky panel with
+ * Shared Open Graph card, drawn like the home page hero: an orange panel with
  * the sun, a giant condensed word, and a white panel on the right.
  * The home card shows Sam's cut-out figure; case-study cards put the project
  * title in the giant type instead.
@@ -58,7 +58,7 @@ export async function ogImage({
   figure = false,
   panel,
 }: {
-  /** The giant condensed word or title on the sky panel. */
+  /** The giant condensed word or title on the orange panel. */
   big: string;
   /** Headline under it (home) or nothing extra (case studies). */
   title?: string;
@@ -78,7 +78,7 @@ export async function ogImage({
         display: "flex",
         position: "relative",
         background:
-          "linear-gradient(168deg, #0a7fbf 0%, #0070a8 46%, #005482 100%)",
+          "radial-gradient(circle at 60% 30%, rgba(255,120,60,0.9) 0%, rgba(255,120,60,0) 45%), linear-gradient(168deg, #c43a04 0%, #b83400 46%, #9c2a00 100%)",
         color: color.white,
         fontFamily: "Mona Sans",
       }}
@@ -93,7 +93,7 @@ export async function ogImage({
           height: 400,
           borderRadius: 200,
           background:
-            "radial-gradient(circle, #ffe676 0%, #fbd816 42%, #fad201 66%, rgba(250,210,1,0) 71%)",
+            "radial-gradient(circle, #ffd2b8 0%, #ffa979 44%, #ff8a50 66%, rgba(255,138,80,0) 71%)",
         }}
       />
 
@@ -123,7 +123,7 @@ export async function ogImage({
             <path
               d="M9 11l5 5-5 5"
               fill="none"
-              stroke="#00a1de"
+              stroke="#ff5b1f"
               strokeWidth="2.75"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -134,7 +134,7 @@ export async function ogImage({
               width="8"
               height="2.75"
               rx="1.2"
-              fill="#fad201"
+              fill="#ffffff"
             />
           </svg>
         </div>
@@ -220,7 +220,7 @@ export async function ogImage({
           <div
             style={{
               fontSize: 19,
-              color: color.sky,
+              color: color.accent,
               fontFamily: "Mona Sans Heavy",
             }}
           >
@@ -254,7 +254,7 @@ export async function ogImage({
               width: 64,
               height: 6,
               borderRadius: 3,
-              background: color.sun,
+              background: color.bright,
             }}
           />
         </div>

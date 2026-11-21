@@ -55,9 +55,7 @@ export const answers = {
     confirm: "Here's your message. Shall I send it?",
     sending: "Sending…",
     sent: (email: string) =>
-      `Sent. Sam will reply to ${email} within a few days.`,
-    mailto:
-      "Your email app should open with the message ready. Just press send.",
+      `Sent straight to Sam's inbox. He will reply to ${email} within a few days.`,
     failed: (error: string) =>
       `${error} You can still send it from your email app:`,
     cancelled: "Cancelled. Nothing was sent.",

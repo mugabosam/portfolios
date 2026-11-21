@@ -29,11 +29,11 @@ export function Timeline({
           <h3 className="relative flex items-center gap-3">
             <span
               aria-hidden="true"
-              className="flex size-6 items-center justify-center rounded-full border-2 border-sky bg-paper"
+              className="flex size-6 items-center justify-center rounded-full border-2 border-accent-ink bg-paper"
             >
-              <span className="size-2 rounded-full bg-sky" />
+              <span className="size-2 rounded-full bg-accent" />
             </span>
-            <span className="rounded-sm border border-sky/30 bg-sky-tint px-2 py-0.5 text-small font-semibold text-sky">
+            <span className="rounded-sm border border-accent-ink/30 bg-accent-tint px-2 py-0.5 text-small font-semibold text-accent-ink">
               {group.label}
             </span>
           </h3>
@@ -78,7 +78,7 @@ function TimelineItem({ entry }: { entry: TimelineEntry }) {
       {entry.href && (
         <Link
           href={entry.href}
-          className="mt-2 inline-flex min-h-tap items-center rounded-sm text-small font-semibold text-sky underline decoration-sky/35 underline-offset-4 hocus:decoration-sky"
+          className="mt-2 inline-flex min-h-tap items-center rounded-sm text-small font-semibold text-accent-ink underline decoration-accent-ink/35 underline-offset-4 hocus:decoration-accent-ink"
         >
           Read the case study
         </Link>

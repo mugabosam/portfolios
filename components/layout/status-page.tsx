@@ -27,10 +27,8 @@ export function StatusPage({
       aria-labelledby={id}
       className="container-site flex min-h-[80svh] flex-col justify-center pt-(--header-h) pb-20"
     >
-      <p className="inline-flex w-fit items-center gap-2 rounded-sm bg-sky-deep px-2.5 py-1 font-mono text-small text-white">
-        <span className={ok ? "text-code-number" : "text-code-string"}>
-          {code}
-        </span>
+      <p className="inline-flex w-fit items-center gap-2 rounded-sm bg-accent-ink px-2.5 py-1 font-mono text-small text-white">
+        <span className={ok ? "text-white" : "text-accent-tint"}>{code}</span>
         {status}
       </p>
       <h1 id={id} className="mt-6 max-w-3xl type-h1">

@@ -8,8 +8,8 @@ const STEP = CELL + GAP;
 const LEFT = 30; // weekday labels
 const TOP = 20; // month labels
 
-/** Empty, then four steps from pale sky to deep sky: the site palette. */
-const LEVELS = ["#e3e9f0", "#a8d8f0", "#4fb8e6", "#0089c4", "#005a87"] as const;
+/** Empty, then four steps from pale peach to deep orange: the site palette. */
+const LEVELS = ["#efe9e2", "#ffd0b8", "#ff9a66", "#e8520f", "#a83000"] as const;
 
 const month = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -26,7 +26,7 @@ const number = new Intl.NumberFormat("en-US");
 const utc = (date: string) => new Date(`${date}T00:00:00Z`);
 
 /**
- * A year of GitHub contributions as a heat map in the site's sky ramp.
+ * A year of GitHub contributions as a heat map in the site's orange ramp.
  * One path per shade keeps the SVG small (five elements instead of 365), so
  * the home page's HTML and parse time stay low. The headline numbers appear
  * as real text, and the SVG carries them in its accessible name.

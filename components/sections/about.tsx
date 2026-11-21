@@ -7,13 +7,13 @@ const SERVICES = [
     title: "Websites and web apps",
     text: "Fast, accessible sites and dashboards that work on any screen.",
     tools: "React, Next.js, TypeScript",
-    tone: "bg-sky",
+    tone: "bg-accent",
   },
   {
     title: "Mobile apps",
     text: "Android apps that keep working with poor signal and speak the user's language.",
     tools: "Flutter, Dart",
-    tone: "bg-sun",
+    tone: "bg-accent-ink",
   },
   {
     title: "Servers and data",
@@ -33,24 +33,24 @@ const FACTS = [
   { term: "Speaks", value: "Kinyarwanda and English" },
 ] as const;
 
-/** Who Sam is, what he does and the essentials: a white sheet on the blue page. */
+/** Who Sam is, what he does and the essentials, on white. */
 export function AboutSection() {
   return (
     <section
       id="about"
       aria-labelledby="about-title"
-      data-tone="blue"
-      className="bg-canvas pb-4 md:pb-6"
+      data-tone="light"
+      className="overflow-x-clip bg-surface"
     >
       <div className="container-site">
-        <div className="grid-site gap-y-12 rounded-[2rem] bg-paper px-6 py-16 sm:px-10 md:py-24 lg:px-16">
+        <div className="grid-site gap-y-12 py-24 md:py-32">
           <div className="col-span-12 md:col-span-5 lg:col-span-4">
             <figure className="about-portrait relative mx-auto max-w-xs md:sticky md:top-[calc(var(--header-h)+2rem)] md:max-w-none">
               <div
                 aria-hidden="true"
-                className="absolute -top-6 -right-6 size-32 rounded-full bg-sun"
+                className="absolute -top-6 -right-6 size-32 rounded-full bg-accent"
               />
-              <div className="relative overflow-hidden rounded-[1.75rem] bg-surface">
+              <div className="relative overflow-hidden rounded-[1.75rem] bg-surface shadow-[0_30px_60px_-35px_rgb(20_20_20/0.45)] ring-1 ring-line">
                 <Portrait
                   variant="full"
                   sizes="(min-width: 1024px) 380px, (min-width: 768px) 40vw, 80vw"
@@ -91,7 +91,7 @@ export function AboutSection() {
                 <li
                   key={service.title}
                   data-fade
-                  className="flex flex-col rounded-[1.25rem] border border-line bg-surface p-5"
+                  className="flex flex-col rounded-[1.25rem] bg-surface p-5 shadow-[0_20px_40px_-30px_rgb(11_27_43/0.45)]"
                 >
                   <span
                     aria-hidden="true"
@@ -108,10 +108,10 @@ export function AboutSection() {
               ))}
             </ul>
 
-            <dl className="mt-10 grid gap-x-8 gap-y-5 border-t border-line pt-8 sm:grid-cols-2">
+            <dl className="mt-10 grid gap-x-8 gap-y-5 border-t border-ink/15 pt-8 sm:grid-cols-2">
               {FACTS.map((fact) => (
                 <div key={fact.term}>
-                  <dt className="text-small font-semibold text-sky">
+                  <dt className="text-small font-semibold text-accent-ink">
                     {fact.term}
                   </dt>
                   <dd className="mt-1 text-ink">{fact.value}</dd>

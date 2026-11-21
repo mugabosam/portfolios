@@ -15,12 +15,14 @@ import {
 } from "./icons";
 
 /**
- * primary: sun fill, the one main action in view.
+ * primary: orange fill, the one main action in view.
  * secondary: outlined, for everything else.
- * inverse: outlined in light ink, for the navy contact band.
- * link: sky text, underlined.
+ * inverse: outlined in white, for orange backgrounds.
+ * light: white fill, the main action on the orange band.
+ * link: orange text, underlined.
  */
-export type ButtonVariant = "primary" | "secondary" | "inverse" | "link";
+export type ButtonVariant =
+  "primary" | "secondary" | "inverse" | "light" | "link";
 export type ButtonIcon = "external" | "download" | "github" | "arrow";
 /** Styleguide only: renders a state without interaction. */
 export type ForcedState = "hover" | "focus" | "active";
@@ -52,13 +54,15 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "rounded-full bg-sun px-6 text-ink shadow-[inset_0_-2px_0_rgb(11_27_43/0.12)] hocus:-translate-y-px hocus:bg-sun-deep",
+    "rounded-full bg-accent-ink px-6 text-white shadow-[0_10px_24px_-12px_rgb(201_56_0/0.8)] hocus:-translate-y-px hocus:bg-accent-deep",
   secondary:
     "rounded-full border border-line-strong bg-surface px-6 text-ink hocus:-translate-y-px hocus:border-ink",
   inverse:
     "rounded-full border border-white/45 px-6 text-white hocus:-translate-y-px hocus:border-white hocus:bg-white/5",
+  light:
+    "rounded-full bg-white px-6 text-accent-ink hocus:-translate-y-px hocus:bg-accent-tint",
   // Small inline padding gives the focus ring room; negative margin keeps alignment.
-  link: "-mx-1 rounded-sm px-1 text-sky underline decoration-sky/35 decoration-1 underline-offset-[5px] hocus:decoration-sky",
+  link: "-mx-1 rounded-sm px-1 text-accent-ink underline decoration-accent-ink/35 decoration-1 underline-offset-[5px] hocus:decoration-accent-ink",
 };
 
 function Icon({ icon, variant }: { icon: ButtonIcon; variant: ButtonVariant }) {
@@ -68,9 +72,11 @@ function Icon({ icon, variant }: { icon: ButtonIcon; variant: ButtonVariant }) {
       <span
         className={cn(
           "-mr-3 inline-flex size-8 shrink-0 items-center justify-center rounded-full transition-transform duration-(--dur-move) ease-(--ease-out) group-hocus:rotate-45",
-          variant === "inverse"
-            ? "bg-white text-sky-deep"
-            : "bg-sky-deep text-white",
+          variant === "light"
+            ? "bg-accent-ink text-white"
+            : variant === "secondary"
+              ? "bg-ink text-white"
+              : "bg-white text-accent-ink",
         )}
       >
         <ArrowUpRightIcon className="size-3.5" />

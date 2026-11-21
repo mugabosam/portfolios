@@ -57,7 +57,9 @@ export function CopyEmail({
         href={`mailto:${email}`}
         className={cn(
           "inline-flex min-h-tap min-w-0 items-center truncate px-4 font-mono text-small transition-colors duration-(--dur-ui)",
-          dark ? "text-white hocus:text-sun" : "text-ink hocus:text-sky",
+          dark
+            ? "text-white hocus:text-accent-tint"
+            : "text-ink hocus:text-accent-ink",
         )}
       >
         {email}
@@ -69,8 +71,8 @@ export function CopyEmail({
           className={cn(
             "relative inline-flex min-h-tap shrink-0 items-center gap-2 border-l px-4 text-small font-semibold transition-colors duration-(--dur-ui)",
             dark
-              ? "border-code-line text-code-fg hocus:bg-white/10"
-              : "border-line-strong text-ink hocus:bg-sky-tint",
+              ? "border-white/30 text-white hocus:bg-white/10"
+              : "border-line-strong text-ink hocus:bg-accent-tint",
           )}
         >
           <span className="relative size-4">

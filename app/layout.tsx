@@ -46,10 +46,11 @@ export const metadata: Metadata = {
     description: site.description,
   },
   alternates: { canonical: "/" },
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f5f7fa",
+  themeColor: "#f7f5f2",
   colorScheme: "light",
 };
 

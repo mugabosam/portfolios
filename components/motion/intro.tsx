@@ -67,7 +67,7 @@ export function Intro() {
         <span className="intro-line">
           <span>{site.name}</span>
         </span>
-        <span className="intro-line text-code-muted">
+        <span className="intro-line text-white/75">
           <span>Software developer, {site.location}</span>
         </span>
       </div>

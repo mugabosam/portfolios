@@ -10,42 +10,27 @@ UI component boundaries and focus indicators 3:1 (SC 1.4.11).
 
 | Foreground | Background | Used for | Ratio | Required | Result |
 | --- | --- | --- | --- | --- | --- |
-| `--ink` `#0b1b2b` | `--paper` `#f5f7fa` | Headings, body text | 16.23:1 | 4.5:1 | Pass |
-| `--ink-2` `#435468` | `--paper` `#f5f7fa` | Secondary text | 7.23:1 | 4.5:1 | Pass |
-| `--ink-3` `#5b6b80` | `--paper` `#f5f7fa` | Meta text, captions | 5.07:1 | 4.5:1 | Pass |
-| `--ink-2` `#435468` | `--surface` `#ffffff` | Text on cards | 7.76:1 | 4.5:1 | Pass |
-| `--ink-3` `#5b6b80` | `--surface` `#ffffff` | Meta text on cards | 5.44:1 | 4.5:1 | Pass |
-| `--ink-3` `#5b6b80` | `--sky-tint` `#e4f2fa` | Text on the sky wash | 4.76:1 | 4.5:1 | Pass |
-| `--sky` `#0070a8` | `--paper` `#f5f7fa` | Links | 5.04:1 | 4.5:1 | Pass |
-| `--sky` `#0070a8` | `--surface` `#ffffff` | Links on cards | 5.41:1 | 4.5:1 | Pass |
-| `--sky` `#0070a8` | `--sky-tint` `#e4f2fa` | Group labels, linked tags | 4.73:1 | 4.5:1 | Pass |
-| `--ink` `#0b1b2b` | `--sun` `#fad201` | Primary button | 11.85:1 | 4.5:1 | Pass |
-| `--ink` `#0b1b2b` | `--sun-deep` `#e8c200` | Primary button, hover | 10.07:1 | 4.5:1 | Pass |
-| `--leaf-ink` `#146c43` | `--leaf-tint` `#e3f4ea` | "Now" and status labels | 5.65:1 | 4.5:1 | Pass |
-| `#b42318` `#b42318` | `--paper` `#f5f7fa` | Form errors | 6.13:1 | 4.5:1 | Pass |
-| `--line-strong` `#7c8da3` | `--paper` `#f5f7fa` | Input and button borders | 3.16:1 | 3:1 | Pass |
-| `--line-strong` `#7c8da3` | `--surface` `#ffffff` | Borders on cards | 3.39:1 | 3:1 | Pass |
-| `--focus (--sky)` `#0070a8` | `--paper` `#f5f7fa` | Focus outline | 5.04:1 | 3:1 | Pass |
+| `--ink` `#141414` | `--paper` `#f7f5f2` | Headings, body text | 16.93:1 | 4.5:1 | Pass |
+| `--ink-2` `#4a4a4a` | `--paper` `#f7f5f2` | Secondary text | 8.14:1 | 4.5:1 | Pass |
+| `--ink-3` `#696969` | `--paper` `#f7f5f2` | Meta text, captions | 5.04:1 | 4.5:1 | Pass |
+| `--ink-2` `#4a4a4a` | `--surface` `#ffffff` | Text on cards | 8.86:1 | 4.5:1 | Pass |
+| `--ink-3` `#696969` | `--surface` `#ffffff` | Meta text on cards | 5.49:1 | 4.5:1 | Pass |
+| `--accent-ink` `#c93800` | `--paper` `#f7f5f2` | Labels, links | 4.77:1 | 4.5:1 | Pass |
+| `--accent-ink` `#c93800` | `--surface` `#ffffff` | Labels on cards | 5.19:1 | 4.5:1 | Pass |
+| `--accent-ink` `#c93800` | `--accent-tint` `#ffede4` | Chips, assistant actions | 4.57:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `--accent-ink` `#c93800` | Primary buttons, chat | 5.19:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `--accent-deep` `#9c2a00` | Button hover | 7.65:1 | 4.5:1 | Pass |
+| `--ink` `#141414` | `--accent-tint` `#ffede4` | Badges on tint | 16.22:1 | 4.5:1 | Pass |
+| `--accent` `#ff5b1f` | `--surface` `#ffffff` | Large type and graphics only | 3.10:1 | 3:1 | Pass |
+| `#ffffff` `#ffffff` | `Panel edge` `#c43a04` | Header, hero copy | 5.31:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `Panel` `#b83400` | Hero headline, band text | 5.95:1 | 4.5:1 | Pass |
+| `rgb(255 255 255 / 0.85)` `rgb(255 255 255 / 0.85)` | `Panel` `#b83400` | Hero caption, band nav | 4.70:1 | 4.5:1 | Pass |
+| `#ffffff` `#ffffff` | `Nav pill` `#6e1e00` | Nav over the hero | 11.36:1 | 4.5:1 | Pass |
+| `--leaf-ink` `#146c43` | `--leaf-tint` `#e3f4ea` | Now badge | 5.65:1 | 4.5:1 | Pass |
 | `--leaf` `#1e8e5a` | `--surface` `#ffffff` | Live dot | 4.14:1 | 3:1 | Pass |
-| `#ffffff` `#ffffff` | `--code` `#0b1b2b` | Headings on navy | 17.41:1 | 4.5:1 | Pass |
-| `#ffffff` `#ffffff` | `Hero sky, top` `#0876b3` | Header over the hero (wordmark, tablet nav) | 4.94:1 | 4.5:1 | Pass |
-| `#ffffff` `#ffffff` | `Hero sky` `#0070a8` | Hero headline, buttons | 5.41:1 | 4.5:1 | Pass |
-| `rgb(255 255 255 / 0.85)` `rgb(255 255 255 / 0.85)` | `Hero sky, lower` `#006399` | Hero stack caption | 5.15:1 | 4.5:1 | Pass |
-| `#ffffff` `#ffffff` | `--canvas` `#00609a` | Text on the blue page | 6.69:1 | 4.5:1 | Pass |
-| `--code-fg` `#d6e2ee` | `--canvas` `#00609a` | Work intro | 5.09:1 | 4.5:1 | Pass |
-| `rgb(255 255 255 / 0.85)` `rgb(255 255 255 / 0.85)` | `--canvas` `#00609a` | Footer text and links | 5.30:1 | 4.5:1 | Pass |
-| `#ffffff` `#ffffff` | `--sky-deep` `#004a75` | Chat bubbles, dark buttons | 9.39:1 | 4.5:1 | Pass |
-| `--code-fg` `#d6e2ee` | `--code` `#0b1b2b` | Code, text on navy | 13.25:1 | 4.5:1 | Pass |
-| `--code-muted` `#8ea3ba` | `--code` `#0b1b2b` | Comments, punctuation | 6.72:1 | 4.5:1 | Pass |
-| `--code-key` `#6cc9f2` | `--code` `#0b1b2b` | Keys, keywords, links on navy | 9.35:1 | 4.5:1 | Pass |
-| `--code-string` `#f6dc5c` | `--code` `#0b1b2b` | Strings | 12.70:1 | 4.5:1 | Pass |
-| `--code-number` `#7fdcae` | `--code` `#0b1b2b` | Numbers, 200 OK | 10.57:1 | 4.5:1 | Pass |
-| `#a9dcf5` `#a9dcf5` | `--code` `#0b1b2b` | Types | 11.81:1 | 4.5:1 | Pass |
-| `--ink` `#0b1b2b` | `--sun` `#fad201` | Primary button on navy | 11.85:1 | 4.5:1 | Pass |
-| `--code-muted` `#8ea3ba` | `--code` `#0b1b2b` | Inverse button border | 6.72:1 | 3:1 | Pass |
-| `--focus (--code-key)` `#6cc9f2` | `--code` `#0b1b2b` | Focus outline on navy | 9.35:1 | 3:1 | Pass |
-| `--ink-3` `#33445a` | `--paper` `#f5f7fa` | Meta text, high-contrast mode | 9.25:1 | 4.5:1 | Pass |
-| `--line-strong` `#4a5b70` | `--paper` `#f5f7fa` | Borders, high-contrast mode | 6.48:1 | 3:1 | Pass |
+| `#b42318` `#b42318` | `--surface` `#ffffff` | Form errors | 6.57:1 | 4.5:1 | Pass |
+| `--line-strong` `#8c857e` | `--surface` `#ffffff` | Input and button borders | 3.64:1 | 3:1 | Pass |
+| `--line-strong` `#8c857e` | `--paper` `#f7f5f2` | Borders on paper | 3.34:1 | 3:1 | Pass |
 
 ## Decorative only
 
@@ -54,9 +39,8 @@ not apply. Any control that uses a border uses `--line-strong` instead.
 
 | Colour | Background | Ratio |
 | --- | --- | --- |
-| `--line` `#dce3eb` | `--paper` `#f5f7fa` | 1.21:1 |
-| `--line` `#dce3eb` | `--surface` `#ffffff` | 1.29:1 |
-| `--code-line` `#223a55` | `--code` `#0b1b2b` | 1.50:1 |
+| `--line` `#e8e3dd` | `--paper` `#f7f5f2` | 1.17:1 |
+| `--line` `#e8e3dd` | `--surface` `#ffffff` | 1.28:1 |
 
 ## Notes
 

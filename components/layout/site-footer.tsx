@@ -9,13 +9,13 @@ const year = new Date(
 ).getUTCFullYear();
 
 const linkClass =
-  "inline-flex min-h-tap items-center rounded-sm text-small md:min-h-9 text-white/85 transition-colors duration-(--dur-ui) hocus:text-white";
+  "inline-flex min-h-tap items-center rounded-sm text-small md:min-h-9 text-ink-2 transition-colors duration-(--dur-ui) hocus:text-accent-ink";
 
 export function SiteFooter() {
   return (
     <footer
-      data-tone="blue"
-      className="relative z-10 bg-canvas text-white [--focus:var(--sun)] [--logo-bg:#fff] [--logo-fg:var(--sky)]"
+      data-tone="light"
+      className="relative z-10 border-t border-line bg-surface text-ink"
     >
       <div className="container-site grid-site gap-y-10 pt-14 pb-10">
         <div className="col-span-12 md:col-span-5">
@@ -23,7 +23,7 @@ export function SiteFooter() {
             <LogoMark className="size-7" />
             {site.name}
           </p>
-          <p className="mt-3 max-w-xs text-small text-white/85">
+          <p className="mt-3 max-w-xs text-small text-ink-2">
             Software developer in {site.location}. Websites, mobile apps and the
             systems behind them.
           </p>
@@ -65,7 +65,7 @@ export function SiteFooter() {
           </a>
         </div>
 
-        <div className="col-span-12 border-t border-white/20 pt-6 text-caption text-white/80">
+        <div className="col-span-12 border-t border-line pt-6 text-caption text-ink-3">
           <p>
             &copy; {year} {site.name}
           </p>

@@ -63,7 +63,7 @@ export function ProjectSheet() {
     >
       {project && (
         <div>
-          <div className="relative overflow-hidden bg-linear-to-br from-sky to-sky-deep px-6 pt-6 pb-7 text-white sm:px-8">
+          <div className="relative overflow-hidden bg-linear-to-br from-accent-ink to-accent-deep px-6 pt-6 pb-7 text-white sm:px-8">
             <div className="flex items-start justify-between gap-6">
               <p className="text-small font-semibold text-white">
                 {project.kind}, {project.year}
@@ -71,7 +71,7 @@ export function ProjectSheet() {
               <button
                 type="button"
                 onClick={close}
-                className="-mt-1 -mr-2 inline-flex min-h-tap items-center rounded-full px-3 text-small font-semibold text-white hocus:text-sun"
+                className="-mt-1 -mr-2 inline-flex min-h-tap items-center rounded-full px-3 text-small font-semibold text-white hocus:text-accent-tint"
               >
                 Close
               </button>
@@ -84,7 +84,7 @@ export function ProjectSheet() {
             </h2>
             <p className="mt-3 text-white">{project.summary}</p>
             <p className="mt-6 flex items-baseline gap-3 border-t border-white/25 pt-5">
-              <span className="shrink-0 text-[2rem] leading-none font-[820] whitespace-nowrap text-sun [font-stretch:80%]">
+              <span className="shrink-0 text-[2rem] leading-none font-[820] whitespace-nowrap text-accent-tint [font-stretch:80%]">
                 {project.highlight.value}
               </span>
               <span className="text-small text-white">
@@ -103,16 +103,22 @@ export function ProjectSheet() {
                 key={term}
                 className="grid gap-1.5 sm:grid-cols-[8.5rem_1fr] sm:gap-6"
               >
-                <dt className="text-small font-semibold text-sky">{term}</dt>
+                <dt className="text-small font-semibold text-accent-ink">
+                  {term}
+                </dt>
                 <dd className="text-ink-2">{text}</dd>
               </div>
             ))}
             <div className="grid gap-1.5 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
-              <dt className="text-small font-semibold text-sky">My role</dt>
+              <dt className="text-small font-semibold text-accent-ink">
+                My role
+              </dt>
               <dd className="text-ink-2">{project.role}</dd>
             </div>
             <div className="grid gap-1.5 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
-              <dt className="text-small font-semibold text-sky">Built with</dt>
+              <dt className="text-small font-semibold text-accent-ink">
+                Built with
+              </dt>
               <dd className="text-ink-2">{project.tools.join(", ")}</dd>
             </div>
           </dl>
@@ -121,7 +127,7 @@ export function ProjectSheet() {
             {project.repo ? (
               <a
                 href={project.repo}
-                className="inline-flex min-h-tap items-center gap-2.5 rounded-full bg-sky-deep px-5 text-small font-semibold text-white hocus:bg-sky"
+                className="inline-flex min-h-tap items-center gap-2.5 rounded-full bg-accent-ink px-5 text-small font-semibold text-white hocus:bg-accent-deep"
               >
                 <GitHubIcon className="size-4" />
                 See it on GitHub

@@ -14,6 +14,7 @@ import { ArrowUpRightIcon, CheckIcon, CopyIcon } from "@/components/ui/icons";
 import { answers, opening } from "@/content/assistant";
 import { projects } from "@/content/projects";
 import { site } from "@/content/site";
+import { isEmail, mailtoFor, sendMessage } from "@/lib/contact/message";
 import { cn } from "@/lib/cn";
 
 /** Opens a project's details sheet (see project-sheet.tsx). */
@@ -73,8 +74,6 @@ const SUGGESTIONS = [
   { label: "Contact Sam", command: "contact", href: "#contact" },
 ] as const;
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
 /** Follows a link from code, as if clicked (downloads, mailto). */
 function follow(href: string, download = false) {
   const link = document.createElement("a");
@@ -85,26 +84,19 @@ function follow(href: string, download = false) {
   link.remove();
 }
 
-function mailtoFor(draft: Draft) {
-  const subject = encodeURIComponent(`Portfolio message from ${draft.name}`);
-  const body = encodeURIComponent(
-    `${draft.message}\n\n${draft.name}\n${draft.email}`,
-  );
-  return `mailto:${site.email}?subject=${subject}&body=${body}`;
-}
-
 /**
  * The hero's assistant: a chat that answers questions about Sam from
  * pre-written facts and does a few things on request, like a small
  * terminal. "cv" downloads the CV, "contact" walks through a message
- * (sent through /api/contact when email delivery is configured, otherwise
- * handed to the visitor's email app), "projects" opens project summaries.
+ * (sent straight to Sam's inbox through Web3Forms, the same way as the
+ * contact form; if that fails, handed to the visitor's email app),
+ * "projects" opens project summaries.
  *
  * The opening exchange is server-rendered and streams in with CSS, so it
  * reads the same without JavaScript; the suggestion buttons are real links
  * underneath (CV download, page sections).
  */
-export function Assistant({ canSend }: { canSend: boolean }) {
+export function Assistant() {
   const [messages, setMessages] = useState<Message[]>(openingMessages);
   const [step, setStep] = useState<Step | null>(null);
   const [draft, setDraft] = useState<Draft>({
@@ -148,38 +140,12 @@ export function Assistant({ canSend }: { canSend: boolean }) {
     say("bot", text, extra);
 
   const send = async (current: Draft) => {
-    if (!canSend) {
-      follow(mailtoFor(current));
-      reply(answers.contact.mailto, {
-        actions: [
-          { kind: "link", label: "Open it again", href: mailtoFor(current) },
-        ],
-      });
-      setStep(null);
-      return;
-    }
     setStep("sending");
     reply(answers.contact.sending);
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...current, company: "" }),
-      });
-      const result = (await response.json()) as { ok: boolean; error?: string };
-      if (result.ok) reply(answers.contact.sent(current.email));
-      else
-        reply(answers.contact.failed(result.error ?? "It didn't go through."), {
-          actions: [
-            {
-              kind: "link",
-              label: "Open my email app",
-              href: mailtoFor(current),
-            },
-          ],
-        });
-    } catch {
-      reply(answers.contact.failed("The connection failed."), {
+    const result = await sendMessage(current);
+    if (result.ok) reply(answers.contact.sent(current.email));
+    else
+      reply(answers.contact.failed(result.error), {
         actions: [
           {
             kind: "link",
@@ -188,7 +154,6 @@ export function Assistant({ canSend }: { canSend: boolean }) {
           },
         ],
       });
-    }
     setStep(null);
   };
 
@@ -206,7 +171,7 @@ export function Assistant({ canSend }: { canSend: boolean }) {
       return reply(answers.contact.askEmail(text.split(" ")[0]!));
     }
     if (step === "email") {
-      if (!EMAIL.test(text)) return reply(answers.contact.emailRetry);
+      if (!isEmail(text)) return reply(answers.contact.emailRetry);
       setDraft((d) => ({ ...d, email: text }));
       setStep("message");
       return reply(answers.contact.askMessage);
@@ -219,7 +184,7 @@ export function Assistant({ canSend }: { canSend: boolean }) {
       return reply(answers.contact.confirm, {
         draft: complete,
         actions: [
-          { kind: "send", label: canSend ? "Send it" : "Open in my email app" },
+          { kind: "send", label: "Send it" },
           { kind: "command", label: "Cancel", command: "cancel" },
         ],
       });
@@ -452,7 +417,7 @@ export function Assistant({ canSend }: { canSend: boolean }) {
       <div className="flex items-center gap-3 border-b border-line pb-4">
         <span
           aria-hidden="true"
-          className="assistant-avatar flex size-10 shrink-0 items-center justify-center rounded-full bg-sky-deep text-sun"
+          className="assistant-avatar flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-ink text-accent-tint"
         >
           <SparkIcon className="size-5" />
         </span>
@@ -495,7 +460,7 @@ export function Assistant({ canSend }: { canSend: boolean }) {
                 href={item.href}
                 download={item.command === "cv" ? "" : undefined}
                 onClick={onSuggestion(item.command)}
-                className="inline-flex min-h-9 items-center rounded-full border border-line-strong/60 bg-surface px-3.5 text-small font-medium text-ink-2 transition-colors duration-(--dur-ui) hocus:border-sky hocus:text-sky"
+                className="inline-flex min-h-9 items-center rounded-full border border-line-strong/60 bg-surface px-3.5 text-small font-medium text-ink-2 transition-colors duration-(--dur-ui) hocus:border-accent-ink hocus:text-accent-ink"
               >
                 {item.label}
               </a>
@@ -511,10 +476,10 @@ export function Assistant({ canSend }: { canSend: boolean }) {
           <label htmlFor={inputId} className="sr-only">
             {step ? placeholder : "Ask about Sam"}
           </label>
-          <div className="flex min-h-12 flex-1 items-center gap-2 rounded-full border border-line-strong/70 bg-paper pr-1.5 pl-4 focus-within:border-sky">
+          <div className="flex min-h-12 flex-1 items-center gap-2 rounded-full border border-line-strong/70 bg-paper pr-1.5 pl-4 focus-within:border-accent-ink">
             <span
               aria-hidden="true"
-              className="font-mono text-small font-semibold text-sky"
+              className="font-mono text-small font-semibold text-accent-ink"
             >
               &gt;
             </span>
@@ -535,7 +500,7 @@ export function Assistant({ canSend }: { canSend: boolean }) {
             <button
               type="submit"
               disabled={!value.trim() || step === "sending"}
-              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-deep text-white transition-opacity duration-(--dur-ui) disabled:opacity-35"
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-ink text-white transition-opacity duration-(--dur-ui) disabled:opacity-35"
             >
               <ArrowUpRightIcon className="size-4 -rotate-45" />
               <span className="sr-only">Send</span>
@@ -572,7 +537,7 @@ function Bubble({
   if (message.from === "user")
     return (
       <div className="msg msg-user self-end" style={style}>
-        <p className="max-w-[16rem] rounded-2xl rounded-br-md bg-sky-deep px-4 py-2.5 text-small text-white">
+        <p className="max-w-[16rem] rounded-2xl rounded-br-md bg-accent-ink px-4 py-2.5 text-small text-white">
           {message.text}
         </p>
       </div>
@@ -582,7 +547,7 @@ function Bubble({
     <div className="msg msg-bot relative flex gap-2.5" style={style}>
       <span
         aria-hidden="true"
-        className="msg-avatar mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-sky-tint text-sky"
+        className="msg-avatar mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-accent-tint text-accent-ink"
       >
         <SparkIcon className="size-3.5" />
       </span>
@@ -625,8 +590,8 @@ function Bubble({
               const className = cn(
                 "inline-flex min-h-8 items-center gap-1.5 rounded-full px-3 text-caption font-semibold transition-colors duration-(--dur-ui)",
                 action.kind === "send"
-                  ? "bg-sun text-ink hocus:bg-sun-deep"
-                  : "border border-sky/30 bg-sky-tint text-sky hocus:border-sky",
+                  ? "bg-accent-ink text-white hocus:bg-accent-deep"
+                  : "border border-accent-ink/30 bg-accent-tint text-accent-ink hocus:border-accent-ink",
               );
               if (action.kind === "download" || action.kind === "link")
                 return (

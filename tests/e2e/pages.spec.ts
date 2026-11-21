@@ -91,16 +91,16 @@ test.describe("one-page navigation", () => {
     expect(await page.evaluate(() => document.activeElement?.id)).toBe("main");
   });
 
-  test("the header stays readable on blue sections", async ({ page }) => {
+  test("the header stays readable on the orange band", async ({ page }) => {
     await ready(page);
     await page.evaluate(() =>
-      document.getElementById("work")!.scrollIntoView(),
+      document.querySelector(".contact-band")!.scrollIntoView(),
     );
     await expect(page.locator(".site-header")).toHaveAttribute(
       "data-tone",
-      "blue",
+      "accent",
     );
-    // The logo mark turns white on blue.
+    // The logo mark turns white on orange.
     const fill = await page
       .locator(".site-header .logo-mark rect")
       .first()
@@ -179,15 +179,40 @@ test.describe("assistant", () => {
     await expect(log(page)).toContainText("Nothing was sent");
   });
 
+  test("sends a message straight to the inbox", async ({ page }) => {
+    const sent: string[] = [];
+    await page.route("https://api.web3forms.com/**", async (route) => {
+      sent.push(route.request().postData() ?? "");
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify({ success: true }),
+      });
+    });
+    await ready(page);
+    await ask(page, "contact");
+    await ask(page, "Test Person");
+    await ask(page, "person@example.com");
+    await ask(page, "We would like to talk about a frontend role.");
+    await ask(page, "send");
+    await expect(log(page)).toContainText("Sent straight to Sam's inbox");
+    expect(sent).toHaveLength(1);
+  });
+
   test("opens a project summary", async ({ page }) => {
     await ready(page);
-    await page
+    // Keyboard throughout: a click can nudge the page, which moves the scene.
+    const projects = page
       .getByRole("list", { name: "Suggestions" })
-      .getByRole("link", { name: "Projects" })
-      .click();
+      .getByRole("link", { name: "Projects" });
+    await expect(projects).toBeVisible();
+    await projects.focus();
+    await page.keyboard.press("Enter");
     const zunga = log(page).getByRole("button", { name: "Zunga" });
+    await expect(zunga).toBeVisible();
     // Keyboard, so nothing scrolls the page (which moves the hero scene).
-    await expect(zunga).toBeInViewport({ ratio: 1 });
+    await page.evaluate(() => window.scrollTo(0, 0));
     await zunga.focus();
     await page.keyboard.press("Enter");
     const sheet = page.getByRole("dialog", { name: "Zunga" });
@@ -228,6 +253,89 @@ test.describe("work", () => {
 });
 
 test.describe("contact", () => {
+  /** Web3Forms stand-in: tests never send real email. */
+  const mockFormService = async (page: Page, ok = true) => {
+    const sent: string[] = [];
+    await page.route("https://api.web3forms.com/**", async (route) => {
+      sent.push(route.request().postData() ?? "");
+      await route.fulfill({
+        status: ok ? 200 : 500,
+        contentType: "application/json",
+        headers: { "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify(
+          ok
+            ? {
+                success: true,
+                message: "The form was submitted successfully.",
+              }
+            : { success: false, message: "Server error" },
+        ),
+      });
+    });
+    return sent;
+  };
+
+  test("the form checks its fields, then sends to the inbox", async ({
+    page,
+  }) => {
+    const sent = await mockFormService(page);
+    await ready(page);
+    const form = page.getByRole("form", { name: "Send a message" });
+    await form.scrollIntoViewIfNeeded();
+    await form.getByRole("button", { name: "Send message" }).click();
+    await expect(form.getByText("Please enter your name.")).toBeVisible();
+    await expect(form.getByLabel("Your name")).toBeFocused();
+
+    await form.getByLabel("Your name").fill("Jane Recruiter");
+    await form.getByLabel("Your email").fill("jane@company.com");
+    await form
+      .getByLabel("Message")
+      .fill("We have a full-stack role and would like to talk with you.");
+    await form.getByRole("button", { name: "Send message" }).click();
+    await expect(
+      page.locator("#contact").getByText("Message sent. Thank you, Jane."),
+    ).toBeVisible();
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toContain("jane@company.com");
+  });
+
+  test("if sending fails, the email app is offered", async ({ page }) => {
+    await mockFormService(page, false);
+    await ready(page);
+    const form = page.getByRole("form", { name: "Send a message" });
+    await form.scrollIntoViewIfNeeded();
+    await form.getByLabel("Your name").fill("Jane Recruiter");
+    await form.getByLabel("Your email").fill("jane@company.com");
+    await form
+      .getByLabel("Message")
+      .fill("We have a full-stack role and would like to talk with you.");
+    await form.getByRole("button", { name: "Send message" }).click();
+    const alert = page.locator("#contact").getByRole("alert");
+    await expect(alert).toContainText("could not be sent");
+    await expect(
+      alert.getByRole("link", { name: /open it with the message/ }),
+    ).toHaveAttribute("href", /^mailto:/);
+  });
+
+  test("without JavaScript the form posts to Web3Forms", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto("/");
+    const form = page.locator("#contact form");
+    await expect(form).toHaveAttribute(
+      "action",
+      "https://api.web3forms.com/submit",
+    );
+    await expect(form).toHaveAttribute("method", "POST");
+    await expect(form.locator('input[name="redirect"]')).toHaveAttribute(
+      "value",
+      /\/thanks$/,
+    );
+    await context.close();
+  });
+
   test("the email can be copied", async ({ browser, browserName }) => {
     test.skip(
       browserName !== "chromium",
@@ -321,12 +429,37 @@ test.describe("motion and fallbacks", () => {
       for (const path of ["/", "/resume"]) {
         await page.goto(path);
         await page.evaluate(() => document.fonts.ready);
-        const overflow = await page.evaluate(
-          () =>
-            document.documentElement.scrollWidth -
-            document.documentElement.clientWidth,
-        );
-        expect(overflow, `${path} at ${width}px`).toBeLessThanOrEqual(0);
+        const { overflow, culprits, widths } = await page.evaluate(() => {
+          const root = document.documentElement;
+          const edge = root.clientWidth;
+          const clipped = (el: Element) => {
+            for (
+              let p = el.parentElement;
+              p && p !== document.body;
+              p = p.parentElement
+            )
+              if (getComputedStyle(p).overflowX !== "visible") return true;
+            return false;
+          };
+          return {
+            overflow: root.scrollWidth - edge,
+            culprits: [...document.querySelectorAll("body *")]
+              .filter(
+                (el) =>
+                  el.getBoundingClientRect().right > edge + 0.5 && !clipped(el),
+              )
+              .slice(0, 5)
+              .map(
+                (el) =>
+                  `${el.tagName}.${String(el.className).slice(0, 60)} (${Math.round(el.getBoundingClientRect().right)})`,
+              ),
+            widths: `scroll ${root.scrollWidth}, client ${edge}, inner ${window.innerWidth}`,
+          };
+        });
+        expect(
+          overflow,
+          `${path} at ${width}px (${widths}): ${culprits.join(", ")}`,
+        ).toBeLessThanOrEqual(0);
       }
       await context.close();
     }

@@ -2,7 +2,7 @@ import { availability } from "@/content/profile";
 import { ogContentType, ogImage, ogSize } from "@/lib/og";
 
 export const alt =
-  "Sam Mugabo, software developer in Kigali: I build software from the database to the interface.";
+  "Sam Mugabo, software developer in Kigali: I build web and mobile apps, front to back.";
 export const size = ogSize;
 export const contentType = ogContentType;
 
@@ -10,8 +10,8 @@ export default function Image() {
   return ogImage({
     big: "Build",
     figure: true,
-    title: "I build software from the database to the interface.",
-    subtitle: "React and Flutter, NestJS and Django, PostgreSQL.",
+    title: "I build web and mobile apps, front to back.",
+    subtitle: "Websites, mobile apps, and the servers and data behind them.",
     panel: {
       label: "Available for",
       value: availability.roles,

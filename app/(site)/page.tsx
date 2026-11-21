@@ -43,9 +43,17 @@ export default function HomePage() {
     ],
   };
 
+  const website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: site.name,
+    url: getSiteUrl().toString(),
+  };
+
   return (
     <>
       <JsonLd data={person} />
+      <JsonLd data={website} />
       <Intro />
       <HomeMotion />
       <HeroSection />

@@ -30,7 +30,7 @@
   gap: 2rem;
   padding: var(--gutter);
   padding-bottom: calc(var(--gutter) + 0.75rem);
-  background-color: var(--sky-deep);
+  background-color: var(--accent-deep);
   color: #fff;
   animation: intro-out 900ms cubic-bezier(0.76, 0, 0.24, 1) 1050ms forwards;
 }
@@ -86,7 +86,7 @@ html[data-intro="seen"] .intro {
   position: absolute;
   inset: auto 0 0;
   height: 5px;
-  background-color: var(--sun);
+  background-color: var(--accent);
   transform-origin: left;
   animation: intro-bar 1000ms cubic-bezier(0.65, 0, 0.35, 1) 40ms both;
 }
@@ -120,13 +120,12 @@ html[data-intro="seen"] .hero {
      4.5:1 for white (see the hero pairs in docs/contrast.md). */
   background:
     /* The bottom edge always ends in the page's blue: no seam below. */
-    linear-gradient(to bottom, rgb(0 96 154 / 0) 62%, var(--canvas) 100%),
     radial-gradient(
       45% 45% at 58% 32%,
-      rgb(38 166 226 / 0.85) 0%,
-      rgb(38 166 226 / 0) 72%
+      rgb(255 120 60 / 0.95) 0%,
+      rgb(255 120 60 / 0) 72%
     ),
-    linear-gradient(168deg, #0876b3 0%, #0070a8 46%, var(--canvas) 100%);
+    linear-gradient(168deg, #c43a04 0%, #b83400 46%, #9c2a00 100%);
 }
 
 /* The sun: rises behind Sam's head on load, sets on scroll. */
@@ -148,10 +147,10 @@ html[data-intro="seen"] .hero {
   border-radius: 50%;
   background: radial-gradient(
     circle at 50% 50%,
-    #ffe676 0%,
-    #fbd816 42%,
-    #fad201 66%,
-    rgb(250 210 1 / 0) 70.7%
+    #ffd2b8 0%,
+    #ffa979 44%,
+    #ff8a50 66%,
+    rgb(255 138 80 / 0) 70.7%
   );
   animation: sun-rise 1900ms var(--ease-out) var(--intro) both;
 }
@@ -163,8 +162,8 @@ html[data-intro="seen"] .hero {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgb(250 210 1 / 0.3) 0%,
-    rgb(250 210 1 / 0) 58%
+    rgb(255 170 120 / 0.35) 0%,
+    rgb(255 170 120 / 0) 58%
   );
 }
 
@@ -236,9 +235,9 @@ html[data-intro="seen"] .hero {
   padding-bottom: 1.75rem;
   background: linear-gradient(
     to top,
-    rgb(0 52 82 / 0.92) 0%,
-    rgb(0 52 82 / 0.75) 45%,
-    rgb(0 52 82 / 0) 100%
+    rgb(120 32 0 / 0.92) 0%,
+    rgb(120 32 0 / 0.72) 45%,
+    rgb(120 32 0 / 0) 100%
   );
 }
 
@@ -354,7 +353,7 @@ html[data-intro="seen"] .hero {
     flex-direction: column;
     border-radius: 1.75rem;
     background-color: var(--surface);
-    box-shadow: -24px 0 60px -30px rgb(0 40 70 / 0.35);
+    box-shadow: -24px 0 60px -30px rgb(80 20 0 / 0.45);
     animation: panel-in 1300ms cubic-bezier(0.76, 0, 0.24, 1)
       calc(var(--intro) - 150ms) both;
   }
@@ -442,7 +441,7 @@ html[data-intro="seen"] .hero {
 }
 
 .header-underline {
-  background-color: var(--sky);
+  background-color: var(--accent-ink);
 }
 
 .site-header[data-tone] {
@@ -460,37 +459,45 @@ html[data-intro="seen"] .hero {
   -webkit-backdrop-filter: none;
 }
 
-.site-header[data-tone="blue"] {
-  background-color: rgb(0 84 136 / 0.86);
-  border-bottom-color: rgb(255 255 255 / 0.12);
+.site-header[data-tone="accent"] {
+  background-color: rgb(176 50 0 / 0.9);
+  border-bottom-color: rgb(255 255 255 / 0.14);
 }
 
 .site-header[data-tone="hero"] .header-brand,
-.site-header[data-tone="blue"] .header-brand,
-.site-header[data-tone="blue"] .header-link[aria-current],
-.site-header[data-tone="blue"] .header-link:focus-visible {
+.site-header[data-tone="accent"] .header-brand,
+.site-header[data-tone="accent"] .header-link[aria-current],
+.site-header[data-tone="accent"] .header-link:focus-visible {
   color: #fff;
 }
 
-.site-header[data-tone="blue"] .header-link {
-  color: rgb(255 255 255 / 0.78);
+.site-header[data-tone="accent"] .header-link {
+  color: rgb(255 255 255 / 0.85);
 }
 
 @media (hover: hover) {
-  .site-header[data-tone="blue"] .header-link:hover {
+  .site-header[data-tone="accent"] .header-link:hover {
     color: #fff;
   }
 }
 
-.site-header[data-tone="blue"] .header-underline {
-  background-color: var(--sun);
+.site-header[data-tone="accent"] .header-underline {
+  background-color: #fff;
 }
 
-/* On blue the mark inverts: a white square with a sky chevron. */
+/* On orange the CV pill turns white, and the mark inverts: a white square
+   with an orange chevron. */
+.site-header[data-tone="hero"] .header-cv,
+.site-header[data-tone="accent"] .header-cv {
+  background-color: #fff;
+  color: var(--accent-ink);
+}
+
 .site-header[data-tone="hero"] .logo-mark,
-.site-header[data-tone="blue"] .logo-mark {
+.site-header[data-tone="accent"] .logo-mark {
   --logo-bg: #fff;
-  --logo-fg: var(--sky);
+  --logo-fg: var(--accent-ink);
+  --logo-cursor: var(--ink);
 }
 
 /* Over the hero the nav floats in a navy pill, readable over both the sky
@@ -504,7 +511,7 @@ html[data-intro="seen"] .hero {
 .site-header[data-tone="hero"] .header-nav {
   padding: 0.25rem 0.25rem 0.25rem 0.75rem;
   border-radius: 999px;
-  background-color: rgb(0 74 117 / 0.9);
+  background-color: rgb(110 30 0 / 0.82);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -525,7 +532,7 @@ html[data-intro="seen"] .hero {
 }
 
 .site-header[data-tone="hero"] .header-underline {
-  background-color: var(--sun);
+  background-color: #fff;
 }
 
 /* Smooth in-page jumps where Lenis is not running (touch screens). */
@@ -542,7 +549,7 @@ html[data-intro="seen"] .hero {
   inset: 0;
   z-index: 30;
   border-radius: inherit;
-  background-color: rgb(0 50 82 / 0.55);
+  background-color: rgb(247 245 242 / 0.7);
   opacity: 0;
   pointer-events: none;
 }
@@ -562,7 +569,7 @@ html[data-intro="seen"] .hero {
   border-radius: inherit;
   background: radial-gradient(
     30rem circle at var(--mx, 50%) var(--my, 50%),
-    rgb(0 161 222 / 0.11),
+    rgb(255 91 31 / 0.08),
     transparent 62%
   );
   opacity: 0;
@@ -581,14 +588,6 @@ html[data-intro="seen"] .hero {
 .contact-band {
   position: relative;
   overflow: hidden;
-}
-
-.contact-glow {
-  background: radial-gradient(
-    55% 75% at 92% 0%,
-    rgb(120 210 250 / 0.28),
-    transparent 70%
-  );
 }
 
 /* SplitText line masks: room for descenders and accents. */
@@ -707,7 +706,7 @@ html[data-intro="seen"] .hero {
 }
 
 .project-sheet::backdrop {
-  background-color: rgb(0 50 82 / 0.6);
+  background-color: rgb(20 20 20 / 0.55);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
@@ -983,39 +982,35 @@ html:has(.project-sheet[open]) {
 
 html:has(.hero),
 html:has(.hero) body {
-  background-color: var(--canvas);
+  background-color: var(--paper);
 }
 
-/* The contact band: the sky again, with the sun rising at the end. */
+/* The contact band: the hero's ember again, with a bright glow rising in
+   its corner. */
 .contact-band {
-  background: linear-gradient(
-    168deg,
-    #0876b3 0%,
-    #0070a8 46%,
-    var(--canvas) 100%
-  );
+  background: linear-gradient(168deg, #c43a04 0%, #b83400 50%, #9c2a00 100%);
 }
 
-.contact-sun {
+.contact-disc {
   position: absolute;
-  right: -6rem;
-  bottom: -14rem;
-  width: min(30rem, 70vw);
+  right: -8rem;
+  bottom: -16rem;
+  width: min(32rem, 75vw);
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    #ffe676 0%,
-    #fbd816 42%,
-    #fad201 66%,
-    rgb(250 210 1 / 0) 70.7%
+    #ffd2b8 0%,
+    #ffa979 44%,
+    #ff8a50 66%,
+    rgb(255 138 80 / 0) 70.7%
   );
   pointer-events: none;
 }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .contact-sun {
+    .contact-disc {
       animation: sun-up linear both;
       animation-timeline: view();
       animation-range: entry 10% cover 60%;

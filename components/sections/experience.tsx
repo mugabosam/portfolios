@@ -10,17 +10,17 @@ export function ExperienceSection() {
     <section
       id="experience"
       aria-labelledby="experience-title"
-      data-tone="blue"
-      className="bg-canvas pb-4 md:pb-6"
+      data-tone="light"
+      className="bg-paper pb-4 md:pb-6"
     >
       <div className="container-site">
-        <div className="grid-site gap-y-12 rounded-[2rem] bg-surface px-6 py-16 sm:px-10 md:py-24 lg:px-16">
+        <div className="grid-site gap-y-12 rounded-[2rem] bg-surface px-6 py-16 shadow-[0_30px_70px_-45px_rgb(20_20_20/0.35)] sm:px-10 md:py-24 lg:px-16">
           <div className="col-span-12 md:col-span-5">
             <div className="md:sticky md:top-[calc(var(--header-h)+2.5rem)]">
               <h2
                 id="experience-title"
                 data-split
-                className="text-[clamp(3rem,8vw,7rem)] leading-[0.92] font-[820] tracking-[-0.035em] [font-stretch:80%]"
+                className="text-[clamp(3rem,6vw,5.5rem)] leading-[0.92] font-[820] tracking-[-0.035em] [font-stretch:80%]"
               >
                 Experience
               </h2>

@@ -26,8 +26,7 @@
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "server-only": "^0.0.1",
-    "zod": "^4.6.7"
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
@@ -53,7 +52,7 @@
   "packageManager": "pnpm@12.18.0",
   "description": "Personal portfolio of Sam Mugabo, software developer.",
   "engines": {
-    "node": ">=24"
+    "node": "24.x"
   },
   "lint-staged": {
     "*.{ts,tsx,js,mjs}": [

@@ -19,6 +19,12 @@ export const site = {
     "Software developer in Kigali, Rwanda. I build products end to end: React and Flutter interfaces, NestJS and Django APIs, and the data underneath.",
   location: "Kigali, Rwanda",
   email: "popesir112@gmail.com",
+  /**
+   * The Web3Forms access key (https://web3forms.com): it tells the service
+   * to email contact-form messages to Sam's inbox. No server of ours is
+   * involved. Web3Forms documents this key as public, so it is safe here.
+   */
+  formAccessKey: "6a643d7c-1657-4e0e-9dcd-d2619532d469",
   /** One-page navigation: each link is a section of the home page. */
   nav: [
     { label: "Work", href: "/#work" },

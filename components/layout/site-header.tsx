@@ -13,7 +13,7 @@ import { getLenis } from "@/lib/motion/lenis";
 const sectionOf = (href: string) => href.split("#")[1] ?? "";
 const SECTIONS = site.nav.map((item) => sectionOf(item.href));
 
-type Tone = "hero" | "blue" | "light";
+type Tone = "hero" | "accent" | "light";
 
 /** Scrolls to a home-page section, through Lenis when it is running. */
 function scrollToSection(id: string) {
@@ -53,9 +53,9 @@ function Wordmark({
  * Fixed header for a one-page site. Each link scrolls to a section of the
  * home page (from any other page it navigates there first), and the link of
  * the section in view is marked as current while the page scrolls. Its
- * colours follow what is underneath: clear over the hero's sky, navy glass
- * over the blue sections (the logo turns white so it stays visible) and
- * paper glass over light ones. On small screens the links move into a modal
+ * colours follow what is underneath: clear over the hero, orange glass
+ * over the orange contact band (the logo turns white so it stays visible)
+ * and paper glass over the light sections. On small screens the links move into a modal
  * dialog (focus contained, Esc closes, focus returns to the Menu button).
  */
 export function SiteHeader() {
@@ -191,7 +191,7 @@ export function SiteHeader() {
                 <a
                   href="/resume.pdf"
                   download
-                  className="inline-flex min-h-10 items-center gap-2 rounded-full bg-sun px-4 text-small font-semibold text-ink transition-[background-color,translate] duration-(--dur-ui) hocus:-translate-y-px hocus:bg-sun-deep"
+                  className="header-cv inline-flex min-h-10 items-center gap-2 rounded-full bg-accent-ink px-4 text-small font-semibold text-white transition-[background-color,translate] duration-(--dur-ui) hocus:-translate-y-px hocus:bg-accent-deep"
                 >
                   <DownloadIcon className="size-4" />
                   Download CV
@@ -270,7 +270,7 @@ export function SiteHeader() {
                       {current && (
                         <span
                           aria-hidden="true"
-                          className="size-2 rounded-full bg-sky"
+                          className="size-2 rounded-full bg-accent"
                         />
                       )}
                     </Link>
@@ -284,14 +284,14 @@ export function SiteHeader() {
             <a
               href="/resume.pdf"
               download
-              className="inline-flex min-h-tap items-center justify-center gap-2 rounded-full bg-sun px-6 text-small font-semibold text-ink"
+              className="inline-flex min-h-tap items-center justify-center gap-2 rounded-full bg-accent-ink px-6 text-small font-semibold text-white"
             >
               <DownloadIcon className="size-4" />
               Download CV
             </a>
             <a
               href={`mailto:${site.email}`}
-              className="inline-flex min-h-tap items-center justify-center text-body font-medium text-sky underline decoration-sky/35 underline-offset-4"
+              className="inline-flex min-h-tap items-center justify-center text-body font-medium text-accent-ink underline decoration-accent-ink/35 underline-offset-4"
             >
               {site.email}
             </a>
